@@ -43,9 +43,9 @@
                     <thead>
                         <tr>
                             <th>Event</th>
-                            <th class="hide-mobile">Date</th>
-                            <th class="only-desktop">Location</th>
-                            <th class="hide-mobile">Team</th>
+                            <th class="hide-mobile col-secondary">Date</th>
+                            <th class="only-desktop col-optional">Location</th>
+                            <th class="hide-mobile col-optional">Team</th>
                             <th>Status</th>
                             <th class="th-right">Attendees</th>
                             <th></th>
@@ -59,14 +59,14 @@
                                 <p class="cell-sub">by {{ $event->creator->name }}</p>
                             </td>
 
-                            <td class="hide-mobile td-nowrap">
+                            <td class="hide-mobile col-secondary td-nowrap">
                                 <span class="tabular">{{ $event->starts_at->format('M j, Y') }}</span>
                                 <p class="cell-sub tabular">{{ $event->starts_at->format('H:i') }}</p>
                             </td>
 
-                            <td class="only-desktop">{{ $event->location ?: '—' }}</td>
+                            <td class="only-desktop col-optional">{{ $event->location ?: '—' }}</td>
 
-                            <td class="hide-mobile">
+                            <td class="hide-mobile col-optional">
                                 @if ($event->team)
                                 <span class="chip capitalize">{{ $event->team }}</span>
                                 @else

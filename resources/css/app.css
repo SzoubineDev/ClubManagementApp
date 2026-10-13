@@ -1131,6 +1131,12 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 .font-size { font-size: 14px; }
 .dialog-body { padding: 4px 0 8px; }
 
+/* Notice zone variants (forgot-password info card) */
+.notice-zone--info { border-left-color: var(--teal-600, #0D9488); background: var(--teal-50); }
+
+/* Role badge variant (members tables) */
+.chip.president { background: var(--saffron-500); color: #3B2F0B; box-shadow: inset 0 0 0 1px var(--saffron-100); font-weight: 600; }
+
 /* Responsive 2-column grid (filters, form rows) */
 .grid--2 { grid-template-columns: 1fr; }
 @media (min-width: 768px) { .grid--2 { grid-template-columns: repeat(2, 1fr); } }
@@ -1307,3 +1313,80 @@ body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; 
 
 /* Staggered entrance for auth cards (Angular route-transition feel) */
 .auth-card { animation: fadeInUp .35s var(--ease-standard) both; }
+
+/* ==========================================================================
+   Mobile responsiveness pass — tables, filters, pagination, buttons, forms
+   (extends the existing Angular-style design system; no new framework)
+   ========================================================================== */
+
+/* Smooth viewport-based typography for hero/page titles on small screens */
+@media (max-width: 767px) {
+    .page-header-title, .hero-title { font-size: clamp(20px, 5.6vw, 24px); }
+}
+
+/* --- Data tables: priority-column collapsing (pure CSS, no JS) ----------- */
+@media (max-width: 899px) {
+    .table-wrap .data-table { min-width: 0; }        /* stop forcing 640px width */
+    .data-table .col-optional { display: none; }     /* email / location / team cells */
+}
+@media (max-width: 639px) {
+    .data-table .col-secondary { display: none; }    /* collapse one tier further */
+    .data-table thead th, .data-table tbody td { padding: 12px 14px; }
+}
+
+/* Table action cells wrap into neat rows instead of overflowing */
+.cell-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+@media (max-width: 639px) {
+    .cell-actions .btn-sm { min-height: 36px; padding: 6px 10px; }
+}
+
+/* --- Filter bars stack vertically and stretch ---------------------------- */
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+@media (max-width: 767px) {
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-bar .field, .filter-bar select, .filter-bar input,
+    .filter-bar .btn { width: 100%; }
+    .filter-bar .btn { justify-content: center; }
+}
+
+/* --- Pagination wraps and stays touch-friendly --------------------------- */
+@media (max-width: 639px) {
+    nav[aria-label="Pagination"] { row-gap: 8px; justify-content: center; }
+    nav[aria-label="Pagination"] svg { width: 16px; height: 16px; }
+}
+
+/* --- Toolbar: hide the user's name earlier so the drawer fits ------------- */
+@media (max-width: 639px) {
+    .user-trigger span:not(.avatar) { display: none; }
+    .toolbar-brand { letter-spacing: .01em; }
+}
+
+/* --- Full-width primary actions on phones -------------------------------- */
+@media (max-width: 639px) {
+    .form-actions { flex-direction: column-reverse; align-items: stretch; }
+    .form-actions .btn { justify-content: center; width: 100%; }
+    .card-footer { flex-direction: column-reverse; align-items: stretch; }
+    .card-footer .btn { justify-content: center; }
+}
+
+/* --- Event detail header & meta chips breathe on small screens ------------ */
+@media (max-width: 639px) {
+    .event-hero-meta { gap: 8px; }
+    .info-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Drawer above the toolbar z-index, under dialogs ---------------------- */
+.mobile-nav { z-index: 80; }
+.drawer-backdrop { z-index: 79; }
+
+/* --- Keep modals scrollable on short landscape phones --------------------- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .dialog-container { align-items: flex-start; }
+    .dialog { max-height: 92vh; overflow-y: auto; }
+}
+
+/* --- Respect OS "no hover" devices (phones/tablets): no stuck hover states */
+@media (hover: none) {
+    .m-card:hover { transform: none; box-shadow: var(--elevation-1); }
+    .team-card:hover { transform: none; }
+}
