@@ -1,3 +1,4 @@
+<x-guest-layout>
 <div class="mb-6">
     <h1 class="auth-title">Verify your email</h1>
     <p class="auth-sub">Thanks for signing up! Before getting started, could you verify your email address by clicking
@@ -26,3 +27,5 @@
         <button type="submit" class="text-action">{{ __('Log Out') }}</button>
     </form>
 </div>
+
+</x-guest-layout>

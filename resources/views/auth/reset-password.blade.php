@@ -1,3 +1,4 @@
+<x-guest-layout>
 <div class="mb-6">
     <h1 class="auth-title">Set a new password</h1>
     <p class="auth-sub">Choose a strong password for your account.</p>
@@ -21,3 +22,5 @@
         {{ __('Reset Password') }}
     </x-primary-button>
 </form>
+
+</x-guest-layout>

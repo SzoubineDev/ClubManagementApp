@@ -1,3 +1,4 @@
+<x-guest-layout>
 {{-- Page-level Alpine scope so `loading` is shared with the submit button --}}
 <div x-data="{ loading: false }">
 
@@ -55,3 +56,5 @@
     </p>
 
 </div>
+
+</x-guest-layout>

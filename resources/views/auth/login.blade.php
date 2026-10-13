@@ -1,3 +1,4 @@
+<x-guest-layout>
 {{-- Page-level Alpine scope --}}
 <div x-data="{ loading: false }">
 
@@ -31,8 +32,10 @@
         @csrf
 
         <x-floating-input name="email" label="Email" type="email" required autofocus autocomplete="username" />
+        <x-input-error :messages="$errors->get('email')" />
 
         <x-password-strength name="password" label="Password" autocomplete="current-password" :rules="false" />
+        <x-input-error :messages="$errors->get('password')" />
 
         <div class="auth-row">
             <label class="flex items-center gap-2 text-sm text-muted cursor-pointer">
@@ -54,3 +57,5 @@
     </p>
 
 </div>
+
+</x-guest-layout>

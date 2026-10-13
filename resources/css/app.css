@@ -801,6 +801,7 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 /* ==========================================================================
    Auth pages (guest layout)
    ========================================================================== */
+.auth-body { background: var(--white); }
 .auth-split { display: flex; min-height: 100vh; }
 .auth-side {
     display: none; position: relative; width: 46%;

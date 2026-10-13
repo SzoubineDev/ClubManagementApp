@@ -1,4 +1,6 @@
-<x-base-layout x-data="{ mobileOpen: false }">
+@props(['bodyClass' => 'app-shell'])
+
+<x-base-layout :body-class="$bodyClass">
     <header class="toolbar">
         <div class="toolbar-inner">
             <a href="{{ route('dashboard') }}" class="toolbar-brand">

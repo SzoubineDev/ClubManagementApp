@@ -1,4 +1,6 @@
-<x-base-layout>
+@props(['bodyClass' => 'auth-body'])
+
+<x-base-layout :body-class="$bodyClass">
     <div class="auth-split">
         {{-- Brand panel (Angular-style split login) --}}
         <aside class="auth-side">
