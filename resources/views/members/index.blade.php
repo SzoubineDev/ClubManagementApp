@@ -48,7 +48,7 @@
                     @foreach ($teams as $t)
                     <option value="{{ $t }}" @selected(request('team')===$t)>{{ ucfirst($t) }}</option>
                     @endforeach
-                    <option value="none" @selected(request('team')==='none')>No team</option>
+                    <option value="none" @if(request('team')==='none')selected@endif>No team</option>
                 </select>
 
                 <select name="role" class="field-select">
@@ -101,9 +101,9 @@
                     <thead>
                         <tr>
                             <th>Member</th>
-                            <th class="hide-mobile">CNE</th>
-                            <th class="only-desktop">Filière</th>
-                            <th class="hide-mobile">Team</th>
+                            <th class="hide-mobile col-secondary">CNE</th>
+                            <th class="only-desktop col-optional">Filière</th>
+                            <th class="hide-mobile col-optional">Team</th>
                             <th>Roles</th>
                             <th></th>
                         </tr>
@@ -135,11 +135,11 @@
                                 </div>
                             </td>
 
-                            <td class="hide-mobile tabular">{{ $member->cne ?: '—' }}</td>
+                            <td class="hide-mobile col-secondary tabular">{{ $member->cne ?: '—' }}</td>
 
-                            <td class="only-desktop">{{ $member->filiere ?: '—' }}</td>
+                            <td class="only-desktop col-optional">{{ $member->filiere ?: '—' }}</td>
 
-                            <td class="hide-mobile">
+                            <td class="hide-mobile col-optional">
                                 @if ($member->team)
                                 <span class="chip capitalize">{{ $member->team }}</span>
                                 @else

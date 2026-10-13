@@ -196,7 +196,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th class="hide-mobile">Email</th>
+                            <th class="hide-mobile col-optional">Email</th>
                             <th class="th-right">Status</th>
                         </tr>
                     </thead>
@@ -209,7 +209,7 @@
                                     <span class="cell-title">{{ $attendee->name }}</span>
                                 </div>
                             </td>
-                            <td class="hide-mobile text-muted">{{ $attendee->email }}</td>
+                            <td class="hide-mobile col-optional text-muted">{{ $attendee->email }}</td>
                             <td class="td-right">
                                 @if ($attendee->pivot->attended)
                                 <span class="status-label status-label--on">

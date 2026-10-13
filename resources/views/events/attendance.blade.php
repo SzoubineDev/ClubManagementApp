@@ -40,7 +40,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th class="hide-mobile">Email</th>
+                            <th class="hide-mobile col-optional">Email</th>
                             <th class="th-right">Attended</th>
                         </tr>
                     </thead>
@@ -53,7 +53,7 @@
                                     <span class="cell-title">{{ $attendee->name }}</span>
                                 </div>
                             </td>
-                            <td class="hide-mobile text-muted">{{ $attendee->email }}</td>
+                            <td class="hide-mobile col-optional text-muted">{{ $attendee->email }}</td>
                             <td class="td-right">
                                 <input type="checkbox"
                                     name="attended[]"
