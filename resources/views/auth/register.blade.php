@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout wide>
 {{-- Page-level Alpine scope so `loading` is shared with the submit button --}}
 <div x-data="{ loading: false }">
 
@@ -29,20 +29,24 @@
         x-on:submit="loading = true">
         @csrf
 
-        <x-floating-input name="name" label="Full name" type="text" required autofocus autocomplete="name" />
+        <div class="field-pair">
+            <x-floating-input name="name" label="Full name" type="text" required autofocus autocomplete="name" />
+            <x-floating-input name="email" label="Email" type="email" required autocomplete="username" />
+        </div>
 
-        <x-floating-input name="email" label="Email" type="email" required autocomplete="username" />
-
-        <x-floating-input name="cne" label="CNE" type="text" required autocomplete="off" />
-
-        <x-birthday-select />
+        <div class="field-pair">
+            <x-floating-input name="cne" label="CNE" type="text" required autocomplete="off" />
+            <x-birthday-select />
+        </div>
 
         <x-filiere-select required />
 
-        <x-password-strength name="password" label="Password" />
+        <div class="field-pair">
+            <x-password-strength name="password" label="Password" />
 
-        <x-floating-input name="password_confirmation" label="Confirm password" type="password" required
-            autocomplete="new-password" />
+            <x-floating-input name="password_confirmation" label="Confirm password" type="password" required
+                autocomplete="new-password" />
+        </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg" :disabled="loading">
             <span class="spinner" x-show="loading" x-cloak style="display:none;"></span>

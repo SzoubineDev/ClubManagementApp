@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout wide>
 @php
 $user = $member ?? \App\Models\User::firstWhere('email', old('email'));
 @endphp

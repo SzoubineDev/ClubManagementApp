@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout wide>
 <div class="mb-6">
     <h1 class="auth-title">Set a new password</h1>
     <p class="auth-sub">Choose a strong password for your account.</p>

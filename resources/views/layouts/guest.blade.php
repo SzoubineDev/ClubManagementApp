@@ -1,7 +1,7 @@
-@props(['bodyClass' => 'auth-body'])
+@props(['bodyClass' => 'auth-body', 'wide' => false])
 
 <x-base-layout :body-class="$bodyClass">
-    <div class="auth-split">
+    <div class="auth-split {{ $wide ? 'auth-split--wide' : '' }}">
         {{-- Brand panel (Angular-style split login) --}}
         <aside class="auth-side">
             <img class="bg"
@@ -27,7 +27,7 @@
 
         {{-- Form panel --}}
         <main class="auth-main">
-            <div class="auth-card">
+            <div class="auth-card {{ $wide ? 'auth-card--form' : '' }}">
                 <a href="/" class="auth-mobile-brand">{{ config('app.name', 'Uni Club') }}</a>
                 {{ $slot }}
             </div>
