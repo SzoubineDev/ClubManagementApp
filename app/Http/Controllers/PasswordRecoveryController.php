@@ -124,7 +124,7 @@ class PasswordRecoveryController extends Controller
     /**
      * Step 2 — show the new-password form (requires a fresh grant).
      */
-    public function showResetForm(Request $request): View|RedirectResponse
+    public function showResetForm(Request $request, ?string $token = null): View|RedirectResponse
     {
         $grant = $this->validSessionGrant($request);
 

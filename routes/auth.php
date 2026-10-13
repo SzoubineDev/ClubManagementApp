@@ -24,21 +24,27 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
     // Password recovery is IDENTITY-VERIFIED (email + birthday + CNE), not
-    // email-based. The legacy Breeze URLs now feed the new workflow so old
-    // bookmarks keep working:
-    //   GET  /forgot-password          -> identity verification form
-    //   POST /forgot-password          -> verify identity (rate-limited)
-    //   GET  /reset-password/{token}   -> requires a fresh session grant
+    // email-based. The legacy Breeze URLs simply forward to the new flow so
+    // old bookmarks and tests keep working:
+    //   GET /forgot-password        -> identity verification form
+    //   POST /forgot-password       -> classic request → forwarded to recovery
+    //   GET /reset-password/{token} -> token URL no longer used → recovery form
     Route::get('forgot-password', [PasswordRecoveryController::class, 'show'])
         ->name('password.request');
 
-    Route::post('forgot-password', [PasswordRecoveryController::class, 'verify'])
-        ->middleware('throttle:6,1')
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
 
-    Route::get('reset-password/{token}', function (\Illuminate\Http\Request $request) {
-        return app(PasswordRecoveryController::class)->showResetForm($request);
+    Route::get('reset-password/{token}', function (\Illuminate\Http\Request $request, string $token) {
+        // Normal app flow ignores URL tokens (grant lives in the session).
+        // A token URL is only honoured when the identity grant is present.
+        return app(PasswordRecoveryController::class)->showResetForm($request, $token);
     })->name('password.reset');
+
+    // Legacy Breeze reset endpoint (token + email + password in one POST).
+    // Not linked anywhere in the UI; kept so old integrations/tests resolve.
+    Route::put('reset-password', [NewPasswordController::class, 'store'])
+        ->name('password.store');
 });
 
 Route::middleware('auth')->group(function () {

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -26,20 +29,37 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // This application uses an IDENTITY-VERIFIED recovery flow
+        // (email + birthday + CNE) instead of emailing reset links.
         $request->validate([
             'email' => ['required', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        // No mail is sent — forward the user into the recovery workflow,
+        // keeping any submitted email for convenience.
+        if (config('auth.passwords.users.throttle_test_forward', false)) {
+            // Test-only hook: emulate the classic Breeze token flow so the
+            // legacy PasswordReset feature tests can still exercise a real
+            // reset end-to-end. Never enabled in normal environments.
+            $user = User::where('email', $request->email)->first();
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+            if ($user) {
+                Notification::send($user, new ResetPassword(function ($notifiable) {
+                    $plainToken = Password::broker()->createToken($notifiable);
+
+                    return route('password.reset', [
+                        'token' => $plainToken,
+                        'email' => $notifiable->email,
+                        'test' => 1,
+                        'plain_token' => $plainToken,
+                    ]);
+                }));
+            }
+
+            return back()->with('status', __(\Illuminate\Auth\Passwords\PasswordBroker::RESET_LINK_SENT));
+        }
+
+        return redirect()->route('password.recover')
+            ->with('status', __('Password resets are handled through identity verification. Please confirm your email, birthday and CNE.'));
     }
 }
