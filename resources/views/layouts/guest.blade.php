@@ -5,7 +5,7 @@
         {{-- Brand panel (Angular-style split login) --}}
         <aside class="auth-side">
             <img class="bg"
-                src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=80"
+                src="/images/hero.jpg"
                 alt="">
             <div class="scrim"></div>
             <div class="auth-side-inner">

@@ -36,7 +36,7 @@
     {{-- Hero --}}
     <header class="landing-hero">
         <div class="photo"
-            style="background-image:url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1600&q=80')"></div>
+            style="background-image:url('/images/hero.jpg')"></div>
         <div class="fade"></div>
 
         <div class="landing-hero-inner">
@@ -157,7 +157,7 @@
         <div class="content-wrap">
             <div class="cta-panel">
                 <div class="photo"
-                    style="background-image:url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=80')"></div>
+                    style="background-image:url('/images/hero.jpg')"></div>
                 <div class="cta-panel-inner">
                     <h2>Ready to join the club?</h2>
                     <p>Sign up in less than a minute. No fees, no commitments — just show up and be part of something.</p>
