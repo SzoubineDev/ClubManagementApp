@@ -1,54 +1,56 @@
-<x-guest-layout>
+{{-- Page-level Alpine scope --}}
+<div x-data="{ loading: false }">
 
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-bordeaux">Welcome back</h1>
-        <p class="text-sm text-mauve mt-1">Log in to continue to your club.</p>
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-sub">Sign in to continue to {{ config('app.name', 'Uni Club') }}.</p>
     </div>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}" class="space-y-4" autocomplete="off">
+    {{-- Validation summary --}}
+    @if ($errors->count() > 0)
+    <div class="alert alert-danger mb-4">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <div>
+            <p class="alert-title">Please fix the following:</p>
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('login') }}" class="auth-form" autocomplete="off"
+        x-on:submit="loading = true">
         @csrf
 
-        <x-floating-input
-            name="email"
-            label="Email"
-            type="email"
-            :value="old('email')"
-            required
-            autofocus
-            autocomplete="username" />
-        <x-input-error :messages="$errors->get('email')" class="mt-1" />
+        <x-floating-input name="email" label="Email" type="email" required autofocus autocomplete="username" />
 
-        <x-floating-input
-            name="password"
-            label="Password"
-            type="password"
-            required
-            autocomplete="current-password" />
-        <x-input-error :messages="$errors->get('password')" class="mt-1" />
+        <x-password-strength name="password" label="Password" autocomplete="current-password" :rules="false" />
 
-        <div class="flex items-center justify-between pt-2">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-blush text-bordeaux shadow-sm focus:ring-bordeaux" name="remember">
-                <span class="ms-2 text-sm text-mauve">{{ __('Remember me') }}</span>
+        <div class="auth-row">
+            <label class="flex items-center gap-2 text-sm text-muted cursor-pointer">
+                <input type="checkbox" name="remember" id="remember" class="checkbox" @checked(old('remember'))>
+                Remember me
             </label>
-
-            @if (Route::has('password.request'))
-            <a class="text-sm text-mauve hover:text-bordeaux" href="{{ route('password.recover') }}">
-                {{ __('Forgot password?') }}
-            </a>
-            @endif
+            <a href="{{ route('password.request') }}" class="text-sm font-medium">Forgot password?</a>
         </div>
 
-        <x-primary-button class="w-full justify-center">
-            {{ __('Log in') }}
-        </x-primary-button>
-
-        <p class="text-center text-sm text-mauve mt-4">
-            Don't have an account?
-            <a href="{{ route('register') }}" class="text-bordeaux font-medium hover:underline">Join us</a>
-        </p>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" :disabled="loading">
+            <span class="spinner" x-show="loading" x-cloak style="display:none;"></span>
+            <span x-text="loading ? 'Signing in…' : 'Sign in'">Sign in</span>
+        </button>
     </form>
 
-</x-guest-layout>
+    <p class="auth-alt">
+        New here?
+        <a href="{{ route('register') }}">Create an account</a>
+    </p>
+
+</div>

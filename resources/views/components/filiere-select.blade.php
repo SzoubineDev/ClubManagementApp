@@ -1,72 +1,43 @@
 @props([
 'name' => 'filiere',
 'label' => 'Filière',
-'value' => null,
+'selected' => null,
 ])
 
 @php
 $options = [
-'DEUST' => [
-'icon' => '📘',
-'desc' => '2-year diploma',
-],
-'LICENSE' => [
-'icon' => '🎓',
-'desc' => "Bachelor's degree",
-],
-'Cycle Ingénieur' => [
-'icon' => '⚙️',
-'desc' => 'Engineering cycle',
-],
-'Master' => [
-'icon' => '📚',
-'desc' => "Master's degree",
-],
-'Doctorat' => [
-'icon' => '🔬',
-'desc' => 'PhD program',
-],
+['DEUST', "2-year foundational diploma — broad first steps.", '🌱'],
+['LICENSE', "3-year bachelor's degree — core specialization.", '🎓'],
+['Cycle Ingénieur', "5-year engineering cycle — advanced track.", '⚙️'],
+['Master', "Postgraduate master's — research and expertise.", '🔬'],
+['Doctorat', "Doctoral studies — original research.", '📚'],
 ];
-$selected = old($name, $value);
+$current = old($name, $selected);
 @endphp
 
-<div x-data="{ selected: '{{ $selected }}' }" class="space-y-2">
+<div x-data="{ selected: @js($current) }" class="stack--sm">
+    <label class="field-caption">{{ $label }}</label>
 
-    <label class="block font-medium text-sm text-bordeaux">{{ $label }}</label>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-
-        @foreach ($options as $key => $opt)
-        <label
-            @click="selected = '{{ $key }}'"
-            :class="selected === '{{ $key }}'
-                    ? 'border-bordeaux bg-blush ring-2 ring-bordeaux/20'
-                    : 'border-blush bg-white hover:bg-snow'"
-            class="relative flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-150">
-            <input
-                type="radio"
-                name="{{ $name }}"
-                value="{{ $key }}"
-                class="sr-only"
-                @checked($selected===$key)>
-
-            <span class="text-2xl">{{ $opt['icon'] }}</span>
-
-            <div class="flex-1 min-w-0">
-                <p class="font-medium text-sm text-bordeaux">{{ $key }}</p>
-                <p class="text-xs text-mauve">{{ $opt['desc'] }}</p>
-            </div>
-
-            {{-- Check mark --}}
-            <span
-                :class="selected === '{{ $key }}' ? 'bg-bordeaux border-bordeaux' : 'border-mauve/40'"
-                class="flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors">
-                <svg x-show="selected === '{{ $key }}'" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="select-grid">
+        @foreach ($options as [$val, $desc, $icon])
+        <label @click="selected = '{{ $val }}'"
+            :class="selected === '{{ $val }}' && 'is-selected'"
+            class="select-card">
+            <input type="radio" name="{{ $name }}" value="{{ $val }}" class="sr-only"
+                :checked="selected === '{{ $val }}'"
+                @if(($current ?? '') === $val) checked @endif
+                @if($loop->first && $attributes->has('required')) required @endif>
+            <span class="select-card-icon">{{ $icon }}</span>
+            <span class="flex-1 min-w-0">
+                <span class="select-card-title block">{{ $val }}</span>
+                <span class="select-card-desc block">{{ $desc }}</span>
+            </span>
+            <span class="select-card-check">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
             </span>
         </label>
         @endforeach
-
     </div>
 </div>

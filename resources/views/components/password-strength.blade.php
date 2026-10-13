@@ -1,107 +1,82 @@
 @props([
 'name' => 'password',
 'label' => 'Password',
-'minLength' => 8,
+'id' => null,
+'rules' => true,
 ])
 
-<div
-    x-data="{
-        value: '',
+@php $id = $id ?? $name; @endphp
+
+<div x-data="{
         show: false,
-        get rules() {
-            return {
-                length: this.value.length >= {{ $minLength }},
-                upper: /[A-Z]/.test(this.value),
-                lower: /[a-z]/.test(this.value),
-                number: /[0-9]/.test(this.value),
-                special: /[^A-Za-z0-9]/.test(this.value),
-            }
+        value: @js(old($name)),
+        score() {
+            const v = this.value || ''
+            let s = 0
+            if (v.length >= 8) s++
+            if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++
+            if (/\d/.test(v)) s++
+            if (/[^A-Za-z0-9]/.test(v)) s++
+            return s
         },
-        get score() {
-            return Object.values(this.rules).filter(Boolean).length
-        },
-        get strength() {
-            const s = this.score
-            if (! this.value) return { label: '', color: '', width: '0%' }
-            if (s <= 2) return { label: 'Weak', color: 'bg-red-500', width: '25%' }
-            if (s === 3) return { label: 'Fair', color: 'bg-yellow-500', width: '50%' }
-            if (s === 4) return { label: 'Good', color: 'bg-[#A48395]', width: '75%' }
-            return { label: 'Strong', color: 'bg-green-600', width: '100%' }
-        },
-        get valid() {
-            return this.score === 5
-        }
-    }"
-    class="space-y-2">
-    <div class="relative">
-        <input
-            :type="show ? 'text' : 'password'"
-            id="{{ $name }}"
+        label(s) { return ['Too short', 'Weak', 'Fair', 'Good', 'Strong'][s] },
+        color(s) { return ['#DC2626','#DC2626','#F5A623','#E76D89','#0E7C7B'][s] },
+     }"
+     class="stack--sm flex flex-col gap-2">
+
+    <div class="field">
+        <input :type="show ? 'text' : 'password'"
+            id="{{ $id }}"
             name="{{ $name }}"
             x-model="value"
             placeholder=" "
-            required
             autocomplete="new-password"
-            {{ $attributes->merge(['class' => 'peer block w-full px-4 pt-6 pb-2 pr-12 text-bordeaux bg-white border border-blush rounded-xl shadow-sm focus:border-bordeaux focus:ring-2 focus:ring-bordeaux/20 focus:outline-none transition-colors']) }}>
+            {{ $attributes->only(['required', 'autofocus']) }}
+            class="field-input">
+        <label class="field-label" for="{{ $id }}">{{ $label }}</label>
 
-        <label
-            for="{{ $name }}"
-            class="absolute left-4 top-4 text-mauve text-base transition-all duration-150 ease-out pointer-events-none
-                   peer-focus:top-2 peer-focus:text-xs peer-focus:text-bordeaux
-                   peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs
-                   peer-[:not(:placeholder-shown)]:text-bordeaux">
-            {{ $label }}
-        </label>
-
-        <button type="button"
-            @click="show = ! show"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-mauve hover:text-bordeaux p-1"
-            tabindex="-1">
-            <svg x-show="! show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button type="button" class="field-affix" @click="show = !show" :aria-label="show ? 'Hide password' : 'Show password'">
+            <svg x-show="!show" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <svg x-show="show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
+            <svg x-show="show" x-cloak fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    d="M3.98 8.223A10.477 10.477 0 002.358 12c1.262 3.282 3.994 5.5 9.642 5.5 1.805 0 3.377-.34 4.64-.926M9.879 4.558A11.7 11.7 0 0112 4.5c5.648 0 8.38 2.218 9.642 5.5a10.9 10.9 0 01-2.13 3.346M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24" />
             </svg>
         </button>
     </div>
 
-    {{-- Strength bar --}}
-    <div class="flex items-center gap-2" x-show="value.length > 0" x-cloak>
-        <div class="flex-1 h-1.5 bg-blush rounded-full overflow-hidden">
-            <div class="h-full transition-all duration-300 rounded-full"
-                :class="strength.color"
-                :style="`width: ${strength.width}`"></div>
+    {{-- Strength meter --}}
+    @if ($rules)
+    <div>
+        <div class="flex items-center justify-between mb-2">
+            <span class="meter" style="flex:1;">
+                <span class="meter-fill"
+                    :style="'width:' + ((value || '').length === 0 ? 0 : Math.max(12.5, (score() / 4) * 100)) + '%; background:' + color(score())"></span>
+            </span>
+            <span class="text-xs font-semibold ml-3" :style="'color:' + color(score())"
+                x-text="(value || '').length === 0 ? '' : label(score())"></span>
         </div>
-        <span class="text-xs font-medium text-mauve w-14 text-right" x-text="strength.label"></span>
-    </div>
 
-    {{-- Rules checklist --}}
-    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-1" x-show="value.length > 0" x-cloak>
-        <template x-for="(passed, key) in rules" :key="key">
-            <li class="flex items-center gap-2 text-xs"
-                :class="passed ? 'text-green-600' : 'text-mauve'">
-                <span class="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                    :class="passed ? 'bg-green-100 text-green-700' : 'bg-blush text-mauve'">
-                    <svg x-show="passed" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <svg x-show="! passed" class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </span>
-                <span x-text="{
-                    length: 'At least {{ $minLength }} characters',
-                    upper: 'One uppercase letter',
-                    lower: 'One lowercase letter',
-                    number: 'One number',
-                    special: 'One special character',
-                }[key]"></span>
-            </li>
-        </template>
-    </ul>
+        <ul class="rule-list">
+            <template x-for="rule in [
+                { text: 'At least 8 characters', ok: (value || '').length >= 8 },
+                { text: 'Upper & lowercase letters', ok: /[a-z]/.test(value || '') && /[A-Z]/.test(value || '') },
+                { text: 'At least one number', ok: /\d/.test(value || '') },
+                { text: 'At least one symbol', ok: /[^A-Za-z0-9]/.test(value || '') },
+            ]">
+                <li class="rule-item" :class="rule.ok && 'is-pass'">
+                    <span class="rule-dot">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </span>
+                    <span x-text="rule.text"></span>
+                </li>
+            </template>
+        </ul>
+    </div>
+    @endif
 </div>

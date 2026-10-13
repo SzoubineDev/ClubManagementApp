@@ -1,86 +1,60 @@
 @props([
-'dayName' => 'birthday_day',
-'monthName' => 'birthday_month',
-'yearName' => 'birthday_year',
+'name' => 'birthday',
 'label' => 'Birthday',
-'dayValue' => null,
-'monthValue' => null,
-'yearValue' => null,
+'selected' => null,
 ])
 
 @php
-$oldDay = old($dayName, $dayValue);
-$oldMonth = old($monthName, $monthValue);
-$oldYear = old($yearName, $yearValue);
-
-$months = [
-1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
-5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
-9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
-];
-$currentYear = (int) date('Y');
-$years = range($currentYear - 15, $currentYear - 60);
+$parts = $selected ? explode('-', $selected) : null;
+$selYear = old('birthday_year', $parts ? intval($parts[0]) : null);
+$selMonth = old('birthday_month', $parts ? intval($parts[1]) : null);
+$selDay = old('birthday_day', $parts ? intval($parts[2]) : null);
 @endphp
 
-<div
-    x-data="{
-        month: '{{ $oldMonth }}',
-        year: '{{ $oldYear }}',
-        get daysInMonth() {
-            if (! this.month || ! this.year) return 31
-            return new Date(parseInt(this.year), parseInt(this.month), 0).getDate()
+<div x-data="{
+        year: {{ $selYear ?? 'null' }},
+        month: {{ $selMonth ?? 'null' }},
+        day: {{ $selDay ?? 'null' }},
+        daysInMonth() {
+            if (!this.month || !this.year) return 31;
+            return new Date(this.year, this.month, 0).getDate();
+        },
+        sync() {
+            const el = this.$refs.composed;
+            if (el) el.value = (this.year && this.month && this.day)
+                ? `${this.year}-${String(this.month).padStart(2,'0')}-${String(this.day).padStart(2,'0')}`
+                : '';
         }
-    }"
-    class="space-y-1">
-    <label class="block font-medium text-sm text-bordeaux">{{ $label }}</label>
+     }"
+     x-init="$watch('year', () => { sync() }); $watch('month', () => { sync() }); $watch('day', () => { sync() })">
 
-    <div class="grid grid-cols-3 gap-1.5">
+    <label class="field-caption">{{ $label }}</label>
 
-        {{-- Day --}}
-        <div class="relative">
-            <select
-                name="{{ $dayName }}"
-                class="appearance-none w-full px-3 py-2 pr-8  text-bordeaux bg-white border border-blush rounded-xl shadow-sm focus:border-bordeaux focus:ring-2 focus:ring-bordeaux/20 focus:outline-none transition-colors cursor-pointer text-base">
-                <option value="">Day</option>
-                <template x-for="d in daysInMonth" :key="d">
-                    <option :value="d" x-text="String(d).padStart(2, '0')" :selected="d == '{{ $oldDay }}'"></option>
-                </template>
-            </select>
-            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mauve" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-        </div>
+    {{-- Hidden composed value submitted to the server --}}
+    <input type="hidden" x-ref="composed" name="{{ $name }}" x-init="sync()" {{ $attributes->only(['required']) }}>
 
-        {{-- Month --}}
-        <div class="relative">
-            <select
-                name="{{ $monthName }}"
-                x-model="month"
-                class="appearance-none w-full px-4 py-3 pr-10 text-bordeaux bg-white border border-blush rounded-xl shadow-sm focus:border-bordeaux focus:ring-2 focus:ring-bordeaux/20 focus:outline-none transition-colors cursor-pointer text-base">
-                <option value="">Month</option>
-                @foreach ($months as $num => $name)
-                <option value="{{ $num }}" @selected($oldMonth==$num)>{{ $name }}</option>
-                @endforeach
-            </select>
-            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mauve" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-        </div>
+    <div class="date-trio">
+        <select class="field-select" x-model.number="year" aria-label="Year">
+            <option value="" disabled selected>Year</option>
+            @foreach (range((int) date('Y') - 14, (int) date('Y') - 80) as $y)
+            <option value="{{ $y }}" @if ($selYear === $y) selected @endif>{{ $y }}</option>
+            @endforeach
+        </select>
 
-        {{-- Year --}}
-        <div class="relative">
-            <select
-                name="{{ $yearName }}"
-                x-model="year"
-                class="appearance-none w-full px-4 py-3 pr-10 text-bordeaux bg-white border border-blush rounded-xl shadow-sm focus:border-bordeaux focus:ring-2 focus:ring-bordeaux/20 focus:outline-none transition-colors cursor-pointer text-base">
-                <option value="">Year</option>
-                @foreach ($years as $y)
-                <option value="{{ $y }}" @selected($oldYear==$y)>{{ $y }}</option>
-                @endforeach
-            </select>
-            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mauve" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-        </div>
+        <select class="field-select" x-model.number="month" aria-label="Month">
+            <option value="" disabled selected>Month</option>
+            @foreach ([1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'May',6=>'Jun',7=>'Jul',8=>'Aug',9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec'] as $m => $label)
+            <option value="{{ $m }}" @if ($selMonth === $m) selected @endif>{{ $label }}</option>
+            @endforeach
+        </select>
+
+        <select class="field-select" x-model.number="day" aria-label="Day">
+            <option value="" disabled selected>Day</option>
+            <template x-for="d in daysInMonth()">
+                <option :value="d" x-text="d"></option>
+            </template>
+        </select>
     </div>
+
+    <p class="field-hint">You must be at least 14 years old to join.</p>
 </div>

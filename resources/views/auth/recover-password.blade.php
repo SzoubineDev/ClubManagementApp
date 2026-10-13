@@ -1,79 +1,57 @@
-<x-guest-layout>
+@php
+$user = $member ?? \App\Models\User::firstWhere('email', old('email'));
+@endphp
+
+{{-- Page-level Alpine scope so `loading` is shared with the submit button --}}
+<div x-data="{ loading: false }">
 
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-bordeaux">Recover your password</h1>
-        <p class="text-sm text-mauve mt-1">
-            Enter the information you provided at registration to verify your identity.
-        </p>
+        <h1 class="auth-title">Recover account</h1>
+        <p class="auth-sub">Enter your CNE or email — we'll generate a temporary password so you can sign in right away
+            and change it later.</p>
     </div>
 
-    @if (session('new_password'))
-    <div class="mb-6 p-5 bg-green-50 border border-green-200 rounded-xl">
-        <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <div class="flex-1">
-                <p class="text-sm font-medium text-green-900">Your account was verified</p>
-                <p class="text-xs text-green-700 mt-1">
-                    A new password has been generated for <strong>{{ session('recovered_email') }}</strong>.
-                </p>
-
-                <div class="mt-3 p-3 bg-white border border-green-200 rounded-lg">
-                    <p class="text-xs uppercase tracking-wide text-green-700 font-medium">New password</p>
-                    <p class="mt-1 font-mono text-lg text-green-900 break-all">{{ session('new_password') }}</p>
-                </div>
-
-                <p class="text-xs text-green-700 mt-3">
-                    Save this now — it won't be shown again. You can change it in your profile after logging in.
-                </p>
-
-                <a href="{{ route('login') }}"
-                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-bordeaux text-white text-sm font-medium rounded-lg hover:bg-bordeaux-light">
-                    Go to login
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
-            </div>
+    {{-- Validation summary --}}
+    @if ($errors->count() > 0)
+    <div class="alert alert-danger mb-4">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <div>
+            <p class="alert-title">Please fix the following:</p>
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     </div>
     @endif
 
-    <form method="POST" action="{{ route('password.recover.verify') }}" class="space-y-4" autocomplete="off">
+    <form method="POST" action="{{ route('password.recover.store') }}" class="auth-form" autocomplete="off"
+        x-on:submit="loading = true">
         @csrf
 
-        <x-floating-input name="email" label="Email" type="email" required autofocus />
-        <x-input-error :messages="$errors->get('email')" class="mt-1" />
+        <x-floating-input name="identifier" label="CNE or email" type="text" required autofocus />
 
-        <x-floating-input name="cne" label="CNE" type="text" required />
-        <x-input-error :messages="$errors->get('cne')" class="mt-1" />
-
-        <div>
-            <x-input-label for="birthday" :value="__('Birthday')" />
-            <x-text-input id="birthday" name="birthday" type="date" class="block mt-1 w-full" :value="old('birthday')" required />
-            <x-input-error :messages="$errors->get('birthday')" class="mt-1" />
-        </div>
-
-        <div>
-            <x-input-label for="filiere" :value="__('Filière')" />
-            <select id="filiere" name="filiere" required
-                class="block mt-1 w-full border-blush focus:border-bordeaux focus:ring-bordeaux rounded-xl shadow-sm px-4 py-3 text-base">
-                <option value="">Select your filière</option>
-                @foreach (['DEUST', 'LICENSE', 'Cycle Ingénieur', 'Master', 'Doctorat'] as $f)
-                <option value="{{ $f }}" @selected(old('filiere')===$f)>{{ $f }}</option>
-                @endforeach
-            </select>
-            <x-input-error :messages="$errors->get('filiere')" class="mt-1" />
-        </div>
-
-        <x-primary-button class="w-full justify-center">
-            Verify & generate new password
-        </x-primary-button>
-
-        <p class="text-center text-sm text-mauve mt-4">
-            <a href="{{ route('login') }}" class="text-bordeaux font-medium hover:underline">Back to login</a>
-        </p>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" :disabled="loading">
+            <span class="spinner" x-show="loading" x-cloak style="display:none;"></span>
+            <span x-text="loading ? 'Generating…' : 'Generate temporary password'">Generate temporary password</span>
+        </button>
     </form>
 
-</x-guest-layout>
+    @if ($user && session('generated_password'))
+    <div class="alert alert-neutral mt-4 flex-col !items-start" style="flex-direction:column; align-items:flex-start;">
+        <p class="text-sm">Temporary password generated for <strong>{{ $user->email }}</strong>. Sign in with it now,
+            then set a new one from your profile:</p>
+        <code class="code-box w-full text-center">{{ session('generated_password') }}</code>
+    </div>
+    @endif
+
+    <p class="auth-alt">
+        Remembered it?
+        <a href="{{ route('login') }}">Back to login</a>
+    </p>
+
+</div>

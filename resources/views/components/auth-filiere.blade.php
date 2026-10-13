@@ -1,26 +1,20 @@
-@props([
-'name' => 'filiere',
-'label' => 'Filière',
-'value' => null,
-])
+@props(['selected' => null])
 
+{{-- Compact chip-style filière picker (kept for backwards compatibility) --}}
 @php
 $options = ['DEUST', 'LICENSE', 'Cycle Ingénieur', 'Master', 'Doctorat'];
-$selected = old($name, $value);
+$current = old('filiere', $selected);
 @endphp
 
-<div x-data="{ selected: '{{ $selected }}' }">
-    <label class="block text-xs font-medium text-gray-500 mb-1.5">{{ $label }}</label>
-
-    <div class="flex flex-wrap gap-1.5">
+<div x-data="{ selected: @js($current) }">
+    <div class="chip-select">
         @foreach ($options as $opt)
-        <label
-            @click="selected = '{{ $opt }}'"
-            :class="selected === '{{ $opt }}'
-                    ? 'bg-bordeaux text-white border-bordeaux'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-            class="px-3 py-1.5 text-xs font-medium border rounded-full cursor-pointer transition-colors">
-            <input type="radio" name="{{ $name }}" value="{{ $opt }}" class="sr-only" :checked="selected === '{{ $opt }}'">
+        <label @click="selected = '{{ $opt }}'"
+            :class="selected === '{{ $opt }}' && 'is-selected'"
+            class="chip-radio">
+            <input type="radio" name="filiere" value="{{ $opt }}" class="sr-only"
+                :checked="selected === '{{ $opt }}'"
+                @if($current === $opt) checked @endif>
             {{ $opt }}
         </label>
         @endforeach
