@@ -172,7 +172,7 @@ table { border-collapse: collapse; width: 100%; }
    Toolbar (top navigation bar — mat-toolbar style)
    ========================================================================== */
 .toolbar {
-    position: sticky; top: 0; z-index: 40;
+    position: sticky; top: calc(env(safe-area-inset-top, 0px)); z-index: 40;
     background: var(--bordeaux-700);
     color: #fff;
     box-shadow: var(--elevation-4);
@@ -275,10 +275,25 @@ table { border-collapse: collapse; width: 100%; }
     .user-trigger span:not(.avatar) { display: none; }
 }
 
-/* Mobile nav sheet */
-.mobile-nav { background: var(--white); border-bottom: 1px solid var(--gray-200); box-shadow: var(--elevation-2); }
+/* Mobile nav drawer (fixed sheet + backdrop) */
+.drawer-backdrop {
+    position: fixed; inset: 0; z-index: 70;
+    background: rgba(26,20,22,.44);
+    animation: fadeIn var(--duration-exit) linear both;
+}
+.mobile-nav {
+    position: fixed; top: 0; bottom: 0; left: 0; z-index: 71;
+    width: min(300px, 85vw);
+    overflow-y: auto;
+    background: var(--white);
+    box-shadow: var(--elevation-8);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: drawerIn var(--duration-enter) var(--ease-decelerate) both;
+}
+@keyframes drawerIn { from { transform: translateX(-100%); } to { transform: none; } }
 .mobile-nav-link {
-    display: block; padding: 12px 24px; font-size: 15px; font-weight: 500; color: var(--gray-700);
+    display: block; padding: 14px 20px; font-size: 15px; font-weight: 500; color: var(--gray-700);
     border-left: 4px solid transparent;
 }
 .mobile-nav-link:hover { background: var(--bordeaux-50); color: var(--bordeaux-700); }
@@ -1041,6 +1056,9 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 .flex-shrink-0 { flex-shrink: 0; }
 .shrink-0 { flex-shrink: 0; }
 .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
+.flex-col { flex-direction: column; }
+.text-left { text-align: left; }
+.text-gray-500 { color: var(--gray-500); }
 .w-full { width: 100%; }
 .w-px { width: 1px; }
 .mt-0 { margin-top: 0; } .mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; }
@@ -1163,13 +1181,86 @@ nav[role="navigation"][aria-label="Pagination"] { display: flex; justify-content
 @media (max-width: 767px) {
     .hide-mobile { display: none !important; }
     .content-wrap { padding: 0 16px; }
+    .p-layout, .m-9 { padding-left: 16px; padding-right: 16px; }
+    .page-content { padding: 16px 0 48px; }
     .card-body, .card-header, .card-footer { padding-left: 18px; padding-right: 18px; }
     .list-item, .def-row { padding-left: 18px; padding-right: 18px; }
     .data-table thead th, .data-table tbody td { padding-left: 18px; padding-right: 18px; }
+    .stack, .m-d, .m-data { gap: 16px; }
+
+    /* Page header: stack title + actions vertically */
+    .page-header .content-wrap { flex-direction: column; align-items: stretch; gap: 12px; padding-top: 14px; padding-bottom: 14px; }
+    .h-right { margin-left: 0; }
+    .btn { white-space: normal; }
+
+    /* Toolbar: tighter brand + user trigger */
+    .toolbar-inner { padding: 0 12px; gap: 8px; }
+    .toolbar-brand { font-size: 15px; }
+    .user-trigger { padding: 4px 6px; }
+
+    /* Tables scroll horizontally with a visible hint */
+    .table-wrap { -webkit-overflow-scrolling: touch; }
+    .table-wrap .data-table { min-width: 640px; }
+
+    /* Dialogs become near-full-screen sheets on phones */
+    .dialog-container { padding: 12px; align-items: flex-end; }
+    .dialog { max-width: 100%; }
+    .dialog-title { padding: 20px 18px 0; font-size: 18px; }
+    .dialog-content { padding: 12px 18px 18px; }
+    .dialog-actions { padding: 12px 18px; }
+
+    /* Auth pages */
+    .auth-main { padding: 28px 18px calc(28px + env(safe-area-inset-bottom)); }
+    .auth-title { font-size: 22px; }
+
+    /* Landing */
+    .landing-nav-inner { padding: 14px 16px; }
+    .landing-hero { min-height: 540px; }
+    .landing-hero-inner { padding: 96px 18px 64px; }
+    .landing-lead { font-size: 15px; }
+    .section { padding: 56px 0; }
+    .section--tight { padding: 36px 0; }
+    .cta-panel { padding: 48px 20px; border-radius: 12px; }
+    .photo-grid .span-2 { height: 190px; }
+    .photo-grid img:not(.span-2) { height: 140px; }
+    .footer-inner { flex-direction: column; text-align: center; justify-content: center; }
+    .landing-actions .btn, .cta-actions .btn { flex: 1 1 auto; justify-content: center; }
+}
+@media (max-width: 400px) {
+    .date-trio { grid-template-columns: 1fr 1fr; }
+    .date-trio select:last-child { grid-column: span 2; }
+    .kpi-grid { grid-template-columns: 1fr; }
 }
 @media (min-width: 768px) { .hide-tablet-up { display: none !important; } }
 @media (min-width: 1024px) { .only-desktop { display: initial; } }
 .only-desktop { display: none; }
+
+/* ==========================================================================
+   Mobile usability hardening (all breakpoints)
+   ========================================================================== */
+/* Prevent iOS zoom-on-focus by keeping form controls >= 16px */
+.field-input, .input, select.field-select, textarea { font-size: 16px; }
+@media (min-width: 768px) {
+    .field-input, .input, select.field-select, textarea { font-size: 15px; }
+}
+
+/* Touch-friendly targets */
+.btn, .fab { min-height: 40px; }
+.btn-icon { width: 44px; height: 44px; }
+.menu-item { padding: 12px 16px; }
+.mobile-nav-link { padding: 14px 20px; }
+.checkbox { width: 18px; height: 18px; }
+
+/* Sticky toolbar + progress bar respect the iPhone notch area */
+#nprogress .bar { top: env(safe-area-inset-top, 0px); }
+
+/* Never let wide content break the viewport */
+html, body { overflow-x: hidden; }
+img, video, iframe, table, pre { max-width: 100%; }
+pre { overflow-x: auto; }
+
+/* Fixed-position drawers/menus stay inside the notch-safe area */
+.menu-panel { right: max(8px, env(safe-area-inset-right)); }
 
 /* ==========================================================================
    NProgress — brand gradient bar
