@@ -819,16 +819,37 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 
 .auth-main { flex: 1; display: flex; flex-direction: column; align-items: center; background: var(--white); padding: 40px 24px; overflow-y: auto; }
 .auth-card { width: 100%; max-width: 420px; margin: auto; }
+/* Long forms (register): scroll the panel instead of stretching the brand image */
+.auth-split--wide { height: 100vh; min-height: 0; overflow: hidden; }
+.auth-split--wide .auth-side { position: sticky; top: 0; height: 100vh; }
+.auth-split--wide .auth-main { height: 100vh; }
+.auth-split--wide .auth-card { margin: 0; }
 @media (min-width: 1024px) {
     .auth-card {
         background: var(--white); border-radius: var(--radius-card);
         box-shadow: var(--elevation-4); padding: 40px;
     }
+    .auth-card--form { max-width: 560px; padding: 36px; }
     .auth-main { background: var(--snow); }
+}
+@media (max-width: 1023px) {
+    .auth-split--wide { height: auto; overflow: visible; }
+    .auth-split--wide .auth-main { height: auto; }
 }
 .auth-title { font-size: 26px; font-weight: 500; color: var(--bordeaux-800); letter-spacing: -.01em; }
 .auth-sub { font-size: 14px; color: var(--gray-600); margin-top: 6px; }
 .auth-form { margin-top: 28px; display: flex; flex-direction: column; gap: 18px; }
+/* Two-column field rows on wide cards (register) to keep the form compact */
+.auth-card--form .auth-form { display: flex; }
+.field-pair { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 560px) {
+    .field-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+    .auth-card--form .select-grid { grid-template-columns: repeat(3, 1fr); }
+    .auth-card--form .select-grid .select-card-desc { display: none; }
+    .auth-card--form .select-grid .select-card-title { font-size: 13px; }
+}
 .auth-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
 .auth-alt { text-align: center; font-size: 13px; color: var(--gray-600); margin-top: 20px; }
 .auth-alt a { font-weight: 600; }
