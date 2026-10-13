@@ -15,29 +15,23 @@ $options = [
 $current = old($name, $selected);
 @endphp
 
-<div x-data="{ selected: @js($current) }" class="stack--sm">
-    <label class="field-caption">{{ $label }}</label>
+@php
+$invalid = $errors->has($name);
+@endphp
 
-    <div class="select-grid">
+{{-- Compact native dropdown so the registration form fits the page --}}
+<div class="field-flat">
+    <label class="field-caption" for="{{ $name }}">{{ $label }}</label>
+
+    <select id="{{ $name }}" name="{{ $name }}" class="field-select"
+        @if($attributes->has('required')) required @endif>
+        <option value="" disabled @if(!$current) selected @endif>Select your filière…</option>
         @foreach ($options as [$val, $desc, $icon])
-        <label @click="selected = '{{ $val }}'"
-            :class="selected === '{{ $val }}' && 'is-selected'"
-            class="select-card">
-            <input type="radio" name="{{ $name }}" value="{{ $val }}" class="sr-only"
-                :checked="selected === '{{ $val }}'"
-                @if(($current ?? '') === $val) checked @endif
-                @if($loop->first && $attributes->has('required')) required @endif>
-            <span class="select-card-icon">{{ $icon }}</span>
-            <span class="flex-1 min-w-0">
-                <span class="select-card-title block">{{ $val }}</span>
-                <span class="select-card-desc block">{{ $desc }}</span>
-            </span>
-            <span class="select-card-check">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-            </span>
-        </label>
+        <option value="{{ $val }}" @if(($current ?? '') === $val) selected @endif>{{ $icon }}  {{ $val }} — {{ $desc }}</option>
         @endforeach
-    </div>
+    </select>
+
+    @error($name)
+    <p class="field-error">{{ $message }}</p>
+    @enderror
 </div>
