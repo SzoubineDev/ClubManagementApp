@@ -42,7 +42,7 @@ $user = $member ?? \App\Models\User::firstWhere('email', old('email'));
     </form>
 
     @if ($user && session('generated_password'))
-    <div class="alert alert-neutral mt-4 flex-col !items-start" style="flex-direction:column; align-items:flex-start;">
+    <div class="alert alert-neutral mt-4" style="flex-direction:column; align-items:flex-start;">
         <p class="text-sm">Temporary password generated for <strong>{{ $user->email }}</strong>. Sign in with it now,
             then set a new one from your profile:</p>
         <code class="code-box w-full text-center">{{ session('generated_password') }}</code>
