@@ -1164,3 +1164,29 @@ body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; 
 
 /* Session status (x-auth-session-status) */
 .auth-session-status { font-size: 13px; color: var(--teal-700); font-weight: 500; }
+
+/* ==========================================================================
+   Authentication pages — safety-net rules
+   Even if a stylesheet tag were missing, auth markup still renders with the
+   design system (typography, fields, buttons, links). Specificity is kept
+   low so the component rules above always win.
+   ========================================================================== */
+.auth-title { margin: 0; font-family: var(--font-sans, Roboto, sans-serif); line-height: 1.25; }
+.auth-sub   { margin: 0; line-height: 1.5; }
+.auth-form  { margin-bottom: 0; }
+.auth-form .field-input,
+.auth-form .field-select { width: 100%; }
+.auth-form button[type="submit"] { margin-top: 6px; }
+.auth-card ul { list-style: none; margin: 0; padding: 0; }
+.auth-side-brand { text-decoration: none; }
+
+/* Auth error messages sit tight under their field */
+.field + .field-error-list { margin-top: -8px; }
+
+/* Register form is taller — give the card breathing room on small screens */
+@media (max-width: 1023px) {
+    .auth-card { padding: 8px 4px 24px; }
+}
+
+/* Staggered entrance for auth cards (Angular route-transition feel) */
+.auth-card { animation: fadeInUp .35s var(--ease-standard) both; }
