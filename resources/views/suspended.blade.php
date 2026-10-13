@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="notice-card animate-fade-in-up" style="max-width:620px;margin:0 auto;text-align:center;padding:48px 32px">
+    <div class="card animate-fade-in-up" style="max-width:620px;margin:0 auto;text-align:center;padding:48px 32px">
         <div class="notice-icon">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

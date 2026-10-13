@@ -171,7 +171,7 @@
                         <label for="reason" class="field-label">Reason (optional)</label>
                     </div>
 
-                    <button class="btn btn-danger btn-sm">Confirm suspension</button>
+                    <button class="btn btn-warn btn-sm">Confirm suspension</button>
                 </form>
             </div>
             @endif
@@ -189,7 +189,7 @@
                     onsubmit="return confirm('Delete {{ $member->name }}? This can be undone by a president.')" class="mt-4">
                     @csrf
                     @method('DELETE')
-                    <button class="btn btn-danger btn-sm">Delete member</button>
+                    <button class="btn btn-warn btn-sm">Delete member</button>
                 </form>
             </div>
             @endcan

@@ -34,7 +34,7 @@ $old = fn ($field, $default = null) => old($field, $isEdit ? $event->$field : $d
     </div>
 
     {{-- Dates --}}
-    <div class="grid gap-6" style="grid-template-columns: 1fr;">
+    <div class="grid grid--2 gap-6">
         <div>
             <label for="starts_at" class="field-caption">Starts at *</label>
             <input type="datetime-local" id="starts_at" name="starts_at"
@@ -57,7 +57,7 @@ $old = fn ($field, $default = null) => old($field, $isEdit ? $event->$field : $d
     </div>
 
     {{-- Capacity + Team --}}
-    <div class="grid gap-6" style="grid-template-columns: 1fr;">
+    <div class="grid grid--2 gap-6">
         <div>
             <label for="capacity" class="field-caption">Capacity</label>
             <input type="number" id="capacity" name="capacity" min="1" value="{{ $old('capacity') }}"

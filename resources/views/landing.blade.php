@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="landing antialiased">
+<body class="landing">
 
     {{-- Top nav --}}
     <nav class="landing-nav">

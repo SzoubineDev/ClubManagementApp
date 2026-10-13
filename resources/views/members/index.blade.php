@@ -37,7 +37,7 @@
                 <h2 class="card-title">Filters</h2>
             </div>
 
-            <div class="card-body grid gap-3" style="grid-template-columns: 1fr;" id="member-filters">
+            <div class="card-body grid grid--2 gap-3" id="member-filters">
                 <div style="grid-column: span 1;">
                     <input type="text" name="q" value="{{ request('q') }}"
                         placeholder="Search name, email, or CNE" class="input">

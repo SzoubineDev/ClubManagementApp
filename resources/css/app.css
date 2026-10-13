@@ -996,6 +996,10 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 /* ==========================================================================
    Utilities (small, hand-written set replacing Tailwind usage)
    ========================================================================== */
+/* Layout primitives */
+.p-layout { max-width: var(--content-max); margin: 0 auto; padding: 0 24px; }
+.m-main { display: flex; flex-direction: column; gap: 24px; }
+
 .flex { display: flex; }
 .inline-flex { display: inline-flex; }
 .grid { display: grid; }
@@ -1005,16 +1009,26 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 .items-start { align-items: flex-start; }
 .justify-between { justify-content: space-between; }
 .justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
 .flex-wrap { flex-wrap: wrap; }
 .flex-1 { flex: 1 1 0%; min-width: 0; }
 .flex-shrink-0 { flex-shrink: 0; }
+.shrink-0 { flex-shrink: 0; }
 .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
 .w-full { width: 100%; }
+.w-px { width: 1px; }
 .mt-0 { margin-top: 0; } .mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; }
 .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; } .mt-8 { margin-top: 32px; }
 .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; }
+.ml-1 { margin-left: 4px; } .ml-2 { margin-left: 8px; }
+.pt-4 { padding-top: 16px; }
+.space-y-2 > * + * { margin-top: 8px; }
+.space-y-3 > * + * { margin-top: 12px; }
+.space-y-6 > * + * { margin-top: 24px; }
 .text-center { text-align: center; } .text-right { text-align: right; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.whitespace-pre-line { white-space: pre-line; }
+.cursor-pointer { cursor: pointer; }
 .text-xs { font-size: 12px; } .text-sm { font-size: 13px; } .text-base { font-size: 15px; }
 .text-lg { font-size: 18px; } .text-xl { font-size: 20px; } .text-2xl { font-size: 24px; }
 .font-medium { font-weight: 500; } .font-semibold { font-weight: 600; } .font-bold { font-weight: 700; }
@@ -1024,17 +1038,64 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 .text-ink { color: var(--gray-900); }
 .text-brand { color: var(--bordeaux-700); }
 .text-white { color: #fff; }
-.space-y-2 > * + * { margin-top: 8px; }
-.space-y-4 > * + * { margin-top: 16px; }
-.space-y-6 > * + * { margin-top: 24px; }
-.divide-y > * + * { border-top: 1px solid var(--gray-200); }
+.ml-3 { margin-left: 12px; }
+
+/* ==========================================================================
+   Aliases / legacy class names used across templates
+   (mapped onto the Angular-style design system above)
+   ========================================================================== */
+
+/* Page & section spacing */
+.m-9 { max-width: var(--content-max); margin: 0 auto; padding: 24px; }
+.m-d, .m-data { display: flex; flex-direction: column; gap: 24px; }
+.m-sub { font-size: 13px; color: var(--gray-600); margin-top: 2px; }
+.m-title { font-size: 20px; font-weight: 500; color: var(--gray-900); letter-spacing: .01em; }
+
+/* Card headers (page-level titles) */
+.h-title { font-size: 20px; font-weight: 500; color: var(--gray-900); letter-spacing: .01em; }
+.h-sub { font-size: 13px; color: var(--gray-600); margin-top: 2px; }
+.h-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.h-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* Auth blocks */
+.h-form { margin-top: 28px; display: flex; flex-direction: column; gap: 18px; }
+.h-alt { text-align: center; font-size: 13px; color: var(--gray-600); margin-top: 20px; }
+.h-alt a { font-weight: 600; color: var(--bordeaux-700); }
+.h-session-status { display: block; }
+.w-password { width: 100%; }
+
+/* Links */
+.mb-link { font-size: 13px; font-weight: 600; color: var(--bordeaux-700); }
+.mb-link:hover { color: var(--bordeaux-600); text-decoration: underline; text-underline-offset: 3px; }
+
+/* Table rows */
+.p-row { padding: 14px 24px; border-bottom: 1px solid var(--gray-200); }
+.p-day, .p-month { display: inline-block; }
+
+/* Landing member/event mini cards */
+.m-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 640px) { .m-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .m-grid { grid-template-columns: repeat(3, 1fr); } }
+.m-card { background: var(--white); border-radius: var(--radius-card); box-shadow: var(--elevation-1); overflow: hidden; transition: box-shadow var(--duration-enter) var(--ease-standard), transform var(--duration-enter) var(--ease-standard); }
+.m-card:hover { box-shadow: var(--elevation-2); transform: translateY(-2px); }
+.m-card-bar { height: 4px; background: linear-gradient(90deg, var(--bordeaux-700), var(--saffron-500)); }
+.m-card-body { padding: 20px; }
+.m-card-icon { font-size: 28px; line-height: 1; }
+
+/* Misc */
+.text-align { text-align: start; }
+.font-size { font-size: 14px; }
+.dialog-body { padding: 4px 0 8px; }
+
+/* Responsive 2-column grid (filters, form rows) */
+.grid--2 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid--2 { grid-template-columns: repeat(2, 1fr); } }
 .border-t { border-top: 1px solid var(--gray-200); }
 .border-b { border-bottom: 1px solid var(--gray-200); }
 .rounded { border-radius: var(--radius-card); }
 .overflow-hidden { overflow: hidden; }
 .relative { position: relative; }
 .mx-auto { margin-left: auto; margin-right: auto; }
-.ml-3 { margin-left: 12px; }
 .min-w-0 { min-width: 0; }
 .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -1097,3 +1158,9 @@ nav[role="navigation"][aria-label="Pagination"] { display: flex; justify-content
     box-shadow: 0 0 10px var(--bordeaux-700), 0 0 5px var(--saffron-500);
     opacity: 1; transform: rotate(3deg) translate(0, -4px);
 }
+
+/* Body type */
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+/* Session status (x-auth-session-status) */
+.auth-session-status { font-size: 13px; color: var(--teal-700); font-weight: 500; }
