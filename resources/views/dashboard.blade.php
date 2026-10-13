@@ -129,7 +129,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title">Administration</h3>
-                        <p class="section-desc !mt-2" style="margin-top:8px; text-align:left;">
+                        <p class="section-desc" style="margin-top:8px; text-align:left;">
                             Review member roles, teams, and suspensions.
                         </p>
                         <a href="{{ route('members.index') }}" class="btn btn-outline w-full mt-4">Open Members Console</a>
