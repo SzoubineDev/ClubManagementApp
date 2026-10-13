@@ -1,3 +1,4 @@
+<x-guest-layout>
 <div class="mb-6">
     <h1 class="auth-title">Confirm password</h1>
     <p class="auth-sub">This is a secure area of the application. Please confirm your password before continuing.</p>
@@ -13,3 +14,5 @@
         {{ __('Confirm') }}
     </x-primary-button>
 </form>
+
+</x-guest-layout>

@@ -1,3 +1,4 @@
+<x-guest-layout>
 <div class="mb-6">
     <h1 class="auth-title">Forgot password?</h1>
     <p class="auth-sub">Enter your email and we'll send you a reset link.</p>
@@ -19,3 +20,5 @@
         <a href="{{ route('login') }}">Back to login</a>
     </p>
 </form>
+
+</x-guest-layout>

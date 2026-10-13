@@ -1,3 +1,5 @@
+@props(['bodyClass' => 'app-shell'])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -19,7 +21,7 @@
     <style>[x-cloak] { display: none !important; }</style>
 </head>
 
-<body class="app-shell">
+<body class="{{ $bodyClass }}" x-data="{ mobileOpen: false }">
     {{ $slot }}
 </body>
 

@@ -1,3 +1,4 @@
+<x-guest-layout>
 @php
 $user = $member ?? \App\Models\User::firstWhere('email', old('email'));
 @endphp
@@ -55,3 +56,5 @@ $user = $member ?? \App\Models\User::firstWhere('email', old('email'));
     </p>
 
 </div>
+
+</x-guest-layout>
