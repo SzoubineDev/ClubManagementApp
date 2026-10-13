@@ -1,270 +1,322 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <h1 class="text-lg font-semibold text-gray-900">Dashboard</h1>
-                <p class="text-sm text-gray-500 mt-0.5">
-                    Welcome back, {{ $user->name }}
-                </p>
-            </div>
-
-            @can('create', \App\Models\Event::class)
-            <a href="{{ route('events.create') }}"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-bordeaux rounded-md hover:bg-bordeaux-light transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                New event
-            </a>
-            @endcan
-        </div>
+        {{-- Intentionally empty — the hero below owns the top of the page --}}
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
-            {{-- KPI strip --}}
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-                <div class="bg-white px-5 py-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Events attended</p>
-                    <p class="mt-2 text-2xl font-semibold text-gray-900 tabular-nums">
+            {{-- ============================================
+                 HERO PANEL — the signature element
+                 ============================================ --}}
+            {{-- ============================================
+     HERO PANEL
+     ============================================ --}}
+            <div class="relative overflow-hidden rounded-2xl bg-bordeaux text-white px-8 py-10 sm:px-12 sm:py-14 shadow-pop animate-fade-in">
+
+                {{-- Subtle dot texture --}}
+                <div class="absolute inset-0 opacity-[0.08] pointer-events-none"
+                    style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 22px 22px;"></div>
+
+                {{-- Warm glow --}}
+                <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-saffron/20 blur-3xl pointer-events-none"></div>
+
+                <div class="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8">
+                    <div class="flex items-center gap-6 max-w-xl">
+
+                        {{-- ── Profile image placeholder ── --}}
+                        <div class="shrink-0">
+                            @if (!empty($user->avatar))
+                            <img src="{{ $user->avatar }}"
+                                alt="{{ $user->name }}"
+                                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover
+                                ring-2 ring-white/20 shadow-pop">
+                            @else
+                            {{-- Placeholder: initials on a soft tint --}}
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl
+                                bg-saffron/20 ring-2 ring-white/20 shadow-pop
+                                flex items-center justify-center
+                                text-saffron text-3xl sm:text-4xl font-bold tracking-tight select-none">
+                                {{ strtoupper(mb_substr($user->name, 0, 1)) }}
+                            </div>
+                            @endif
+                        </div>
+
+                        <div class="min-w-0">
+                            <p class="text-[11px] font-bold uppercase tracking-[0.25em] text-white/50">
+                                {{ now()->format('l, F j') }}
+                            </p>
+                            <h1 class="mt-3 text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1]">
+                                Welcome back,<br>
+                                <span class="text-saffron">{{ $user->name }}</span>
+                            </h1>
+                            <p class="mt-4 text-sm sm:text-base text-white/75 leading-relaxed">
+                                @if ($stats['rsvps'] > 0)
+                                You have <strong class="text-white font-semibold">{{ $stats['rsvps'] }} upcoming event{{ $stats['rsvps'] === 1 ? '' : 's' }}</strong> on your calendar.
+                                @else
+                                Your calendar is clear. Time to find your next one.
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    @can('create', \App\Models\Event::class)
+                    <a href="{{ route('events.create') }}"
+                        class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white text-bordeaux font-bold text-sm
+                  hover:bg-saffron hover:text-bordeaux-900 transition-colors shrink-0 shadow-pop self-start sm:self-end">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create event
+                    </a>
+                    @endcan
+                </div>
+            </div>
+            {{-- ============================================
+                 STATS ROW — one card, three sections
+                 ============================================ --}}
+            <div class="grid grid-cols-3 bg-white rounded-2xl border border-blush shadow-soft overflow-hidden divide-x divide-blush animate-fade-in-up delay-100">
+                <div class="px-6 py-6 sm:px-8 sm:py-7">
+                    <p class="text-4xl sm:text-5xl font-bold text-ink tabular-nums tracking-tight leading-none">
                         {{ $stats['attended'] }}
                     </p>
+                    <p class="mt-3 text-[11px] font-bold text-mauve uppercase tracking-widest">
+                        Events attended
+                    </p>
                 </div>
-
-                <div class="bg-white px-5 py-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Upcoming RSVPs</p>
-                    <p class="mt-2 text-2xl font-semibold text-gray-900 tabular-nums">
+                <div class="px-6 py-6 sm:px-8 sm:py-7">
+                    <p class="text-4xl sm:text-5xl font-bold text-ink tabular-nums tracking-tight leading-none">
                         {{ $stats['rsvps'] }}
                     </p>
-                </div>
-
-                <div class="bg-white px-5 py-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Member since</p>
-                    <p class="mt-2 text-2xl font-semibold text-gray-900">
-                        {{ $stats['member_since']->format('M Y') }}
+                    <p class="mt-3 text-[11px] font-bold text-mauve uppercase tracking-widest">
+                        Upcoming RSVPs
                     </p>
                 </div>
-
-                <div class="bg-white px-5 py-4">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Team</p>
-                    <p class="mt-2 text-2xl font-semibold text-gray-900 capitalize">
-                        {{ $user->team ?: '—' }}
+                <div class="px-6 py-6 sm:px-8 sm:py-7">
+                    <p class="text-4xl sm:text-5xl font-bold text-ink tracking-tight leading-none">
+                        {{ $stats['member_since']->format('M Y') }}
+                    </p>
+                    <p class="mt-3 text-[11px] font-bold text-mauve uppercase tracking-widest">
+                        Member since
                     </p>
                 </div>
             </div>
 
-            {{-- Two-column layout --}}
+            {{-- ============================================
+                 MAIN GRID
+                 ============================================ --}}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {{-- Main column --}}
+                {{-- ---------- LEFT column ---------- --}}
                 <div class="lg:col-span-2 space-y-6">
 
-                    {{-- Upcoming events --}}
-                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                    {{-- Calendar --}}
+                    <section class="bg-white rounded-2xl border border-blush shadow-soft overflow-hidden animate-fade-in-up delay-200">
+                        <header class="px-6 py-5 flex items-baseline justify-between border-b border-blush">
                             <div>
-                                <h2 class="text-sm font-semibold text-gray-900">Your upcoming events</h2>
-                                <p class="text-xs text-gray-500 mt-0.5">
-                                    Events you've RSVP'd to
-                                </p>
+                                <h2 class="text-base font-bold text-ink">Your calendar</h2>
+                                <p class="text-xs text-mauve mt-0.5">Events you've committed to</p>
                             </div>
                             <a href="{{ route('events.index') }}"
-                                class="text-xs font-medium text-bordeaux hover:underline">
-                                View all
+                                class="text-xs font-bold text-bordeaux hover:text-bordeaux-dark link-underline">
+                                All events
                             </a>
-                        </div>
+                        </header>
 
                         @if ($upcomingRsvps->isEmpty())
-                        <div class="px-5 py-10 text-center">
-                            <p class="text-sm text-gray-500">You haven't RSVP'd to anything yet.</p>
+                        <div class="px-6 py-20 text-center">
+                            <p class="text-base font-bold text-ink">Nothing scheduled</p>
+                            <p class="text-sm text-mauve mt-2">When you RSVP, it shows up here.</p>
                             <a href="{{ route('events.index') }}"
-                                class="mt-2 inline-block text-sm font-medium text-bordeaux hover:underline">
+                                class="mt-5 inline-block text-sm font-bold text-bordeaux hover:text-bordeaux-dark link-underline">
                                 Browse events →
                             </a>
                         </div>
                         @else
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-gray-200 bg-gray-50">
-                                    <th class="text-left px-5 py-2.5 text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
-                                    <th class="text-left px-5 py-2.5 text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
-                                    <th class="text-right px-5 py-2.5 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($upcomingRsvps as $event)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-5 py-3">
-                                        <a href="{{ route('events.show', $event) }}"
-                                            class="text-sm font-medium text-gray-900 hover:text-bordeaux">
-                                            {{ $event->title }}
-                                        </a>
-                                        @if ($event->location)
-                                        <p class="text-xs text-gray-500 mt-0.5">{{ $event->location }}</p>
-                                        @endif
-                                    </td>
-                                    <td class="px-5 py-3 hidden sm:table-cell">
-                                        <span class="text-sm text-gray-700 tabular-nums">
-                                            {{ $event->starts_at->format('M j, Y') }}
-                                        </span>
-                                        <p class="text-xs text-gray-500 mt-0.5 tabular-nums">
-                                            {{ $event->starts_at->format('H:i') }}
+                        <ul class="divide-y divide-blush">
+                            @foreach ($upcomingRsvps as $event)
+                            <li>
+                                <a href="{{ route('events.show', $event) }}"
+                                    class="group flex items-center gap-6 px-6 py-5 hover:bg-bordeaux-50/40 transition-colors">
+
+                                    {{-- Date block — replaces the useless calendar icon --}}
+                                    <div class="w-14 shrink-0 text-center">
+                                        <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-bordeaux">
+                                            {{ $event->starts_at->format('M') }}
                                         </p>
-                                    </td>
-                                    <td class="px-5 py-3 text-right">
-                                        <span class="inline-flex items-center gap-1 text-xs font-medium text-green-700">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                                            Going
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        <p class="mt-1 text-3xl font-bold text-ink tabular-nums leading-none">
+                                            {{ $event->starts_at->format('j') }}
+                                        </p>
+                                    </div>
+
+                                    {{-- Content --}}
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[15px] font-semibold text-ink group-hover:text-bordeaux transition-colors truncate">
+                                            {{ $event->title }}
+                                        </p>
+                                        <p class="text-xs text-mauve mt-1 truncate tabular-nums">
+                                            {{ $event->starts_at->format('H:i') }}
+                                            @if ($event->location)
+                                            <span class="mx-1.5">·</span>{{ $event->location }}
+                                            @endif
+                                        </p>
+                                    </div>
+
+                                    {{-- Status --}}
+                                    <span class="shrink-0 text-[10px] font-bold uppercase tracking-[0.15em]
+                                                 text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full
+                                                 ring-1 ring-teal-200/70">
+                                        Going
+                                    </span>
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
                         @endif
-                    </div>
+                    </section>
 
                     {{-- Discover --}}
                     @if ($visibleEvents->isNotEmpty())
-                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <div>
-                                <h2 class="text-sm font-semibold text-gray-900">Discover events</h2>
-                                <p class="text-xs text-gray-500 mt-0.5">
-                                    Published events you haven't joined yet
-                                </p>
-                            </div>
-                        </div>
+                    <section class="bg-white rounded-2xl border border-blush shadow-soft overflow-hidden animate-fade-in-up delay-300">
+                        <header class="px-6 py-5 border-b border-blush">
+                            <h2 class="text-base font-bold text-ink">Discover</h2>
+                            <p class="text-xs text-mauve mt-0.5">Published events you haven't joined</p>
+                        </header>
 
-                        <table class="w-full">
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($visibleEvents as $event)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-5 py-3">
-                                        <a href="{{ route('events.show', $event) }}"
-                                            class="text-sm font-medium text-gray-900 hover:text-bordeaux">
+                        <ul class="divide-y divide-blush">
+                            @foreach ($visibleEvents as $event)
+                            <li>
+                                <a href="{{ route('events.show', $event) }}"
+                                    class="group flex items-center gap-6 px-6 py-5 hover:bg-bordeaux-50/40 transition-colors">
+
+                                    <div class="w-14 shrink-0 text-center">
+                                        <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-mauve">
+                                            {{ $event->starts_at->format('M') }}
+                                        </p>
+                                        <p class="mt-1 text-3xl font-bold text-ink tabular-nums leading-none">
+                                            {{ $event->starts_at->format('j') }}
+                                        </p>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[15px] font-semibold text-ink group-hover:text-bordeaux transition-colors truncate">
                                             {{ $event->title }}
-                                        </a>
-                                        <p class="text-xs text-gray-500 mt-0.5">
+                                        </p>
+                                        <p class="text-xs text-mauve mt-1 truncate">
                                             by {{ $event->creator->name }}
                                             @if ($event->team)
-                                            · <span class="capitalize">{{ $event->team }}</span>
+                                            <span class="mx-1.5">·</span>{{ ucfirst($event->team) }}
                                             @endif
                                         </p>
-                                    </td>
-                                    <td class="px-5 py-3 text-right whitespace-nowrap">
-                                        <span class="text-sm text-gray-700 tabular-nums">
-                                            {{ $event->starts_at->format('M j') }}
-                                        </span>
-                                    </td>
-                                    <td class="px-5 py-3 text-right w-px">
-                                        <a href="{{ route('events.show', $event) }}"
-                                            class="text-xs font-medium text-bordeaux hover:underline">
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+
+                                    <span class="shrink-0 text-sm font-bold text-bordeaux
+                                                 group-hover:translate-x-0.5 transition-transform">
+                                        →
+                                    </span>
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </section>
                     @endif
                 </div>
 
-                {{-- Side column --}}
-                <div class="space-y-6">
+                {{-- ---------- RIGHT sidebar ---------- --}}
+                <aside class="space-y-6">
 
                     {{-- Account --}}
-                    <div class="bg-white border border-gray-200 rounded-lg">
-                        <div class="px-5 py-4 border-b border-gray-200">
-                            <h2 class="text-sm font-semibold text-gray-900">Account</h2>
-                        </div>
+                    <section class="bg-white rounded-2xl border border-blush shadow-soft overflow-hidden animate-fade-in-up delay-200">
+                        <header class="px-6 py-5 border-b border-blush">
+                            <h2 class="text-base font-bold text-ink">Your account</h2>
+                        </header>
 
-                        <dl class="divide-y divide-gray-100">
-                            <div class="px-5 py-3 flex items-center justify-between gap-3">
-                                <dt class="text-xs text-gray-500">CNE</dt>
-                                <dd class="text-sm font-medium text-gray-900 tabular-nums">{{ $user->cne ?: '—' }}</dd>
+                        <dl class="px-6 py-6 space-y-5">
+                            <div>
+                                <dt class="text-[10px] font-bold uppercase tracking-widest text-mauve">Name</dt>
+                                <dd class="mt-1.5 text-sm font-semibold text-ink">{{ $user->name }}</dd>
                             </div>
-                            <div class="px-5 py-3 flex items-center justify-between gap-3">
-                                <dt class="text-xs text-gray-500">Filière</dt>
-                                <dd class="text-sm font-medium text-gray-900">{{ $user->filiere ?: '—' }}</dd>
+                            <div>
+                                <dt class="text-[10px] font-bold uppercase tracking-widest text-mauve">Email</dt>
+                                <dd class="mt-1.5 text-sm text-ink truncate">{{ $user->email }}</dd>
                             </div>
-                            <div class="px-5 py-3 flex items-center justify-between gap-3">
-                                <dt class="text-xs text-gray-500">Team</dt>
-                                <dd class="text-sm font-medium text-gray-900 capitalize">{{ $user->team ?: 'None' }}</dd>
+                            <div class="grid grid-cols-2 gap-5 pt-1">
+                                <div>
+                                    <dt class="text-[10px] font-bold uppercase tracking-widest text-mauve">CNE</dt>
+                                    <dd class="mt-1.5 text-sm font-semibold text-ink tabular-nums">{{ $user->cne ?: '—' }}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-bold uppercase tracking-widest text-mauve">Team</dt>
+                                    <dd class="mt-1.5 text-sm font-semibold text-ink capitalize">{{ $user->team ?: '—' }}</dd>
+                                </div>
                             </div>
-                            <div class="px-5 py-3 flex items-center justify-between gap-3">
-                                <dt class="text-xs text-gray-500">Email</dt>
-                                <dd class="text-sm text-gray-700 truncate max-w-[60%]">{{ $user->email }}</dd>
+                            <div>
+                                <dt class="text-[10px] font-bold uppercase tracking-widest text-mauve">Filière</dt>
+                                <dd class="mt-1.5 text-sm font-semibold text-ink">{{ $user->filiere ?: '—' }}</dd>
                             </div>
                         </dl>
 
-                        <div class="px-5 py-3 border-t border-gray-100">
+                        <div class="px-6 py-4 border-t border-blush bg-blush/20">
                             <a href="{{ route('profile.edit') }}"
-                                class="text-xs font-medium text-bordeaux hover:underline">
-                                Edit profile →
+                                class="text-xs font-bold text-bordeaux hover:text-bordeaux-dark link-underline">
+                                Edit profile
                             </a>
                         </div>
-                    </div>
+                    </section>
 
                     {{-- Roles --}}
-                    <div class="bg-white border border-gray-200 rounded-lg">
-                        <div class="px-5 py-4 border-b border-gray-200">
-                            <h2 class="text-sm font-semibold text-gray-900">Your roles</h2>
-                        </div>
+                    <section class="bg-white rounded-2xl border border-blush shadow-soft overflow-hidden animate-fade-in-up delay-300">
+                        <header class="px-6 py-5 border-b border-blush">
+                            <h2 class="text-base font-bold text-ink">Roles</h2>
+                        </header>
 
-                        <div class="px-5 py-4">
+                        <div class="px-6 py-5">
                             @if ($user->roles->isEmpty())
-                            <p class="text-sm text-gray-500">No roles assigned.</p>
+                            <p class="text-sm text-mauve">No roles assigned.</p>
                             @else
-                            <div class="flex flex-wrap gap-1.5">
+                            <div class="flex flex-wrap gap-2">
                                 @foreach ($user->roles as $role)
-                                <span class="inline-flex items-center text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-700 capitalize">
+                                <span class="text-xs font-bold px-2.5 py-1.5 rounded-md
+                                                 bg-bordeaux-50 text-bordeaux-800 capitalize
+                                                 ring-1 ring-bordeaux-100">
                                     {{ str_replace('_', ' ', $role->name) }}
                                 </span>
                                 @endforeach
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </section>
 
                     {{-- Quick links --}}
-                    <div class="bg-white border border-gray-200 rounded-lg">
-                        <div class="px-5 py-4 border-b border-gray-200">
-                            <h2 class="text-sm font-semibold text-gray-900">Quick links</h2>
-                        </div>
+                    <section class="bg-white rounded-2xl border border-blush shadow-soft overflow-hidden animate-fade-in-up delay-400">
+                        <header class="px-6 py-5 border-b border-blush">
+                            <h2 class="text-base font-bold text-ink">Jump to</h2>
+                        </header>
 
-                        <nav class="divide-y divide-gray-100">
+                        <nav class="divide-y divide-blush">
                             <a href="{{ route('events.index') }}"
-                                class="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors group">
-                                <span class="text-sm text-gray-700 group-hover:text-bordeaux">Browse events</span>
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-bordeaux" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
+                                class="flex items-center justify-between px-6 py-4 hover:bg-bordeaux-50/40 transition-colors group">
+                                <span class="text-sm font-medium text-ink group-hover:text-bordeaux transition-colors">Browse events</span>
+                                <span class="text-mauve group-hover:text-bordeaux group-hover:translate-x-1 transition-all text-base leading-none">→</span>
                             </a>
 
                             @can('viewAny', \App\Models\User::class)
                             <a href="{{ route('members.index') }}"
-                                class="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors group">
-                                <span class="text-sm text-gray-700 group-hover:text-bordeaux">Members</span>
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-bordeaux" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
+                                class="flex items-center justify-between px-6 py-4 hover:bg-bordeaux-50/40 transition-colors group">
+                                <span class="text-sm font-medium text-ink group-hover:text-bordeaux transition-colors">Members</span>
+                                <span class="text-mauve group-hover:text-bordeaux group-hover:translate-x-1 transition-all text-base leading-none">→</span>
                             </a>
                             @endcan
 
                             <a href="{{ route('profile.edit') }}"
-                                class="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors group">
-                                <span class="text-sm text-gray-700 group-hover:text-bordeaux">Profile settings</span>
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-bordeaux" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
+                                class="flex items-center justify-between px-6 py-4 hover:bg-bordeaux-50/40 transition-colors group">
+                                <span class="text-sm font-medium text-ink group-hover:text-bordeaux transition-colors">Profile settings</span>
+                                <span class="text-mauve group-hover:text-bordeaux group-hover:translate-x-1 transition-all text-base leading-none">→</span>
                             </a>
                         </nav>
-                    </div>
+                    </section>
 
-                </div>
+                </aside>
             </div>
 
         </div>
