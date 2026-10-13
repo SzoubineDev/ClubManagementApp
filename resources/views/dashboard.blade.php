@@ -4,12 +4,14 @@
             <h1 class="page-header-title">{{ __('Dashboard') }}</h1>
             <p class="page-header-sub">Welcome back, {{ Auth::user()->name }}.</p>
         </div>
+        @can('create', \App\Models\Event::class)
         <a href="{{ route('events.create') }}" class="btn btn-primary">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             New Event
         </a>
+        @endcan
     </x-slot>
 
     <div class="content-wrap stack">
@@ -85,7 +87,9 @@
                 <div class="empty-state">
                     <p class="empty-state-title">No upcoming events yet</p>
                     <p>Plan your next gathering and it will show up here.</p>
+                    @can('create', \App\Models\Event::class)
                     <a href="{{ route('events.create') }}" class="text-action">Create an event →</a>
+                    @endcan
                 </div>
                 @endforelse
             </section>
