@@ -425,6 +425,8 @@ table { border-collapse: collapse; width: 100%; }
 .btn-outline:hover { background: var(--gray-50); color: var(--gray-900); }
 
 .btn-stroked { background: transparent; border: 1px solid currentColor; }
+.btn-invert-text { color: #fff; border-color: rgba(255,255,255,.4); }
+.btn-invert-text:hover { background: rgba(255,255,255,.1); color: #fff; }
 .btn-flat { background: transparent; color: var(--bordeaux-700); }
 .btn-flat:hover { background: var(--bordeaux-50); }
 .btn-icon { padding: 8px; border-radius: 50%; width: 40px; height: 40px; }
@@ -504,6 +506,7 @@ textarea.field-input { resize: vertical; min-height: 110px; }
 
 /* Labeled (non-floating) field */
 .field-caption { display: block; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 6px; }
+.field-label.static { position: static; display: block; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 8px; pointer-events: auto; }
 
 select.field-select {
     appearance: none;
@@ -938,9 +941,14 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 .footer-links a:hover { color: var(--bordeaux-700); }
 
 /* ==========================================================================
-   Suspended page
+   Notices (suspended page + admin danger zones)
    ========================================================================== */
-.notice-card { max-width: 620px; margin: 0 auto; text-align: center; padding: 48px 32px; }
+.notice-zone {
+    border-left: 4px solid var(--danger);
+    background: var(--danger-bg);
+}
+.notice-zone.is-warn   { border-left-color: var(--warning); background: var(--warning-bg); }
+.notice-zone.is-neutral { border-left-color: var(--gray-400, #9CA3AF); background: var(--gray-50); }
 .notice-icon {
     width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 24px;
     background: var(--danger-bg); color: var(--danger);
@@ -1040,6 +1048,30 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 @keyframes spin { to { transform: rotate(360deg); } }
 .py-8 { padding-top: 32px; padding-bottom: 32px; }
 .py-16 { padding-top: 64px; padding-bottom: 64px; }
+
+/* Pagination (Laravel default Tailwind views, restyled) */
+nav[role="navigation"][aria-label="Pagination"] { display: flex; justify-content: center; }
+.pagination, [role="navigation"][aria-label="Pagination"] > *:first-child {
+    display: inline-flex; align-items: center; gap: 4px; padding: 6px;
+    background: var(--white); border-radius: 100px; box-shadow: var(--elevation-1);
+}
+[role="navigation"][aria-label="Pagination"] a,
+[role="navigation"][aria-label="Pagination"] span > span,
+[role="navigation"][aria-label="Pagination"] svg {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 36px; height: 36px; padding: 0 10px; border-radius: 50%;
+    font-size: 13px; font-weight: 500; color: var(--gray-700);
+    transition: background var(--duration-enter) var(--ease-standard), color var(--duration-enter) var(--ease-standard);
+}
+[role="navigation"][aria-label="Pagination"] a:hover { background: var(--bordeaux-50); color: var(--bordeaux-700); }
+[role="navigation"][aria-label="Pagination"] [aria-current="page"] span,
+[role="navigation"][aria-label="Pagination"] span[aria-current] > span {
+    background: var(--bordeaux-700); color: #fff !important;
+}
+[role="navigation"][aria-label="Pagination"] svg { width: 18px; height: 18px; }
+[role="navigation"][aria-label="Pagination"] span[aria-hidden="true"] > span,
+[role="navigation"][aria-label="Pagination"] .inline-flex.font-mono,
+[role="navigation"][aria-label="Pagination"] span.text-gray-500 { color: var(--gray-400); background: transparent; }
 
 @media (max-width: 767px) {
     .hide-mobile { display: none !important; }

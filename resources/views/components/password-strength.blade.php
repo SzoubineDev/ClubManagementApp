@@ -22,7 +22,7 @@
         label(s) { return ['Too short', 'Weak', 'Fair', 'Good', 'Strong'][s] },
         color(s) { return ['#DC2626','#DC2626','#F5A623','#E76D89','#0E7C7B'][s] },
      }"
-     class="stack--sm flex flex-col gap-2">
+     class="stack--sm">
 
     <div class="field">
         <input :type="show ? 'text' : 'password'"
