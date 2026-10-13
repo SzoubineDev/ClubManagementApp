@@ -606,6 +606,10 @@ select.field-select:focus { background-color: var(--blush); border-bottom: 2px s
 /* Birthday triple select */
 .date-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
+/* Labeled (non-floating) field wrapper — dropdowns, date trios, etc. */
+.field-flat { display: flex; flex-direction: column; }
+.field-flat .field-select.is-invalid { border-bottom: 2px solid var(--danger); background-color: #FDECEC; }
+
 /* Role checkbox rows */
 .option-row {
     display: flex; align-items: center; gap: 12px;

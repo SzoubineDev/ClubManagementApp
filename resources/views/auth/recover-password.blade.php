@@ -1,8 +1,4 @@
 <x-guest-layout wide>
-@php
-$user = $member ?? \App\Models\User::firstWhere('email', old('email'));
-@endphp
-
 {{-- Page-level Alpine scope so `loading` is shared with the submit button --}}
 <div x-data="{ loading: false }">
 
@@ -30,7 +26,7 @@ $user = $member ?? \App\Models\User::firstWhere('email', old('email'));
     </div>
     @endif
 
-    <form method="POST" action="{{ route('password.recover.store') }}" class="auth-form" autocomplete="off"
+    <form method="POST" action="{{ route('password.recover.verify') }}" class="auth-form" autocomplete="off"
         x-on:submit="loading = true">
         @csrf
 
@@ -42,11 +38,11 @@ $user = $member ?? \App\Models\User::firstWhere('email', old('email'));
         </button>
     </form>
 
-    @if ($user && session('generated_password'))
+    @if (session('recovered_email') && session('new_password'))
     <div class="alert alert-neutral mt-4" style="flex-direction:column; align-items:flex-start;">
-        <p class="text-sm">Temporary password generated for <strong>{{ $user->email }}</strong>. Sign in with it now,
-            then set a new one from your profile:</p>
-        <code class="code-box w-full text-center">{{ session('generated_password') }}</code>
+        <p class="text-sm">Temporary password generated for <strong>{{ session('recovered_email') }}</strong>. Sign in
+            with it now, then set a new one from your profile:</p>
+        <code class="code-box w-full text-center">{{ session('new_password') }}</code>
     </div>
     @endif
 

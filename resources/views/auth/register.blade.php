@@ -40,7 +40,6 @@
         </div>
 
         <x-filiere-select required />
-
         <div class="field-pair">
             <x-password-strength name="password" label="Password" />
 
