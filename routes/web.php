@@ -40,8 +40,7 @@ Route::get('/', function () {
 
     // Published upcoming events shown on the landing "What's next?" section.
     $upcomingEvents = \App\Models\Event::query()
-        ->whereNotNull('published_at')
-        ->where('published_at', '<=', now())
+        ->where(function ($q) { \App\Models\Event::publishedScope($q); })
         ->where('starts_at', '>=', now())
         ->orderBy('starts_at')
         ->take(3)
@@ -101,6 +100,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsActive::class])->gro
 
     Route::patch('events/{event}/publish', [EventController::class, 'publish'])
         ->name('events.publish');
+    Route::patch('events/{event}/unpublish', [EventController::class, 'unpublish'])
+        ->name('events.unpublish');
 
     Route::resource('events', EventController::class);
 

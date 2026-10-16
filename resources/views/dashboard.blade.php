@@ -76,10 +76,10 @@
                             @if ($event->location) · {{ $event->location }} @endif
                         </div>
                     </div>
-                    @if ($event->is_published)
+                    @if ($event->isPublished())
                     <span class="chip chip--success hide-mobile">Published</span>
                     @else
-                    <span class="chip chip--warning hide-mobile">Draft</span>
+                    <span class="chip chip--warning hide-mobile">Draft — only you & managers see this</span>
                     @endif
                     <span class="list-chevron">›</span>
                 </a>

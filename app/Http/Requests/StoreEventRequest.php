@@ -21,6 +21,17 @@ class StoreEventRequest extends FormRequest
             'ends_at' => ['nullable', 'date', 'after:starts_at'],
             'capacity' => ['nullable', 'integer', 'min:1'],
             'team' => ['nullable', 'in:arabic,english,french'],
+            'filiere' => ['nullable', 'string', 'max:100'],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        // Events are scoped to a team OR a filière — never both.
+        $validator->after(function ($v) {
+            if ($this->input('team') && $this->input('filiere')) {
+                $v->errors()->add('filiere', 'Pick either a team or a filière, not both.');
+            }
+        });
     }
 }

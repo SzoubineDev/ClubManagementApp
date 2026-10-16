@@ -12,7 +12,17 @@ class EventRsvpController extends Controller
     {
         $this->authorize('rsvp', $event);
 
+        // Draft events cannot be joined — only published ones are open.
+        if (! $event->isPublished()) {
+            abort(403, 'This event is not open for registration yet.');
+        }
+
         $user = Auth::user();
+
+        // Filière-restricted events accept matching students only.
+        if ($event->filiere && $user->filiere !== $event->filiere) {
+            return back()->withErrors(['rsvp' => "This event is reserved for {$event->filiere} students."]);
+        }
 
         if ($event->attendees()->where('user_id', $user->id)->exists()) {
             return back()->with('status', 'You are already registered.');
