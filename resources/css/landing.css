@@ -4,7 +4,10 @@
             ink #171411 · gold #E4B85C
    ========================================================================== */
 
-.nb {
+/* Design tokens are declared on <html> so every TGD page — including the
+   auth pages (.nb-auth), which load auth.css without landing.css — can reuse
+   the exact same palette and shadow system. */
+html {
     --nb-burgundy: #660C1B;
     --nb-wine: #3D0711;
     --nb-cream: #F5EBD7;
@@ -14,7 +17,9 @@
     --nb-shadow: 6px 6px 0 var(--nb-ink);
     --nb-shadow-sm: 4px 4px 0 var(--nb-ink);
     --nb-border: 3px solid var(--nb-ink);
+}
 
+.nb {
     background: var(--nb-cream);
     color: var(--nb-ink);
     font-family: "Archivo Black", "Roboto Condensed", Roboto, Impact, sans-serif;

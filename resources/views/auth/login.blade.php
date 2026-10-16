@@ -2,6 +2,9 @@
 {{-- Page-level Alpine scope --}}
 <div x-data="{ loading: false }">
 
+    <div style="margin-bottom:14px;">
+        <span style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--nb-ink);color:var(--nb-cream);border:2px solid var(--nb-ink);padding:4px 10px;">Members · Issue Nº01</span>
+    </div>
     <div class="mb-6">
         <h1 class="auth-title">Welcome back</h1>
         <p class="auth-sub">Sign in to continue to {{ config('app.name', 'Uni Club') }}.</p>
