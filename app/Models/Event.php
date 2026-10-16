@@ -17,8 +17,10 @@ class Event extends Model
         'ends_at',
         'capacity',
         'team',
+        'filiere',
         'created_by',
         'published_at',
+        'status',
     ];
 
     protected function casts(): array
@@ -44,6 +46,23 @@ class Event extends Model
 
     public function isPublished(): bool
     {
-        return $this->published_at !== null && $this->published_at->isPast();
+        return $this->status === 'published'
+            || ($this->published_at !== null && $this->published_at->isPast());
+    }
+
+    /**
+     * The single source of truth for "who may see this event".
+     * Published events are visible to EVERY authenticated member;
+     * drafts stay private to their creator and the management roles.
+     */
+    public static function publishedScope($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('status', 'published')
+              ->orWhere(function ($q2) {
+                  $q2->whereNotNull('published_at')
+                     ->where('published_at', '<=', now());
+              });
+        });
     }
 }

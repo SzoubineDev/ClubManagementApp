@@ -84,6 +84,21 @@ $old = fn ($field, $default = null) => old($field, $isEdit ? $event->$field : $d
         </div>
     </div>
 
+    {{-- Filière --}}
+    <div>
+        <label for="filiere" class="field-caption">Filière</label>
+        <select id="filiere" name="filiere" class="field-select">
+            <option value="">All filières (no restriction)</option>
+            @foreach (['DEUST', 'LICENSE', 'Cycle Ingénieur', 'Master', 'Doctorat'] as $f)
+            <option value="{{ $f }}" @selected($old('filiere')===$f)>{{ $f }}</option>
+            @endforeach
+        </select>
+        @error('filiere')
+        <p class="field-error">{{ $message }}</p>
+        @enderror
+        <p class="field-hint">Restrict this event to a specific study programme, if needed.</p>
+    </div>
+
 </div>
 
 <style>
