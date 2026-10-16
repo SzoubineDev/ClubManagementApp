@@ -4,181 +4,260 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Uni Club') }}</title>
+    <title>The Great Debaters Club — Think. Speak. Change.</title>
+    <meta name="description" content="The Great Debaters Club (TGD) at FST Errachidia — a student community built around public speaking, critical thinking, argumentation, and intellectual exchange.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap"
-        rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Roboto+Condensed:wght@400;700;900&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/css/landing.css', 'resources/js/app.js'])
 </head>
 
-<body class="landing">
+<body class="nb" x-data="{ navOpen: false }">
 
-    {{-- Top nav --}}
-    <nav class="landing-nav">
-        <div class="landing-nav-inner">
-            <a href="/" class="landing-nav-brand toolbar-brand">
-                <span class="toolbar-logo-badge">UC</span>
-                {{ config('app.name', 'Uni Club') }}
+    {{-- ======================= NAVIGATION ======================= --}}
+    <nav class="nb-nav" aria-label="Main navigation">
+        <div class="nb-nav-inner">
+            <a href="{{ route('landing') }}" class="nb-wordmark" aria-label="The Great Debaters Club — home">
+                <span class="nb-wordmark-badge">TGD</span>
+                THE GREAT<br>DEBATERS
             </a>
 
-            <div class="flex items-center gap-3">
-                @auth
-                <a href="{{ route('events.index') }}" class="btn btn-glass btn-sm">Go to app</a>
-                @else
-                <a href="{{ route('login') }}" class="link-ghost">Log in</a>
-                <a href="{{ route('register') }}" class="btn btn-invert btn-sm">Join us</a>
-                @endauth
-            </div>
+            <ul class="nb-links">
+                <li><a href="#top" class="is-active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#join">Contact</a></li>
+            </ul>
+
+            <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
+
+            <button type="button" class="nb-burger" @click="navOpen = !navOpen"
+                    :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-menu" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <div class="nb-mobile-menu" id="mobile-menu" x-cloak x-show="navOpen" @click.outside="navOpen = false">
+            <ul>
+                <li><a href="#top" @click="navOpen = false">Home</a></li>
+                <li><a href="#about" @click="navOpen = false">About</a></li>
+                <li><a href="#events" @click="navOpen = false">Events</a></li>
+                <li><a href="#join" @click="navOpen = false">Contact</a></li>
+                <li><a href="{{ route('login') }}" @click="navOpen = false">Log in</a></li>
+                <li><a href="{{ route('register') }}" class="nb-btn nb-btn--primary" style="width:auto;" @click="navOpen = false">Join the club</a></li>
+            </ul>
         </div>
     </nav>
 
-    {{-- Hero --}}
-    <header class="landing-hero">
-        <div class="photo"
-            style="background-image:url('/images/hero.jpg')"></div>
-        <div class="fade"></div>
+    {{-- ======================= HERO ======================= --}}
+    <header class="nb-hero" id="top">
+        <div class="nb-container">
+            <div class="nb-hero-grid">
+                <div>
+                    <div class="nb-hero-kicker">
+                        <span class="nb-label nb-label--invert">FST Errachidia · Issue Nº01</span>
+                        <span class="nb-label nb-label--gold">Your voice matters</span>
+                    </div>
 
-        <div class="landing-hero-inner">
-            <span class="landing-eyebrow animate-fade-in-down">UNIVERSITY CLUB · SINCE 2024</span>
+                    <h1 class="nb-hero-title">
+                        THINK<span class="dot">.</span><br>
+                        <span class="line-burg">SPEAK<span class="dot">.</span></span><br>
+                        CHANGE<span class="dot">.</span>
+                    </h1>
 
-            <h1 class="landing-title animate-fade-in-up">
-                Where students<br>
-                <strong>become community.</strong>
-            </h1>
+                    <p class="nb-hero-sub nb-body">
+                        The Great Debaters Club is a student community built around public
+                        speaking, critical thinking, argumentation, and intellectual
+                        exchange. We turn quiet opinions into powerful arguments.
+                    </p>
 
-            <p class="landing-lead animate-fade-in-up delay-100">
-                Join a vibrant community of students across Arabic, English, and French teams.
-                Attend events, build skills, and make friends that last beyond graduation.
-            </p>
+                    <div class="nb-hero-actions">
+                        <a href="#about" class="nb-btn nb-btn--dark">Discover the club ↓</a>
+                        <a href="#events" class="nb-btn">Explore events →</a>
+                    </div>
+                </div>
 
-            <div class="landing-actions animate-fade-in-up delay-200">
-                <a href="{{ route('register') }}" class="btn btn-invert btn-lg">
-                    Join us
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
-                <a href="{{ route('login') }}" class="btn btn-stroked btn-invert-text btn-lg">I'm already a member</a>
+                {{-- CSS-driven typographic composition (no photos invented) --}}
+                <div class="nb-hero-art" aria-hidden="true">
+                    <div class="nb-art-card nb-art-a">
+                        <div class="big">Words<br>win<br>debates.</div>
+                        <div class="small">Est. student union · TGD</div>
+                    </div>
+                    <div class="nb-art-card nb-art-c"></div>
+                    <div class="nb-art-stamp">YOUR<br>VOICE<br>MATTERS</div>
+                    <div class="nb-art-card nb-art-b">Admit one · Free speech</div>
+                    <div class="nb-art-card nb-art-d"></div>
+                </div>
             </div>
         </div>
     </header>
 
-    {{-- Stats strip --}}
-    <section class="section section--white section--tight">
-        <div class="content-wrap">
-            <div class="landing-stats stagger">
-                <div class="landing-stat"><b>250+</b><span>Active members</span></div>
-                <div class="landing-stat"><b>3</b><span>Language teams</span></div>
-                <div class="landing-stat"><b>40+</b><span>Events per year</span></div>
-                <div class="landing-stat"><b>5</b><span>Years running</span></div>
+    {{-- ======================= ABOUT ======================= --}}
+    <section class="nb-about" id="about" aria-labelledby="about-title">
+        <div class="nb-container">
+            <div class="nb-about-grid">
+                <div class="nb-section-num" aria-hidden="true">01</div>
+                <div class="nb-about-copy">
+                    <span class="nb-label nb-label--flat">Who we are</span>
+                    <h2 class="nb-h2" id="about-title" style="margin-top:18px;">More than<br><em>words.</em></h2>
+                    <p class="nb-body">
+                        TGD is not a lecture hall. It's a training ground. Every week our
+                        members step up, take a side — often the one they disagree with —
+                        and defend it under pressure. We build confidence through public
+                        speaking, sharpen judgment through critical thinking, learn to
+                        argue as a team, and trade ideas that survive contact with
+                        opposition.
+                    </p>
+                    <blockquote class="nb-quote">
+                        "A debate club is a gymnasium for the mind."
+                        <footer>— The TGD charter</footer>
+                    </blockquote>
+                </div>
             </div>
         </div>
     </section>
 
-    {{-- About --}}
-    <section class="section">
-        <div class="content-wrap">
-            <div class="split-grid">
+    {{-- ======================= PILLARS ======================= --}}
+    <section class="nb-pillars" aria-labelledby="pillars-title">
+        <div class="nb-container">
+            <div class="nb-pillars-head">
                 <div>
-                    <div class="section-head section-head--start">
-                        <span class="section-kicker">About the club</span>
-                        <h2 class="section-title">A community built by students, for students.</h2>
-                        <p class="section-desc">
-                            We bring together students from across the university to share ideas, learn new skills,
-                            and create lasting friendships. Whether you're into debates, arts, tech, or community
-                            service — there's a place for you here.
-                        </p>
-                    </div>
+                    <span class="nb-label nb-label--invert">What you train</span>
+                    <h2 class="nb-h2" id="pillars-title" style="margin-top:16px;">Three <em>pillars.</em></h2>
+                </div>
+                <span class="nb-label nb-label--flat">Nº02 — Core program</span>
+            </div>
 
-                    <ul class="check-list">
-                        @foreach ([
-                        'Weekly events and workshops',
-                        'Three language teams to grow in',
-                        'Mentorship from senior members',
-                        'Leadership opportunities',
-                        ] as $item)
-                        <li>
-                            <span class="check-bullet">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                                </svg>
-                            </span>
-                            {{ $item }}
-                        </li>
-                        @endforeach
+            <div class="nb-pillar-grid">
+                <article class="nb-pillar">
+                    <div class="nb-pillar-num">01</div>
+                    <h3>Public Speaking</h3>
+                    <p class="nb-body">Structured rounds, improvisation drills and mic
+                        sessions that turn stage-fright into stage-presence. You leave able
+                        to hold any room.</p>
+                    <span class="nb-pillar-tag">Voice</span>
+                </article>
+
+                <article class="nb-pillar nb-pillar--dark">
+                    <div class="nb-pillar-num">02</div>
+                    <h3>Critical Thinking</h3>
+                    <p class="nb-body">Every claim gets interrogated. Learn to dismantle an
+                        argument, spot fallacies, and rebuild your own position on stronger
+                        evidence.</p>
+                    <span class="nb-pillar-tag">Logic</span>
+                </article>
+
+                <article class="nb-pillar">
+                    <div class="nb-pillar-num">03</div>
+                    <h3>Powerful Ideas</h3>
+                    <p class="nb-body">Cross-disciplinary motions — tech, society, ethics,
+                        campus life. Ideas collide, get stress-tested, and come out sharper
+                        on both sides of the house.</p>
+                    <span class="nb-pillar-tag">Substance</span>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    {{-- ======================= EVENTS ======================= --}}
+    @php
+        $upcomingEvents = \App\Models\Event::whereNotNull('published_at')
+            ->where('published_at', '<=', now())
+            ->where('starts_at', '>=', now())
+            ->orderBy('starts_at')
+            ->limit(3)
+            ->get();
+    @endphp
+    <section class="nb-events" id="events" aria-labelledby="events-title">
+        <div class="nb-container">
+            <div class="nb-events-head">
+                <div>
+                    <span class="nb-label nb-label--gold">Nº03 — Calendar</span>
+                    <h2 class="nb-h2" id="events-title" style="margin-top:16px;">What's <em>next?</em></h2>
+                    <p class="nb-body">Weekly practice rounds, inter-faculty exhibitions and
+                        end-of-term showdowns. The full programme lives inside the club
+                        app — log in or join to see dates, venues and seats left.</p>
+                </div>
+                <a href="{{ route('login') }}" class="nb-btn nb-btn--gold">View all events →</a>
+            </div>
+
+            @if ($upcomingEvents->count())
+                <div class="nb-pillar-grid">
+                    @foreach ($upcomingEvents as $event)
+                        <article class="nb-pillar">
+                            <div class="nb-pillar-num">{{ $loop->iteration }}</div>
+                            <h3>{{ $event->title }}</h3>
+                            <p class="nb-body">
+                                {{ $event->starts_at->format('D d M Y · H:i') }}<br>
+                                {{ $event->location ?: 'Venue TBA' }}
+                            </p>
+                            <span class="nb-pillar-tag">{{ $event->team ? Str::upper($event->team) : 'Open round' }}</span>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="nb-events-empty">
+                    <strong>The floor is open.</strong>
+                    <span>No published events right now — new rounds are being scheduled.
+                        Join the club and be first to know when the mic turns on.</span>
+                    <div style="margin-top:24px;">
+                        <a href="{{ route('register') }}" class="nb-btn nb-btn--gold">Get notified when I join</a>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </section>
+
+    {{-- ======================= FINAL CTA ======================= --}}
+    <section class="nb-cta" id="join" aria-labelledby="cta-title">
+        <div class="nb-container">
+            <div class="nb-cta-box">
+                <div>
+                    <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº04 — Last word</span>
+                    <h2 id="cta-title" style="margin-top:16px;">Your voice<br><em>belongs here.</em></h2>
+                    <p class="nb-body">One membership. Three languages. Zero excuses.
+                        Pull up a chair, take the opposing side, and argue like it
+                        matters — because it does.</p>
+                </div>
+                <div style="display:grid;gap:14px;">
+                    <a href="{{ route('register') }}" class="nb-btn nb-btn--gold">Join the club</a>
+                    <a href="{{ route('login') }}" class="nb-btn" style="background:transparent;color:var(--nb-cream);border-color:var(--nb-cream);box-shadow:4px 4px 0 var(--nb-cream);">Member log in</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ======================= FOOTER ======================= --}}
+    <footer class="nb-footer">
+        <div class="nb-container">
+            <div class="nb-footer-grid">
+                <div>
+                    <span class="nb-footer-brand">TGD<span style="color:var(--nb-gold);">.</span></span>
+                    <p>The Great Debaters Club — a student community at FST Errachidia
+                        built around public speaking, critical thinking and
+                        intellectual exchange.</p>
+                </div>
+                <div>
+                    <h4>Navigate</h4>
+                    <ul>
+                        <li><a href="#top">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#join">Contact</a></li>
                     </ul>
                 </div>
-
-                <div class="photo-grid">
-                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=600&q=80"
-                        alt="Students collaborating" class="span-2">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80"
-                        alt="Team meeting">
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=400&q=80"
-                        alt="Event">
+                <div>
+                    <h4>Members</h4>
+                    <ul>
+                        <li><a href="{{ route('login') }}">Log in</a></li>
+                        <li><a href="{{ route('register') }}">Register</a></li>
+                        <li><a href="{{ route('password.recover') }}">Forgot password?</a></li>
+                    </ul>
                 </div>
             </div>
-        </div>
-    </section>
-
-    {{-- Teams --}}
-    <section class="section section--blush">
-        <div class="content-wrap">
-            <div class="section-head">
-                <span class="section-kicker">Our teams</span>
-                <h2 class="section-title">Three languages. One community.</h2>
-                <p class="section-desc">
-                    Every member belongs to one of our language teams. You'll find your people here.
-                </p>
-            </div>
-
-            <div class="team-grid stagger">
-                @foreach ([
-                ['name' => 'Arabic Team', 'icon' => '🌙', 'desc' => 'Rich discussions, poetry nights, and cultural events in Arabic.'],
-                ['name' => 'English Team', 'icon' => '🌍', 'desc' => 'Debates, workshops, and social events held in English.'],
-                ['name' => 'French Team', 'icon' => '✨', 'desc' => 'Francophone meetups, film screenings, and creative sessions.'],
-                ] as $team)
-                <article class="team-card">
-                    <div class="team-card-bar"></div>
-                    <div class="team-card-body">
-                        <div class="team-card-icon">{{ $team['icon'] }}</div>
-                        <h3>{{ $team['name'] }}</h3>
-                        <p>{{ $team['desc'] }}</p>
-                    </div>
-                </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- CTA --}}
-    <section class="section">
-        <div class="content-wrap">
-            <div class="cta-panel">
-                <div class="photo"
-                    style="background-image:url('/images/hero.jpg')"></div>
-                <div class="cta-panel-inner">
-                    <h2>Ready to join the club?</h2>
-                    <p>Sign up in less than a minute. No fees, no commitments — just show up and be part of something.</p>
-
-                    <div class="cta-actions">
-                        <a href="{{ route('register') }}" class="btn btn-invert btn-lg">Join us — it's free</a>
-                        <a href="{{ route('login') }}" class="btn btn-glass btn-lg">I'm a member</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Footer --}}
-    <footer class="footer">
-        <div class="footer-inner">
-            <small>© {{ date('Y') }} {{ config('app.name', 'Uni Club') }}. All rights reserved.</small>
-            <div class="footer-links">
-                <a href="#">Contact</a>
-                <a href="#">Instagram</a>
-                <a href="#">Facebook</a>
+            <div class="nb-footer-bottom">
+                <span>© {{ date('Y') }} The Great Debaters Club · FST Errachidia</span>
+                <span>Think. Speak. Change.</span>
             </div>
         </div>
     </footer>
