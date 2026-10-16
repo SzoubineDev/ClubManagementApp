@@ -3,12 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EventRsvpController extends Controller
 {
-    public function store(Event $event): RedirectResponse
+    /**
+     * Shared handler: works both as a normal form POST/DELETE (redirect back)
+     * and as an AJAX request from the event page (JSON response).
+     */
+    private function respond(Request $request, ?string $message, ?array $errors = null)
+    {
+        if ($request->expectsJson()) {
+            return $errors
+                ? response()->json(['ok' => false, 'message' => $errors['rsvp']], 422)
+                : response()->json(['ok' => true, 'message' => $message]);
+        }
+
+        return $errors
+            ? back()->withInput()->withErrors($errors)
+            : back()->with('status', $message);
+    }
+
+    public function store(Request $request, Event $event)
     {
         $this->authorize('rsvp', $event);
 
@@ -21,28 +38,37 @@ class EventRsvpController extends Controller
 
         // Filière-restricted events accept matching students only.
         if ($event->filiere && $user->filiere !== $event->filiere) {
-            return back()->withErrors(['rsvp' => "This event is reserved for {$event->filiere} students."]);
+            return $this->respond($request, null, [
+                'rsvp' => "This event is reserved for {$event->filiere} students.",
+            ]);
         }
 
         if ($event->attendees()->where('user_id', $user->id)->exists()) {
-            return back()->with('status', 'You are already registered.');
+            return $this->respond($request, 'You are already registered.');
         }
 
         if ($event->capacity && $event->attendees()->count() >= $event->capacity) {
-            return back()->withErrors(['rsvp' => 'This event is full.']);
+            return $this->respond($request, null, ['rsvp' => 'This event is full.']);
         }
 
         $event->attendees()->attach($user->id);
 
-        return back()->with('status', 'You are registered for this event.');
+        return $this->respond($request, 'You are registered for this event.');
     }
 
-    public function destroy(Event $event): RedirectResponse
+    public function destroy(Request $request, Event $event)
     {
         $this->authorize('rsvp', $event);
 
+        // Only cancel an RSVP that actually exists — never detach blindly.
+        $registered = $event->attendees()->where('user_id', Auth::id())->exists();
+
+        if (! $registered) {
+            return $this->respond($request, 'You are not registered for this event.');
+        }
+
         $event->attendees()->detach(Auth::id());
 
-        return back()->with('status', 'RSVP cancelled.');
+        return $this->respond($request, 'RSVP cancelled.');
     }
 }

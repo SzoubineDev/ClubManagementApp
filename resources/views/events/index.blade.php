@@ -46,7 +46,9 @@
                             <th class="hide-mobile col-secondary">Date</th>
                             <th class="only-desktop col-optional">Location</th>
                             <th class="hide-mobile col-optional">Team</th>
+                            @if (auth()->user()->can('events.update'))
                             <th>Status</th>
+                            @endif
                             <th class="th-right">Attendees</th>
                             <th></th>
                         </tr>
@@ -75,14 +77,19 @@
                             </td>
 
                             <td>
-                                @if ($event->isPublished())
-                                <span class="status-label status-label--on">
-                                    <span class="status-dot status-dot--on"></span> Published
-                                </span>
+                                @if (auth()->user()->can('events.update'))
+                                    @if ($event->isPublished())
+                                    <span class="status-label status-label--on">
+                                        <span class="status-dot status-dot--on"></span> Published
+                                    </span>
+                                    @else
+                                    <span class="status-label status-label--draft">
+                                        <span class="status-dot status-dot--draft"></span> Draft
+                                    </span>
+                                    @endif
                                 @else
-                                <span class="status-label status-label--draft">
-                                    <span class="status-dot status-dot--draft"></span> Draft
-                                </span>
+                                    {{-- Members never see the internal status --}}
+                                    <span class="text-muted">—</span>
                                 @endif
                             </td>
 

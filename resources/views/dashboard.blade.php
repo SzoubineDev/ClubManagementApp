@@ -76,10 +76,12 @@
                             @if ($event->location) · {{ $event->location }} @endif
                         </div>
                     </div>
-                    @if ($event->isPublished())
-                    <span class="chip chip--success hide-mobile">Published</span>
-                    @else
-                    <span class="chip chip--warning hide-mobile">Draft — only you & managers see this</span>
+                    @if (auth()->user()->can('events.update'))
+                        @if ($event->isPublished())
+                        <span class="chip chip--success hide-mobile">Published</span>
+                        @else
+                        <span class="chip chip--warning hide-mobile">Draft — only you & managers see this</span>
+                        @endif
                     @endif
                     <span class="list-chevron">›</span>
                 </a>

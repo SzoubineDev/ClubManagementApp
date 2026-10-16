@@ -5,14 +5,16 @@
                 <a href="{{ route('events.index') }}" class="breadcrumb-link">← Events</a>
                 <div class="flex items-center gap-3 mt-1 flex-wrap">
                     <h1 class="page-header-title truncate">{{ $event->title }}</h1>
-                    @if ($event->isPublished())
-                    <span class="status-label status-label--on">
-                        <span class="status-dot status-dot--on"></span> Published
-                    </span>
-                    @else
-                    <span class="status-label status-label--draft">
-                        <span class="status-dot status-dot--draft"></span> Draft
-                    </span>
+                    @if (auth()->user()->can('events.update'))
+                        @if ($event->isPublished())
+                        <span class="status-label status-label--on">
+                            <span class="status-dot status-dot--on"></span> Published
+                        </span>
+                        @else
+                        <span class="status-label status-label--draft">
+                            <span class="status-dot status-dot--draft"></span> Draft
+                        </span>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -124,62 +126,39 @@
         </div>
 
         {{-- RSVP --}}
-        <div class="card animate-fade-in-up delay-100"
-            x-data="{
-                 registered: {{ auth()->user()->isRegisteredFor($event) ? 'true' : 'false' }},
-                 count: {{ $event->attendees->count() }},
-                 loading: false,
-                 async toggle() {
-                     this.loading = true
-                     const wasRegistered = this.registered
-                     this.registered = ! this.registered
-                     this.count += this.registered ? 1 : -1
-
-                     try {
-                         const res = await fetch(
-                             wasRegistered
-                                 ? '{{ route('events.rsvp.cancel', $event) }}'
-                                 : '{{ route('events.rsvp', $event) }}',
-                             {
-                                 method: wasRegistered ? 'DELETE' : 'POST',
-                                 headers: {
-                                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                     'Accept': 'application/json',
-                                 },
-                             }
-                         )
-                         if (! res.ok) throw new Error('failed')
-                         window.location.reload()
-                     } catch (e) {
-                         this.registered = wasRegistered
-                         this.count += wasRegistered ? 1 : -1
-                         alert('Something went wrong. Please try again.')
-                     } finally {
-                         this.loading = false
-                     }
-                 }
-             }">
+        @php $alreadyRegistered = auth()->user()->isRegisteredFor($event); @endphp
+        <div class="card animate-fade-in-up delay-100">
             <div class="card-body flex items-center justify-between gap-4 flex-wrap">
                 <div class="min-w-0">
-                    <p class="text-base font-medium text-ink"
-                        x-text="registered ? 'You\'re going 🎉' : 'Want to join?'"></p>
+                    <p class="text-base font-medium text-ink">{{ $alreadyRegistered ? "You're going 🎉" : 'Want to join?' }}</p>
                     <p class="cell-sub">
                         @if ($event->capacity)
-                        <span x-text="Math.max(0, {{ $event->capacity }} - count)"></span> spots remaining
+                        {{ max(0, $event->capacity - $event->attendees->count()) }} spots remaining
                         @else
                         Open to all members
                         @endif
                     </p>
                 </div>
 
-                <button type="button"
-                    @click="toggle"
-                    :disabled="loading"
-                    :class="registered ? 'btn btn-outline' : 'btn btn-primary'"
-                    class="btn btn-primary" style="min-width: 140px;">
-                    <span class="spinner" x-show="loading" x-cloak style="display:none;"></span>
-                    <span x-text="loading ? '…' : (registered ? 'Cancel RSVP' : 'RSVP')"></span>
-                </button>
+                @if ($alreadyRegistered)
+                {{-- Cancel RSVP — plain POST form (no JS required), CSRF protected --}}
+                <form method="POST" action="{{ route('events.rsvp.cancel', $event) }}"
+                    onsubmit="return confirm('Cancel your registration for this event?')"
+                    style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline" style="min-width: 140px;">Cancel RSVP</button>
+                </form>
+                @else
+                {{-- RSVP — plain POST form (no JS required), CSRF protected --}}
+                <form method="POST" action="{{ route('events.rsvp', $event) }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-primary" style="min-width: 140px;"
+                        @if ($event->capacity && $event->attendees->count() >= $event->capacity) disabled @endif>
+                        {{ $event->capacity && $event->attendees->count() >= $event->capacity ? 'Event full' : 'RSVP' }}
+                    </button>
+                </form>
+                @endif
             </div>
         </div>
 
