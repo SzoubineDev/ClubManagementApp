@@ -12,9 +12,12 @@
     @vite(['resources/css/app.css', 'resources/css/landing.css', 'resources/js/app.js'])
 </head>
 
-<body class="nb" x-data="{ navOpen: false }">
+<body class="nb">
 
     {{-- ======================= NAVIGATION ======================= --}}
+    {{-- Hidden checkbox: pure-CSS fallback so the burger works even if Alpine.js fails to load --}}
+    <input type="checkbox" id="nb-nav-toggle" class="nb-burger-fallback" aria-hidden="true" tabindex="-1">
+
     <nav class="nb-nav" aria-label="Main navigation">
         <div class="nb-nav-inner">
             <a href="{{ route('landing') }}" class="nb-wordmark" aria-label="The Great Debaters Club — home">
@@ -31,20 +34,19 @@
 
             <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
 
-            <button type="button" class="nb-burger" @click="navOpen = !navOpen"
-                    :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-menu" aria-label="Toggle menu">
+            <label for="nb-nav-toggle" class="nb-burger" role="button" tabindex="0" aria-controls="mobile-menu" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
-            </button>
+            </label>
         </div>
 
-        <div class="nb-mobile-menu" id="mobile-menu" x-cloak x-show="navOpen" @click.outside="navOpen = false">
+        <div class="nb-mobile-menu" id="mobile-menu">
             <ul>
-                <li><a href="#top" @click="navOpen = false">Home</a></li>
-                <li><a href="#about" @click="navOpen = false">About</a></li>
-                <li><a href="#events" @click="navOpen = false">Events</a></li>
-                <li><a href="#join" @click="navOpen = false">Contact</a></li>
-                <li><a href="{{ route('login') }}" @click="navOpen = false">Log in</a></li>
-                <li><a href="{{ route('register') }}" class="nb-btn nb-btn--primary" style="width:auto;" @click="navOpen = false">Join the club</a></li>
+                <li><a href="#top">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#join">Contact</a></li>
+                <li><a href="{{ route('login') }}">Log in</a></li>
+                <li><a href="{{ route('register') }}" class="nb-btn nb-btn--primary" style="width:auto;">Join the club</a></li>
             </ul>
         </div>
     </nav>
