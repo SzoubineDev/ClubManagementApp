@@ -37,7 +37,17 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('events.index');
     }
-    return view('landing');
+
+    // Published upcoming events shown on the landing "What's next?" section.
+    $upcomingEvents = \App\Models\Event::query()
+        ->whereNotNull('published_at')
+        ->where('published_at', '<=', now())
+        ->where('starts_at', '>=', now())
+        ->orderBy('starts_at')
+        ->take(3)
+        ->get();
+
+    return view('landing', compact('upcomingEvents'));
 })->name('landing');
 
 /*

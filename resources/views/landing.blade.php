@@ -74,7 +74,7 @@
                     </p>
 
                     <div class="nb-hero-actions">
-                        <a href="#about" class="nb-btn nb-btn--dark">Discover the club ↓</a>
+                        <a href="#about" class="nb-btn nb-btn--primary">Discover the club ↓</a>
                         <a href="#events" class="nb-btn">Explore events →</a>
                     </div>
                 </div>

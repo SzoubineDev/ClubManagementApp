@@ -27,6 +27,12 @@ html {
     overflow-x: hidden;
 }
 
+/* Smooth in-page anchor navigation (Home / About / Events / Contact links) */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* Offset anchored sections so the sticky nav never covers their headings */
+.nb [id] { scroll-margin-top: 96px; }
+
 /* subtle paper grain */
 .nb::before {
     content: "";
@@ -179,6 +185,13 @@ html {
 .nb-burger:focus-visible { outline: 3px solid var(--nb-burgundy); outline-offset: 2px; }
 
 .nb-mobile-menu { display: none; border-bottom: 4px solid var(--nb-ink); background: var(--nb-cream); }
+/* When Alpine is open, x-show sets inline display:block — keep it usable */
+.nb-mobile-menu[style*="display: block"], .nb-mobile-menu[style*="display:block"] { display: block !important; }
+/* Fallback if Alpine fails to initialise (e.g. JS blocked or module error):
+   the checkbox hack keeps the burger functional with pure CSS. */
+.nb-burger-fallback { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.nb-burger-fallback:checked ~ .nb-mobile-menu { display: block; }
+.nb-burger-fallback:checked ~ .nb-nav-inner .nb-burger { background: var(--nb-gold); }
 .nb-mobile-menu ul { list-style: none; margin: 0; padding: 12px 24px 20px; display: grid; gap: 10px; }
 .nb-mobile-menu a {
     display: block;
