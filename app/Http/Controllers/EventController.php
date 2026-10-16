@@ -20,19 +20,25 @@ class EventController extends Controller
 
         $query = Event::with('creator')->withCount('attendees')->latest('starts_at');
 
-        // Team leads only see their own team's events (plus published global ones)
-        if ($user->hasRole('team_lead') && ! $user->hasAnyRole([
-            'president',
-            'vice_president',
-            'secretary_general',
-        ])) {
+        // Global roles (admins/president/VP/SG) see every event they create or manage.
+        $isGlobalManager = $user->can('events.create') && $user->hasAnyRole([
+            'president', 'vice_president', 'secretary_general', 'admin',
+        ]);
+
+        // Everyone else (plain members + team leads): only PUBLISHED upcoming
+        // events — so an admin's newly created event appears here the moment it
+        // is published, and drafts/unpublished events stay invisible to them.
+        if (! $isGlobalManager) {
             $query->where(function ($q) use ($user) {
-                $q->where('team', $user->team)
-                    ->orWhere(function ($q2) {
-                        $q2->whereNull('team')
-                            ->whereNotNull('published_at')
-                            ->where('published_at', '<=', now());
+                $q->where(function ($q1) {
+                    $q1->whereNotNull('published_at')
+                       ->where('published_at', '<=', now());
+                });
+                if ($user->team) {
+                    $q->orWhere(function ($q2) use ($user) {
+                        $q2->where('team', $user->team);
                     });
+                }
             });
         }
 
@@ -53,11 +59,14 @@ class EventController extends Controller
         $event = Event::create([
             ...$request->validated(),
             'created_by' => auth()->id(),
+            // Publish immediately so the event appears in members' "Upcoming events"
+            // (landing page + app) as soon as the admin creates it.
+            'published_at' => now(),
         ]);
 
         return redirect()
             ->route('events.show', $event)
-            ->with('status', 'Event created.');
+            ->with('status', 'Event created and published.');
     }
 
     public function show(Event $event): View
