@@ -2,10 +2,10 @@
 
 <x-base-layout body-class="auth-body nb-auth" :extra-css="['resources/css/auth.css']">
     <div class="auth-split {{ $wide ? 'auth-split--wide' : '' }}">
-        {{-- Brand panel — preserves the club photo (public/images/auth-bg.jpg) --}}
+        {{-- Brand panel — preserves the club photo (public/images/hero.jpg) --}}
         <aside class="auth-side">
             <img class="bg"
-                src="{{ asset('images/auth-bg.jpg') }}"
+                src="{{ asset('images/hero.jpg') }}"
                 alt="The Great Debaters Club">
             <div class="scrim"></div>
             <div class="auth-side-inner">
