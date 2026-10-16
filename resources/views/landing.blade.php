@@ -29,7 +29,7 @@
                 <li><a href="#join">Contact</a></li>
             </ul>
 
-            <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
+            <a href="{{ route('register') }}" class="nb-btn nb-btn--secondary">Join the club</a>
 
             <button type="button" class="nb-burger" @click="navOpen = !navOpen"
                 :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-menu" aria-label="Toggle menu">
@@ -46,7 +46,7 @@
                 <li><a href="#events" @click="navOpen = false">Events</a></li>
                 <li><a href="#join" @click="navOpen = false">Contact</a></li>
                 <li><a href="{{ route('login') }}" @click="navOpen = false">Log in</a></li>
-                <li><a href="{{ route('register') }}" class="nb-btn nb-btn--primary" style="width:auto;" @click="navOpen = false">Join the club</a></li>
+                <li><a href="{{ route('register') }}" class="nb-btn nb-btn--secondary" style="width:auto;" @click="navOpen = false">Join the club</a></li>
             </ul>
         </div>
     </nav>
