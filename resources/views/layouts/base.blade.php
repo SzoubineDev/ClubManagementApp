@@ -17,7 +17,7 @@
         rel="stylesheet">
 
     {{-- Custom design system (no Tailwind) --}}
-    @php $css = array_merge(['resources/css/app.css'], $extraCss); @endphp
+    @php $css = array_merge(['resources/css/app.css', 'resources/css/brutal.css'], $extraCss); @endphp
     @vite(array_merge($css, ['resources/js/app.js']))
     <style>[x-cloak] { display: none !important; }</style>
 </head>
