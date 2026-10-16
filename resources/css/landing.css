@@ -450,3 +450,69 @@ html {
     .nb *, .nb *::before, .nb *::after { transition: none !important; animation: none !important; }
     .nb-btn:hover, .nb-pillar:hover { transform: none; }
 }
+
+/* Mobile navigation */
+[x-cloak] {
+    display: none !important;
+}
+
+.nb-mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    padding: 20px 24px 26px;
+    background: var(--nb-cream);
+    border-bottom: 3px solid var(--nb-burgundy);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.nb-mobile-menu ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nb-mobile-menu li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.nb-mobile-menu li:last-child {
+    border-bottom: 0;
+    padding-top: 18px;
+}
+
+.nb-mobile-menu a:not(.nb-btn) {
+    display: block;
+    padding: 15px 4px;
+    color: var(--nb-burgundy);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.nb-mobile-menu a:not(.nb-btn):hover {
+    padding-left: 10px;
+    color: var(--nb-gold);
+}
+
+.nb-mobile-menu .nb-btn {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.nb-nav-inner {
+    position: relative;
+}
+
+.nb-burger {
+    position: relative;
+    z-index: 10000;
+    cursor: pointer;
+    touch-action: manipulation;
+}

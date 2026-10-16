@@ -32,12 +32,14 @@
             <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
 
             <button type="button" class="nb-burger" @click="navOpen = !navOpen"
-                    :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-menu" aria-label="Toggle menu">
+                :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-menu" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
             </button>
         </div>
 
-        <div class="nb-mobile-menu" id="mobile-menu" x-cloak x-show="navOpen" @click.outside="navOpen = false">
+        <div id="mobile-menu"
+            x-show="navOpen"
+            style="background: #f5f0e6; color: #65151b; padding: 20px; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999;">
             <ul>
                 <li><a href="#top" @click="navOpen = false">Home</a></li>
                 <li><a href="#about" @click="navOpen = false">About</a></li>
@@ -161,41 +163,41 @@
 
     {{-- ======================= EVENTS ======================= --}}
     @php
-        $upcomingEvents = \App\Models\Event::whereNotNull('published_at')
-            ->where('published_at', '<=', now())
-            ->where('starts_at', '>=', now())
-            ->orderBy('starts_at')
-            ->limit(3)
-            ->get();
-    @endphp
-    <section class="nb-events" id="events" aria-labelledby="events-title">
-        <div class="nb-container">
-            <div class="nb-events-head">
-                <div>
-                    <span class="nb-label nb-label--gold">Nº03 — Calendar</span>
-                    <h2 class="nb-h2" id="events-title" style="margin-top:16px;">What's <em>next?</em></h2>
-                    <p class="nb-body">Weekly practice rounds, inter-faculty exhibitions and
-                        end-of-term showdowns. The full programme lives inside the club
-                        app — log in or join to see dates, venues and seats left.</p>
+    $upcomingEvents = \App\Models\Event::whereNotNull('published_at')
+    ->where('published_at', '<=', now())
+        ->where('starts_at', '>=', now())
+        ->orderBy('starts_at')
+        ->limit(3)
+        ->get();
+        @endphp
+        <section class="nb-events" id="events" aria-labelledby="events-title">
+            <div class="nb-container">
+                <div class="nb-events-head">
+                    <div>
+                        <span class="nb-label nb-label--gold">Nº03 — Calendar</span>
+                        <h2 class="nb-h2" id="events-title" style="margin-top:16px;">What's <em>next?</em></h2>
+                        <p class="nb-body">Weekly practice rounds, inter-faculty exhibitions and
+                            end-of-term showdowns. The full programme lives inside the club
+                            app — log in or join to see dates, venues and seats left.</p>
+                    </div>
+                    <a href="{{ route('login') }}" class="nb-btn nb-btn--gold">View all events →</a>
                 </div>
-                <a href="{{ route('login') }}" class="nb-btn nb-btn--gold">View all events →</a>
-            </div>
 
-            @if ($upcomingEvents->count())
+                @if ($upcomingEvents->count())
                 <div class="nb-pillar-grid">
                     @foreach ($upcomingEvents as $event)
-                        <article class="nb-pillar">
-                            <div class="nb-pillar-num">{{ $loop->iteration }}</div>
-                            <h3>{{ $event->title }}</h3>
-                            <p class="nb-body">
-                                {{ $event->starts_at->format('D d M Y · H:i') }}<br>
-                                {{ $event->location ?: 'Venue TBA' }}
-                            </p>
-                            <span class="nb-pillar-tag">{{ $event->team ? Str::upper($event->team) : 'Open round' }}</span>
-                        </article>
+                    <article class="nb-pillar">
+                        <div class="nb-pillar-num">{{ $loop->iteration }}</div>
+                        <h3>{{ $event->title }}</h3>
+                        <p class="nb-body">
+                            {{ $event->starts_at->format('D d M Y · H:i') }}<br>
+                            {{ $event->location ?: 'Venue TBA' }}
+                        </p>
+                        <span class="nb-pillar-tag">{{ $event->team ? Str::upper($event->team) : 'Open round' }}</span>
+                    </article>
                     @endforeach
                 </div>
-            @else
+                @else
                 <div class="nb-events-empty">
                     <strong>The floor is open.</strong>
                     <span>No published events right now — new rounds are being scheduled.
@@ -204,63 +206,63 @@
                         <a href="{{ route('register') }}" class="nb-btn nb-btn--gold">Get notified when I join</a>
                     </div>
                 </div>
-            @endif
-        </div>
-    </section>
+                @endif
+            </div>
+        </section>
 
-    {{-- ======================= FINAL CTA ======================= --}}
-    <section class="nb-cta" id="join" aria-labelledby="cta-title">
-        <div class="nb-container">
-            <div class="nb-cta-box">
-                <div>
-                    <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº04 — Last word</span>
-                    <h2 id="cta-title" style="margin-top:16px;">Your voice<br><em>belongs here.</em></h2>
-                    <p class="nb-body">One membership. Three languages. Zero excuses.
-                        Pull up a chair, take the opposing side, and argue like it
-                        matters — because it does.</p>
-                </div>
-                <div style="display:grid;gap:14px;">
-                    <a href="{{ route('register') }}" class="nb-btn nb-btn--gold">Join the club</a>
-                    <a href="{{ route('login') }}" class="nb-btn" style="background:transparent;color:var(--nb-cream);border-color:var(--nb-cream);box-shadow:4px 4px 0 var(--nb-cream);">Member log in</a>
+        {{-- ======================= FINAL CTA ======================= --}}
+        <section class="nb-cta" id="join" aria-labelledby="cta-title">
+            <div class="nb-container">
+                <div class="nb-cta-box">
+                    <div>
+                        <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº04 — Last word</span>
+                        <h2 id="cta-title" style="margin-top:16px;">Your voice<br><em>belongs here.</em></h2>
+                        <p class="nb-body">One membership. Three languages. Zero excuses.
+                            Pull up a chair, take the opposing side, and argue like it
+                            matters — because it does.</p>
+                    </div>
+                    <div style="display:grid;gap:14px;">
+                        <a href="{{ route('register') }}" class="nb-btn nb-btn--gold">Join the club</a>
+                        <a href="{{ route('login') }}" class="nb-btn" style="background:transparent;color:var(--nb-cream);border-color:var(--nb-cream);box-shadow:4px 4px 0 var(--nb-cream);">Member log in</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    {{-- ======================= FOOTER ======================= --}}
-    <footer class="nb-footer">
-        <div class="nb-container">
-            <div class="nb-footer-grid">
-                <div>
-                    <span class="nb-footer-brand">TGD<span style="color:var(--nb-gold);">.</span></span>
-                    <p>The Great Debaters Club — a student community at FST Errachidia
-                        built around public speaking, critical thinking and
-                        intellectual exchange.</p>
+        {{-- ======================= FOOTER ======================= --}}
+        <footer class="nb-footer">
+            <div class="nb-container">
+                <div class="nb-footer-grid">
+                    <div>
+                        <span class="nb-footer-brand">TGD<span style="color:var(--nb-gold);">.</span></span>
+                        <p>The Great Debaters Club — a student community at FST Errachidia
+                            built around public speaking, critical thinking and
+                            intellectual exchange.</p>
+                    </div>
+                    <div>
+                        <h4>Navigate</h4>
+                        <ul>
+                            <li><a href="#top">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#events">Events</a></li>
+                            <li><a href="#join">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Members</h4>
+                        <ul>
+                            <li><a href="{{ route('login') }}">Log in</a></li>
+                            <li><a href="{{ route('register') }}">Register</a></li>
+                            <li><a href="{{ route('password.recover') }}">Forgot password?</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div>
-                    <h4>Navigate</h4>
-                    <ul>
-                        <li><a href="#top">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#events">Events</a></li>
-                        <li><a href="#join">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Members</h4>
-                    <ul>
-                        <li><a href="{{ route('login') }}">Log in</a></li>
-                        <li><a href="{{ route('register') }}">Register</a></li>
-                        <li><a href="{{ route('password.recover') }}">Forgot password?</a></li>
-                    </ul>
+                <div class="nb-footer-bottom">
+                    <span>© {{ date('Y') }} The Great Debaters Club · FST Errachidia</span>
+                    <span>Think. Speak. Change.</span>
                 </div>
             </div>
-            <div class="nb-footer-bottom">
-                <span>© {{ date('Y') }} The Great Debaters Club · FST Errachidia</span>
-                <span>Think. Speak. Change.</span>
-            </div>
-        </div>
-    </footer>
+        </footer>
 
 </body>
 
