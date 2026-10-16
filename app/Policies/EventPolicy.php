@@ -18,18 +18,20 @@ class EventPolicy
             return false;
         }
 
-        // Unpublished events are only visible to creators and higher roles
-        if (! $event->isPublished()) {
-            return $user->id === $event->created_by
-                || $user->hasAnyRole([
-                    'president',
-                    'vice_president',
-                    'secretary_general',
-                    'team_lead',
-                ]);
+        // Unpublished events are only visible to creators and higher roles.
+        // Published events are open to every authenticated member.
+        if ($event->status === 'published' || $event->isPublished()) {
+            return true;
         }
 
-        return true;
+        return $user->id === $event->created_by
+            || $user->hasAnyRole([
+                'president',
+                'vice_president',
+                'secretary_general',
+                'team_lead',
+                'admin',
+            ]);
     }
 
     public function create(User $user): bool

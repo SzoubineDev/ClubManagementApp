@@ -35,12 +35,26 @@
             <div class="card-footer">
                 <a href="{{ route('events.show', $event) }}" class="text-action">Cancel</a>
 
-                <button type="submit" class="btn btn-primary">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Save changes
-                </button>
+                <div class="flex gap-2 flex-wrap">
+                    @if ($event->isPublished())
+                    <button type="submit" name="submit_action" value="draft" class="btn btn-outline">
+                        Move to draft
+                    </button>
+                    @else
+                    <button type="submit" name="submit_action" value="draft" class="btn btn-outline">
+                        Keep as draft
+                    </button>
+                    <button type="submit" name="submit_action" value="publish" class="btn btn-success">
+                        Publish event
+                    </button>
+                    @endif
+                    <button type="submit" name="submit_action" value="save" class="btn btn-primary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Save changes
+                    </button>
+                </div>
             </div>
         </form>
 

@@ -20,24 +20,17 @@ class EventController extends Controller
 
         $query = Event::with('creator')->withCount('attendees')->latest('starts_at');
 
-        // Global roles (admins/president/VP/SG) see every event they create or manage.
+        // Managers (admins/president/VP/SG/team leads) also see their own drafts.
+        // Plain members only ever see PUBLISHED events — enforced here, server-side.
         $isGlobalManager = $user->can('events.create') && $user->hasAnyRole([
             'president', 'vice_president', 'secretary_general', 'admin',
         ]);
 
-        // Everyone else (plain members + team leads): only PUBLISHED upcoming
-        // events — so an admin's newly created event appears here the moment it
-        // is published, and drafts/unpublished events stay invisible to them.
         if (! $isGlobalManager) {
             $query->where(function ($q) use ($user) {
-                $q->where(function ($q1) {
-                    $q1->whereNotNull('published_at')
-                       ->where('published_at', '<=', now());
-                });
-                if ($user->team) {
-                    $q->orWhere(function ($q2) use ($user) {
-                        $q2->where('team', $user->team);
-                    });
+                Event::publishedScope($q);
+                if ($user->hasRole('team_lead')) {
+                    $q->where('team', $user->team);
                 }
             });
         }
@@ -56,17 +49,23 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request): RedirectResponse
     {
+        $data = $request->validated();
+
+        // "Save event" publishes officially; "Draft event" keeps it private.
+        $publish = ($request->input('submit_action') ?? 'publish') === 'publish';
+
         $event = Event::create([
-            ...$request->validated(),
+            ...$data,
             'created_by' => auth()->id(),
-            // Publish immediately so the event appears in members' "Upcoming events"
-            // (landing page + app) as soon as the admin creates it.
-            'published_at' => now(),
+            'status' => $publish ? 'published' : 'draft',
+            'published_at' => $publish ? now() : null,
         ]);
 
         return redirect()
             ->route('events.show', $event)
-            ->with('status', 'Event created and published.');
+            ->with('status', $publish
+                ? 'Event created and published — members can now see it.'
+                : 'Event saved as draft. Only managers can see it until you publish it.');
     }
 
     public function show(Event $event): View
@@ -87,7 +86,19 @@ class EventController extends Controller
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
-        $event->update($request->validated());
+        $data = $request->validated();
+
+        // Publish/draft toggle from the edit form buttons.
+        $action = $request->input('submit_action');
+        if ($action === 'publish') {
+            $data['status'] = 'published';
+            $data['published_at'] = $event->published_at ?? now();
+        } elseif ($action === 'draft') {
+            $data['status'] = 'draft';
+            $data['published_at'] = null;
+        }
+
+        $event->update($data);
 
         return redirect()
             ->route('events.show', $event)
@@ -109,9 +120,18 @@ class EventController extends Controller
     {
         $this->authorize('publish', $event);
 
-        $event->update(['published_at' => now()]);
+        $event->update(['published_at' => now(), 'status' => 'published']);
 
         return back()->with('status', 'Event published.');
+    }
+
+    public function unpublish(Event $event): RedirectResponse
+    {
+        $this->authorize('publish', $event);
+
+        $event->update(['published_at' => null, 'status' => 'draft']);
+
+        return back()->with('status', 'Event moved back to draft.');
     }
     public function attendance(Event $event): View
     {
@@ -126,7 +146,16 @@ class EventController extends Controller
     {
         $this->authorize('manageAttendance', $event);
 
-        $attendedIds = $request->input('attended', []);
+        // Attendance is only meaningful for events that actually happened.
+        if (! $event->isPublished()) {
+            return back()->withErrors(['attendance' => 'Publish the event before logging attendance.']);
+        }
+
+        if ($event->starts_at->isFuture()) {
+            return back()->withErrors(['attendance' => "This event hasn't started yet."]);
+        }
+
+        $attendedIds = array_map('intval', (array) $request->input('attended', []));
 
         foreach ($event->attendees as $attendee) {
             $event->attendees()->updateExistingPivot($attendee->id, [
