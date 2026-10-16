@@ -160,8 +160,82 @@
                                 </div>
                             </td>
 
-                            <td class="td-right td-nowrap">
+                            <td class="td-right td-nowrap"
+                                x-data="{ open: false }"
+                                @click.outside="open = false"
+                                @keydown.escape.window="open = false"
+                                style="position:relative;">
                                 <a href="{{ route('members.show', $member) }}" class="text-action">View</a>
+
+                                @can('manage', $member)
+                                <button type="button"
+                                        class="manage-trigger ml-2"
+                                        :aria-expanded="open"
+                                        aria-haspopup="menu"
+                                        @click="open = !open">
+                                    Manage ▾
+                                </button>
+
+                                <div class="menu-panel nb-menu" x-cloak x-show="open"
+                                     x-transition.opacity.duration.120ms
+                                     role="menu"
+                                     style="position:absolute; right:0; top:calc(100% + 6px); z-index:40;">
+
+                                    <a href="{{ route('members.edit', $member) }}" role="menuitem">
+                                        ✎ Edit profile &amp; team
+                                    </a>
+
+                                    @can('updateRoles', $member)
+                                    <form method="POST" action="{{ route('members.update', $member) }}" role="menuitem">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="roles[]"
+                                               value="{{ $member->hasRole('admin') ? 'member' : 'admin' }}">
+                                        <button type="submit">
+                                            {{ $member->hasRole('admin') ? '↓ Demote to member' : '↑ Promote to admin' }}
+                                        </button>
+                                    </form>
+                                    @endcan
+
+                                    <hr>
+
+                                    @if ($member->is_suspended)
+                                        @can('unsuspend', $member)
+                                        <form method="POST" action="{{ route('members.unsuspend', $member) }}" role="menuitem">
+                                            @csrf
+                                            <button type="submit">▶ Reactivate account</button>
+                                        </form>
+                                        @endcan
+                                    @else
+                                        @can('suspend', $member)
+                                        <form method="POST" action="{{ route('members.suspend', $member) }}" role="menuitem"
+                                              onsubmit="return confirm('Suspend {{ $member->name }}? Their existing sessions will be invalidated.');">
+                                            @csrf
+                                            <button type="submit">⏸ Suspend account</button>
+                                        </form>
+                                        @endcan
+                                    @endif
+
+                                    @can('delete', $member)
+                                    <form method="POST" action="{{ route('members.destroy', $member) }}" role="menuitem"
+                                          onsubmit="return confirm('Delete {{ $member->name }}? This can be restored later from the Deleted filter.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="nb-menu-danger">✕ Delete member</button>
+                                    </form>
+                                    @endcan
+                                </div>
+                                @endcan
+
+                                @if ($member->trashed())
+                                    @can('restore', $member)
+                                    <form method="POST" action="{{ route('members.restore', $member) }}" class="inline-form ml-2"
+                                          style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-secondary">Restore</button>
+                                    </form>
+                                    @endcan
+                                @endif
                             </td>
                         </tr>
                         @endforeach
