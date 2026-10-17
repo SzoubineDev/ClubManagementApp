@@ -36,13 +36,13 @@
 
                 <div class="flex gap-2 flex-wrap">
                     <button type="submit" name="submit_action" value="draft" class="btn btn-outline">
-                        Draft event
+                        Save as draft
                     </button>
                     <button type="submit" name="submit_action" value="publish" class="btn btn-primary">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Save event
+                        Publish event
                     </button>
                 </div>
             </div>

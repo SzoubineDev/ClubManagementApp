@@ -5,7 +5,7 @@
                 <a href="{{ route('events.index') }}" class="breadcrumb-link">← Events</a>
                 <div class="flex items-center gap-3 mt-1 flex-wrap">
                     <h1 class="page-header-title truncate">{{ $event->title }}</h1>
-                    @if (auth()->user()->can('events.update'))
+                    @if ((auth()->user()->isManager() || auth()->user()->can('events.update')))
                         @if ($event->isPublished())
                         <span class="status-label status-label--on">
                             <span class="status-dot status-dot--on"></span> Published

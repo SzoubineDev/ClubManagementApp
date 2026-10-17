@@ -46,7 +46,7 @@
                             <th class="hide-mobile col-secondary">Date</th>
                             <th class="only-desktop col-optional">Location</th>
                             <th class="hide-mobile col-optional">Team</th>
-                            @if (auth()->user()->can('events.update'))
+                            @if ((auth()->user()->isManager() || auth()->user()->can('events.update')))
                             <th>Status</th>
                             @endif
                             <th class="th-right">Attendees</th>
@@ -55,7 +55,7 @@
                     </thead>
                     <tbody>
                         @foreach ($events as $event)
-                        <tr>
+                        <tr data-event-row="{{ $event->id }}">
                             <td>
                                 <p class="cell-title"><a href="{{ route('events.show', $event) }}">{{ $event->title }}</a></p>
                                 <p class="cell-sub">by {{ $event->creator->name }}</p>
@@ -77,13 +77,13 @@
                             </td>
 
                             <td>
-                                @if (auth()->user()->can('events.update'))
+                                @if ((auth()->user()->isManager() || auth()->user()->can('events.update')))
                                     @if ($event->isPublished())
-                                    <span class="status-label status-label--on">
+                                    <span class="status-label status-label--on" data-status-label>
                                         <span class="status-dot status-dot--on"></span> Published
                                     </span>
                                     @else
-                                    <span class="status-label status-label--draft">
+                                    <span class="status-label status-label--draft" data-status-label>
                                         <span class="status-dot status-dot--draft"></span> Draft
                                     </span>
                                     @endif
@@ -101,6 +101,19 @@
                             </td>
 
                             <td class="td-right td-nowrap">
+                                @can('update', $event)
+                                <a href="{{ route('events.edit', $event) }}" class="text-action">Edit</a>
+                                @endcan
+                                @if (! $event->isPublished())
+                                    @can('publish', $event)
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm publish-event-btn"
+                                            data-url="{{ route('events.publish', $event) }}"
+                                            data-title="{{ $event->title }}">
+                                        Publish event
+                                    </button>
+                                    @endcan
+                                @endif
                                 <a href="{{ route('events.show', $event) }}" class="text-action">View</a>
                             </td>
                         </tr>
@@ -116,4 +129,68 @@
         @endif
 
     </div>
+
+    <div class="toast-stack" id="event-toasts" aria-live="polite"></div>
+
+    <script>
+        (function () {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+
+            function toast(message, type) {
+                const stack = document.getElementById('event-toasts');
+                if (!stack) return;
+                const el = document.createElement('div');
+                el.className = 'toast toast--' + type;
+                el.textContent = message;
+                stack.appendChild(el);
+                setTimeout(() => el.classList.add('toast--out'), 3200);
+                setTimeout(() => el.remove(), 3800);
+            }
+
+            document.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.publish-event-btn');
+                if (!btn) return;
+
+                if (!window.confirm('Publish "' + btn.dataset.title + '"? Members will see it immediately.')) {
+                    return;
+                }
+
+                btn.disabled = true;
+                const original = btn.textContent;
+                btn.textContent = 'Publishing…';
+
+                try {
+                    const res = await fetch(btn.dataset.url, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': csrf,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    const json = await res.json().catch(() => ({}));
+
+                    if (!res.ok || !json.ok) {
+                        throw new Error(json.message || 'You are not allowed to publish this event.');
+                    }
+
+                    // Update the row in place: badge -> Published, remove button.
+                    const row = btn.closest('tr');
+                    const label = row?.querySelector('[data-status-label]');
+                    if (label) {
+                        label.className = 'status-label status-label--on';
+                        label.setAttribute('data-status-label', '');
+                        label.innerHTML = '<span class="status-dot status-dot--on"></span> Published';
+                    }
+                    btn.remove();
+                    toast(json.message || 'Event published.', 'success');
+                } catch (err) {
+                    toast(err.message || 'Could not publish the event.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = original;
+                }
+            });
+        })();
+    </script>
 </x-app-layout>
