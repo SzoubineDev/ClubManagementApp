@@ -50,6 +50,7 @@ class EventPolicy
             'president',
             'vice_president',
             'secretary_general',
+            'admin',
         ])) {
             return true;
         }
@@ -96,6 +97,7 @@ class EventPolicy
             'president',
             'vice_president',
             'secretary_general',
+            'admin',
         ])) {
             return true;
         }

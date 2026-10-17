@@ -137,6 +137,31 @@ class RolePermissionSeeder extends Seeder
             'teams.manageMembers',
         ]);
 
+        // admin — full management (created via migration for existing DBs;
+        // added here so fresh seeds get it too)
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->syncPermissions([
+            ...$member->permissions->pluck('name')->toArray(),
+            'members.viewAny',
+            'members.view',
+            'events.create',
+            'events.update',
+            'events.delete',
+            'events.publish',
+            'events.manageAttendance',
+            'announcements.create',
+            'announcements.update',
+            'announcements.delete',
+            'announcements.publish',
+            'posts.create',
+            'posts.update',
+            'posts.delete',
+            'teams.update',
+            'teams.manageMembers',
+            'documents.create',
+            'documents.update',
+        ]);
+
         // vice_president — everything except settings + role assignment
         $vice = Role::firstOrCreate(['name' => 'vice_president']);
         $vice->syncPermissions(
