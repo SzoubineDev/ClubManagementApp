@@ -13,6 +13,15 @@
 
      <div class="content-wrap stack">
 
+        {{-- Toast notifications (server flash + JS actions) --}}
+        <div id="member-toasts" class="toast-stack" aria-live="polite"></div>
+        @if (session('status'))
+        <div class="alert alert-success animate-fade-in-up">{{ session('status') }}</div>
+        @endif
+        @if ($errors->any())
+        <div class="alert alert-danger animate-fade-in-up">{{ $errors->first() }}</div>
+        @endif
+
          {{-- KPI strip --}}
          <div class="kpi-grid stagger">
              <div class="kpi-card">
@@ -212,53 +221,36 @@
                                      </a>
 
                                      @can('updateRoles', $member)
-                                     <form method="POST" action="{{ route('members.update', $member) }}" role="menuitem">
-                                         @csrf
-                                         @method('PUT')
-
-                                         <input
-                                             type="hidden"
-                                             name="roles[]"
-                                             value="{{ $member->hasRole('admin') ? 'member' : 'admin' }}">
-
-                                         <button type="submit">
-                                             {{ $member->hasRole('admin') ? '↓ Demote to member' : '↑ Promote to admin' }}
-                                         </button>
-                                     </form>
+                                     <button type="button" role="menuitem" data-action="promote"
+                                         data-url="{{ route('members.promote', $member) }}"
+                                         data-role="{{ $member->hasRole('president') ? 'member' : 'president' }}"
+                                         data-confirm="{{ $member->hasRole('president')
+                                             ? 'Return ' . $member->name . ' to the regular member role?'
+                                             : 'Make ' . $member->name . ' the club president? The current president will be demoted to member.' }}">
+                                         {{ $member->hasRole('president') ? '↓ Return to member' : '★ Promote to president' }}
+                                     </button>
                                      @endcan
 
                                      <hr>
 
                                      @if ($member->is_suspended)
                                      @can('unsuspend', $member)
-                                     <form method="POST" action="{{ route('members.unsuspend', $member) }}" role="menuitem">
-                                         @csrf
-                                         <button type="submit">▶ Reactivate account</button>
-                                     </form>
+                                     <button type="button" role="menuitem" data-action="post"
+                                         data-url="{{ route('members.unsuspend', $member) }}"
+                                         data-confirm="">▶ Reactivate account</button>
                                      @endcan
                                      @else
                                      @can('suspend', $member)
-                                     <form
-                                         method="POST"
-                                         action="{{ route('members.suspend', $member) }}"
-                                         role="menuitem"
-                                         onsubmit="return confirm('Suspend {{ $member->name }}? Their existing sessions will be invalidated.');">
-                                         @csrf
-                                         <button type="submit">⏸ Suspend account</button>
-                                     </form>
+                                     <button type="button" role="menuitem" data-action="post"
+                                         data-url="{{ route('members.suspend', $member) }}"
+                                         data-confirm="Suspend {{ $member->name }}? Their existing sessions will be invalidated.">⏸ Suspend account</button>
                                      @endcan
                                      @endif
 
                                      @can('delete', $member)
-                                     <form
-                                         method="POST"
-                                         action="{{ route('members.destroy', $member) }}"
-                                         role="menuitem"
-                                         onsubmit="return confirm('Delete {{ $member->name }}? This can be restored later from the Deleted filter.');">
-                                         @csrf
-                                         @method('DELETE')
-                                         <button type="submit" class="nb-menu-danger">✕ Delete member</button>
-                                     </form>
+                                     <button type="button" role="menuitem" class="nb-menu-danger" data-action="delete"
+                                         data-url="{{ route('members.destroy', $member) }}"
+                                         data-confirm="Delete {{ $member->name }}? This can be restored later from the Deleted filter.">✕ Delete member</button>
                                      @endcan
                                  </div>
                                  @endcan
@@ -308,4 +300,94 @@
              }
          }
      </style>
+
+     <script>
+         (function () {
+             const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+             const stack = document.getElementById('member-toasts');
+
+             function toast(message, type = 'success') {
+                 if (!stack) return;
+                 const el = document.createElement('div');
+                 el.className = 'toast toast--' + type;
+                 el.setAttribute('role', 'status');
+                 el.textContent = message;
+                 stack.appendChild(el);
+                setTimeout(() => { el.classList.add('toast--out'); }, 3800);
+                 setTimeout(() => el.remove(), 4300);
+             }
+
+             async function memberAction(url, method, body) {
+                 const res = await fetch(url, {
+                     method,
+                     headers: {
+                         'X-CSRF-TOKEN': csrf,
+                         'X-Requested-With': 'XMLHttpRequest',
+                         'Accept': 'application/json',
+                         'Content-Type': 'application/json',
+                     },
+                     body: body ? JSON.stringify(body) : undefined,
+                 });
+                 let data = {};
+                 try { data = await res.json(); } catch (e) { /* empty body */ }
+                 if (!res.ok) {
+                     throw new Error(data.message || data.errors
+                         ? Object.values(data.errors || {})[0]?.[0] || data.message
+                         : 'Request failed (' + res.status + ')');
+                 }
+                 return data;
+             }
+
+             document.addEventListener('click', async (e) => {
+                 const btn = e.target.closest('[data-action]');
+                 if (!btn) return;
+                 e.preventDefault();
+
+                 const { action, url, confirm: msg, role } = btn.dataset;
+                 if (msg && !window.confirm(msg)) return;
+
+                 const original = btn.textContent;
+                 btn.disabled = true;
+                 btn.textContent = 'Working…';
+
+                 try {
+                     let data;
+                     if (action === 'promote') {
+                         data = await memberAction(url, 'POST', { role });
+                     } else if (action === 'delete') {
+                         data = await memberAction(url, 'DELETE');
+                     } else {
+                         data = await memberAction(url, 'POST');
+                     }
+
+                     toast(data.message || 'Done.', 'success');
+
+                     // Update UI in place where possible.
+                     if (action === 'promote') {
+                         btn.textContent = role === 'president'
+                             ? '↓ Return to member'
+                             : '★ Promote to president';
+                         btn.dataset.role = role === 'president' ? 'member' : 'president';
+                         btn.dataset.confirm = role === 'president'
+                             ? 'Return this member to the regular member role?'
+                             : 'Make this member the club president? The current president will be demoted to member.';
+                         const chipRow = btn.closest('tr')?.querySelector('.chip-row');
+                         if (chipRow) chipRow.innerHTML = '<span class="chip chip--primary-solid" style="font-size:11px;padding:2px 10px;">'
+                             + (role === 'president' ? 'president' : 'member') + '</span>';
+                     } else if (action === 'delete') {
+                         btn.closest('tr')?.remove();
+                     } else if (action === 'post') {
+                         // Suspend/unsuspend: reload so status chips stay accurate.
+                         window.location.reload();
+                         return;
+                     }
+                 } catch (err) {
+                     toast(err.message || 'Something went wrong.', 'error');
+                 } finally {
+                     btn.disabled = false;
+                     if (btn.isConnected && action !== 'promote') btn.textContent = original;
+                 }
+             });
+         })();
+     </script>
  </x-app-layout>
