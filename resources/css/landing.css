@@ -112,8 +112,15 @@ html { scroll-behavior: smooth; }
 .nb-btn--primary { background: var(--nb-burgundy); color: var(--nb-cream); }
 .nb-btn--dark { background: var(--nb-ink); color: var(--nb-cream); }
 .nb-btn--gold { background: var(--nb-gold); color: var(--nb-ink); }
+/* Outline button — transparent bg with burgundy border/text so it stays crisp on cream */
+.nb-btn--outline { background: var(--nb-paper); color: var(--nb-burgundy); box-shadow: 3px 3px 0 var(--nb-burgundy); }
+.nb-btn--outline:hover, .nb-btn--outline:focus-visible { box-shadow: 6px 6px 0 var(--nb-burgundy); }
 .nb-btn--ghost { background: transparent; box-shadow: none; }
 .nb-btn--ghost:hover { box-shadow: var(--nb-shadow-sm); }
+
+/* Nav action buttons — compact sizing + clear separation between Log in / Join */
+.nb-nav-actions { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.nb-nav-actions .nb-btn { font-size: 13px; padding: 10px 18px; white-space: nowrap; }
 
 /* ---------- nav ---------- */
 .nb-nav {
@@ -439,7 +446,7 @@ html { scroll-behavior: smooth; }
     .nb-footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
-    .nb-links, .nb-nav .nb-btn { display: none; }
+    .nb-links, .nb-nav-actions { display: none; }
     .nb-burger { display: flex; }
     .nb-about-grid { grid-template-columns: 1fr; }
     .nb-section-num { border-right: none; border-bottom: 4px solid var(--nb-ink); padding: 0 0 12px; }

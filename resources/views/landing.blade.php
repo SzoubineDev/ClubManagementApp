@@ -32,7 +32,14 @@
                 <li><a href="#join">Contact</a></li>
             </ul>
 
-            <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
+            <div class="nb-nav-actions">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="nb-btn nb-btn--gold">Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}" class="nb-btn nb-btn--outline">Log in</a>
+                @endauth
+                <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
+            </div>
 
             <label for="nb-nav-toggle" class="nb-burger" role="button" tabindex="0" aria-controls="mobile-menu" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
