@@ -20,11 +20,12 @@ class EventController extends Controller
 
         $query = Event::with('creator')->withCount('attendees')->latest('starts_at');
 
-        // Managers (admins/president/VP/SG/team leads) also see their own drafts.
+        // Managers (president/VP/SG/admin + team leads) also see drafts.
         // Plain members only ever see PUBLISHED events — enforced here, server-side.
-        $isGlobalManager = $user->can('events.create') && $user->hasAnyRole([
-            'president', 'vice_president', 'secretary_general', 'admin',
-        ]);
+        // NOTE: role-based check ONLY (via User::isManager()). This used to be
+        // gated on the Spatie permission `events.create`, which silently denied
+        // presidents whose permission pivot rows were missing/stale.
+        $isGlobalManager = $user->isManager() || $user->hasRole('team_lead');
 
         if (! $isGlobalManager) {
             $query->where(function ($q) use ($user) {

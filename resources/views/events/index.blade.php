@@ -46,7 +46,7 @@
                             <th class="hide-mobile col-secondary">Date</th>
                             <th class="only-desktop col-optional">Location</th>
                             <th class="hide-mobile col-optional">Team</th>
-                            @if (auth()->user()->can('events.update'))
+                            @if ((auth()->user()->isManager() || auth()->user()->can('events.update')))
                             <th>Status</th>
                             @endif
                             <th class="th-right">Attendees</th>
@@ -77,7 +77,7 @@
                             </td>
 
                             <td>
-                                @if (auth()->user()->can('events.update'))
+                                @if ((auth()->user()->isManager() || auth()->user()->can('events.update')))
                                     @if ($event->isPublished())
                                     <span class="status-label status-label--on">
                                         <span class="status-dot status-dot--on"></span> Published

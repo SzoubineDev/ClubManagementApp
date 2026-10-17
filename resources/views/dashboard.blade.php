@@ -76,7 +76,7 @@
                             @if ($event->location) · {{ $event->location }} @endif
                         </div>
                     </div>
-                    @if (auth()->user()->can('events.update'))
+                    @if ((auth()->user()->isManager() || auth()->user()->can('events.update')))
                         @if ($event->isPublished())
                         <span class="chip chip--success hide-mobile">Published</span>
                         @else
