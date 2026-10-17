@@ -112,6 +112,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsActive::class])->gro
     Route::put('members/{member}', [MemberController::class, 'update'])->name('members.update');
     Route::post('members/{member}/suspend', [MemberController::class, 'suspend'])->name('members.suspend');
     Route::post('members/{member}/unsuspend', [MemberController::class, 'unsuspend'])->name('members.unsuspend');
+    Route::post('members/{member}/promote', [MemberController::class, 'promote'])->name('members.promote');
     Route::delete('members/{member}', [MemberController::class, 'destroy'])->name('members.destroy');
     Route::post('members/{member}/restore', [MemberController::class, 'restore'])->name('members.restore');
 

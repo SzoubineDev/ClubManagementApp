@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-DvAyQTjA.css",
+    "file": "assets/app-DCZuZWeQ.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -27,7 +27,7 @@
     ]
   },
   "resources/css/landing.css": {
-    "file": "assets/landing-DviRucRK.css",
+    "file": "assets/landing-BNuPnE9a.css",
     "src": "resources/css/landing.css",
     "isEntry": true,
     "name": "landing",

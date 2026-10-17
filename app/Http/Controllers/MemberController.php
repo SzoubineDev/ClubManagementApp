@@ -182,6 +182,11 @@ class MemberController extends Controller
 
         $member->delete();
 
+        // AJAX (Manage menu) vs plain form fallback.
+        if (request()->expectsJson()) {
+            return response()->json(['ok' => true, 'message' => "{$member->name} has been deleted."]);
+        }
+
         return redirect()
             ->route('members.index')
             ->with('status', "{$member->name} has been deleted.");
@@ -193,6 +198,64 @@ class MemberController extends Controller
 
         $member->restore();
 
+        if (request()->expectsJson()) {
+            return response()->json(['ok' => true, 'message' => "{$member->name} has been restored."]);
+        }
+
         return back()->with('status', "{$member->name} has been restored.");
+    }
+
+    /**
+     * Promote a member to president (or demote a president back to member).
+     * Used by the Manage menu on the members page via fetch().
+     */
+    public function promote(Request $request, User $member): RedirectResponse|\Illuminate\Http\JsonResponse
+    {
+        $this->authorize('updateRoles', $member);
+
+        $request->validate([
+            'role' => ['required', 'in:president,member'],
+        ]);
+
+        if ($request->input('role') === 'president') {
+            if ($member->hasRole('president')) {
+                return $this->roleResponse($member, null, "{$member->name} is already president.");
+            }
+
+            // Only one president at a time — demote any current president first.
+            foreach (User::role('president')->get() as $current) {
+                if ($current->id !== $member->id) {
+                    $current->removeRole('president');
+                    if (! $current->roles()->exists()) {
+                        $current->assignRole('member');
+                    }
+                }
+            }
+
+            $member->syncRoles(['president']);
+            $message = "{$member->name} is now the club president.";
+        } else {
+            if (! $member->hasRole('president')) {
+                return $this->roleResponse($member, null, "{$member->name} is not the president.");
+            }
+
+            $member->syncRoles(['member']);
+            $message = "{$member->name} has been returned to member role.";
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'message' => $message]);
+        }
+
+        return back()->with('status', $message);
+    }
+
+    private function roleResponse(User $member, ?string $error, string $successMessage)
+    {
+        if (request()->expectsJson()) {
+            return response()->json($error ? ['ok' => false, 'message' => $error] : ['ok' => true, 'message' => $successMessage], $error ? 422 : 200);
+        }
+
+        return $error ? back()->withErrors(['roles' => $error]) : back()->with('status', $successMessage);
     }
 }
