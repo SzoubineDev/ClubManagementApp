@@ -29,7 +29,14 @@
                 <li><a href="#join">Contact</a></li>
             </ul>
 
-            <a href="{{ route('register') }}" class="nb-btn nb-btn--secondary">Join the club</a>
+            <div class="nb-nav-actions">
+                @auth
+                <a href="{{ route('dashboard') }}" class="nb-btn nb-btn--gold">Dashboard</a>
+                @else
+                <a href="{{ route('login') }}" class="nb-btn nb-btn--outline">Log in</a>
+                @endauth
+                <a href="{{ route('register') }}" class="nb-btn nb-btn--primary">Join the club</a>
+            </div>
 
             <button type="button" class="nb-burger" @click="navOpen = !navOpen"
                 :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-menu" aria-label="Toggle menu">
