@@ -22,6 +22,10 @@ class StoreEventRequest extends FormRequest
             'capacity' => ['nullable', 'integer', 'min:1'],
             'team' => ['nullable', 'in:arabic,english,french'],
             'filiere' => ['nullable', 'string', 'max:100'],
+            // The status is chosen by the submit button ("Publish event" vs
+            // "Save as draft"). Anything other than an authorized manager's
+            // explicit choice falls back to draft server-side.
+            'status' => ['nullable', 'in:draft,published'],
         ];
     }
 
@@ -33,5 +37,26 @@ class StoreEventRequest extends FormRequest
                 $v->errors()->add('filiere', 'Pick either a team or a filière, not both.');
             }
         });
+    }
+
+    /**
+     * Normalized creation payload: default to DRAFT unless a manager
+     * explicitly requested publishing. Never trust raw client input.
+     */
+    public function creationData(): array
+    {
+        $data = $this->validated();
+        $requested = $data['status'] ?? $this->input('submit_action');
+
+        $publish = in_array($requested, ['published', 'publish'], true)
+            && $this->user()?->can('publish', \App\Models\Event::class);
+
+        unset($data['status']);
+
+        return [
+            ...$data,
+            'status' => $publish ? 'published' : 'draft',
+            'published_at' => $publish ? now() : null,
+        ];
     }
 }
