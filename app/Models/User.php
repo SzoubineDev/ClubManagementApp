@@ -63,6 +63,22 @@ class User extends Authenticatable
         return $this->hasRole('president');
     }
 
+    /**
+     * Management roles in this club's Spatie setup. There is no literal
+     * "admin" role in production — the president / vice-president are the
+     * admins. Used as a defensive fallback so permission checks never fail
+     * because of stale caches or missing pivot rows.
+     */
+    public function isManager(): bool
+    {
+        return $this->hasAnyRole([
+            'president',
+            'vice_president',
+            'secretary_general',
+            'admin',
+        ]);
+    }
+
     public function isSuspended(): bool
     {
         return (bool) $this->is_suspended;

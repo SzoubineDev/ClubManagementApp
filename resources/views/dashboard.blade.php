@@ -29,7 +29,7 @@
                         </p>
                     </div>
                 </div>
-                @if (Auth::user()->hasRole('president'))
+                @if (Auth::user()->isManager())
                 <a href="{{ route('members.index') }}" class="fab">Manage Members</a>
                 @endif
             </div>

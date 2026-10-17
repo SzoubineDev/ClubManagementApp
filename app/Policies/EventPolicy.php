@@ -9,50 +9,48 @@ class EventPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('events.viewAny');
+        // Every authenticated member can browse events (published only).
+        return true;
     }
 
     public function view(User $user, Event $event): bool
     {
-        if (! $user->can('events.view')) {
-            return false;
-        }
-
-        // Unpublished events are only visible to creators and higher roles.
         // Published events are open to every authenticated member.
         if ($event->status === 'published' || $event->isPublished()) {
             return true;
         }
 
+        // Drafts: creator + management roles + same-team team leads only.
         return $user->id === $event->created_by
-            || $user->hasAnyRole([
-                'president',
-                'vice_president',
-                'secretary_general',
-                'team_lead',
-                'admin',
-            ]);
+            || $user->isManager()
+            || ($user->hasRole('team_lead') && $event->team === $user->team);
     }
 
     public function create(User $user): bool
     {
-        return $user->can('events.create');
+        // Defensive fallback: management roles ALWAYS have event-creation
+        // rights, even if Spatie's permission cache is stale or pivot rows
+        // are missing (a recurring cause of "admin can't create events").
+        if ($user->isManager()) {
+            return true;
+        }
+
+        if ($user->hasRole('team_lead')) {
+            return $user->can('events.create');
+        }
+
+        return false;
     }
 
     public function update(User $user, Event $event): bool
     {
-        if (! $user->can('events.update')) {
-            return false;
+        // Global managers can always edit (defensive against stale caches).
+        if ($user->isManager()) {
+            return true;
         }
 
-        // Global roles can update anything
-        if ($user->hasAnyRole([
-            'president',
-            'vice_president',
-            'secretary_general',
-            'admin',
-        ])) {
-            return true;
+        if (! $user->can('events.update')) {
+            return false;
         }
 
         // Team leads are scoped to their own team
@@ -65,6 +63,10 @@ class EventPolicy
 
     public function delete(User $user, Event $event): bool
     {
+        if ($user->isManager()) {
+            return true;
+        }
+
         if (! $user->can('events.delete')) {
             return false;
         }
@@ -83,23 +85,19 @@ class EventPolicy
 
     public function publish(User $user, Event $event): bool
     {
-        return $user->can('events.publish');
+        // Managers can always publish/unpublish drafts.
+        return $user->isManager() || $user->can('events.publish');
     }
 
     public function manageAttendance(User $user, Event $event): bool
     {
-        if (! $user->can('events.manageAttendance')) {
-            return false;
+        // Global managers can manage any event's attendance
+        if ($user->isManager()) {
+            return true;
         }
 
-        // Global roles can manage any event's attendance
-        if ($user->hasAnyRole([
-            'president',
-            'vice_president',
-            'secretary_general',
-            'admin',
-        ])) {
-            return true;
+        if (! $user->can('events.manageAttendance')) {
+            return false;
         }
 
         // Team leads are scoped to their own team
@@ -111,6 +109,8 @@ class EventPolicy
     }
     public function rsvp(User $user, Event $event): bool
     {
-        return $user->can('events.rsvp');
+        // Any authenticated member can RSVP (published events only — the
+        // controller double-checks status server-side).
+        return true;
     }
 }
