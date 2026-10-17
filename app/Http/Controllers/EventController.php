@@ -20,11 +20,12 @@ class EventController extends Controller
 
         $query = Event::with('creator')->withCount('attendees')->latest('starts_at');
 
-        // Managers (admins/president/VP/SG/team leads) also see their own drafts.
+        // Managers (president/VP/SG/admin + team leads) also see drafts.
         // Plain members only ever see PUBLISHED events — enforced here, server-side.
-        $isGlobalManager = $user->can('events.create') && $user->hasAnyRole([
-            'president', 'vice_president', 'secretary_general', 'admin',
-        ]);
+        // NOTE: role-based check ONLY (via User::isManager()). This used to be
+        // gated on the Spatie permission `events.create`, which silently denied
+        // presidents whose permission pivot rows were missing/stale.
+        $isGlobalManager = $user->isManager() || $user->hasRole('team_lead');
 
         if (! $isGlobalManager) {
             $query->where(function ($q) use ($user) {
@@ -49,21 +50,16 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        // "Save event" publishes officially; "Draft event" keeps it private.
-        $publish = ($request->input('submit_action') ?? 'publish') === 'publish';
-
+        // Status is normalized server-side: defaults to draft, publishes only
+        // when an authorized manager explicitly chose "Publish event".
         $event = Event::create([
-            ...$data,
+            ...$request->creationData(),
             'created_by' => auth()->id(),
-            'status' => $publish ? 'published' : 'draft',
-            'published_at' => $publish ? now() : null,
         ]);
 
         return redirect()
             ->route('events.show', $event)
-            ->with('status', $publish
+            ->with('status', $event->isPublished()
                 ? 'Event created and published — members can now see it.'
                 : 'Event saved as draft. Only managers can see it until you publish it.');
     }
@@ -116,20 +112,36 @@ class EventController extends Controller
             ->with('status', 'Event deleted.');
     }
 
-    public function publish(Event $event): RedirectResponse
+    public function publish(Event $event)
     {
         $this->authorize('publish', $event);
 
-        $event->update(['published_at' => now(), 'status' => 'published']);
+        $event->update(['published_at' => $event->published_at ?? now(), 'status' => 'published']);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Event published.',
+                'status' => $event->status,
+            ]);
+        }
 
         return back()->with('status', 'Event published.');
     }
 
-    public function unpublish(Event $event): RedirectResponse
+    public function unpublish(Event $event)
     {
         $this->authorize('publish', $event);
 
         $event->update(['published_at' => null, 'status' => 'draft']);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Event moved back to draft.',
+                'status' => $event->status,
+            ]);
+        }
 
         return back()->with('status', 'Event moved back to draft.');
     }
