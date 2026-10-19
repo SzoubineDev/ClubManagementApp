@@ -1,6 +1,6 @@
-/node_modules
+/node_modules/
+/vendor/
 /public/hot
-/vendor
 .env
 .env.*
 !.env.example
