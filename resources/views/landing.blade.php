@@ -26,6 +26,7 @@
                 <li><a href="#top" class="is-active">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#events">Events</a></li>
+                <li><a href="#team">Team</a></li>
                 <li><a href="#join">Contact</a></li>
             </ul>
 
@@ -51,6 +52,7 @@
                 <li><a href="#top" @click="navOpen = false">Home</a></li>
                 <li><a href="#about" @click="navOpen = false">About</a></li>
                 <li><a href="#events" @click="navOpen = false">Events</a></li>
+                <li><a href="#team" @click="navOpen = false">Team</a></li>
                 <li><a href="#join" @click="navOpen = false">Contact</a></li>
                 <li><a href="{{ route('login') }}" @click="navOpen = false">Log in</a></li>
                 <li><a href="{{ route('register') }}" class="nb-btn nb-btn--secondary" style="width:auto;" @click="navOpen = false">Join the club</a></li>
@@ -217,12 +219,51 @@
             </div>
         </section>
 
-        {{-- ======================= FINAL CTA ======================= --}}
+        {{-- ======================= TEAM ======================= --}}
+    @php
+    $teamMembers = [
+        ['name' => 'Zoubine Soulaimane', 'role' => 'President', 'mark' => 'P'],
+        ['name' => '', 'role' => 'Vice President', 'mark' => 'VP'],
+        ['name' => 'Fanta Ba', 'role' => 'Secretary General', 'mark' => 'SG'],
+        ['name' => '', 'role' => 'Media Manager', 'mark' => 'MM'],
+        ['name' => '', 'role' => 'Design Manager', 'mark' => 'DM'],
+        ['name' => '', 'role' => 'English Section Lead', 'mark' => 'EN'],
+        ['name' => '', 'role' => 'French Section Lead', 'mark' => 'FR'],
+        ['name' => '', 'role' => 'Arabic Section Lead', 'mark' => 'AR'],
+    ];
+    @endphp
+    <section class="nb-team" id="team" aria-labelledby="team-title">
+        <div class="nb-container">
+            <div class="nb-events-head">
+                <div>
+                    <span class="nb-label nb-label--invert">Nº04 — The bureau</span>
+                    <h2 class="nb-h2" id="team-title" style="margin-top:16px;">The team behind <em>the mic.</em></h2>
+                    <p class="nb-body">Eight desks, one house order. The bureau keeps the rounds running,
+                        the languages balanced and the calendar full.</p>
+                </div>
+            </div>
+
+            <div class="nb-team-grid">
+                @foreach ($teamMembers as $member)
+                <article class="nb-team-card{{ $loop->first ? ' nb-team-card--lead' : '' }}">
+                    <span class="nb-team-mark" aria-hidden="true">{{ $member['mark'] }}</span>
+                    <h3>{{ $member['name'] !== '' ? $member['name'] : 'Seat open' }}</h3>
+                    <span class="nb-team-role">{{ $member['role'] }}</span>
+                    @if ($member['name'] === '')
+                    <span class="nb-team-status">To be announced</span>
+                    @endif
+                </article>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ======================= FINAL CTA ======================= --}}
         <section class="nb-cta" id="join" aria-labelledby="cta-title">
             <div class="nb-container">
                 <div class="nb-cta-box">
                     <div>
-                        <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº04 — Last word</span>
+                        <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº05 — Last word</span>
                         <h2 id="cta-title" style="margin-top:16px;">Your voice<br><em>belongs here.</em></h2>
                         <p class="nb-body">One membership. Three languages. Zero excuses.
                             Pull up a chair, take the opposing side, and argue like it
@@ -252,6 +293,7 @@
                             <li><a href="#top">Home</a></li>
                             <li><a href="#about">About</a></li>
                             <li><a href="#events">Events</a></li>
+                            <li><a href="#team">Team</a></li>
                             <li><a href="#join">Contact</a></li>
                         </ul>
                     </div>

@@ -1,13 +1,3 @@
-*.css.map
-vendor/
 node_modules/
-.idea/
-.vscode/
-*.swp
-*.swo
-.env
-.env.local
-.env.*.local
-.DS_Store
-Thumbs.db
-/public/build/
+vendor/
+public/build/
