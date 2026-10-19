@@ -1,0 +1,13 @@
+*   [33mdecbc27[m[33m ([m[1;35mrefs/stash[m[33m)[m On main: Backup before syncing latest main
+[31m|[m[32m\[m  
+[31m|[m * [33m3948acd[m index on main: e883fd2 Merge branch 'main' of https://github.com/SzoubineDev/ClubManagementApp
+[31m|[m[31m/[m  
+*   [33me883fd2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'main' of https://github.com/SzoubineDev/ClubManagementApp
+[33m|[m[34m\[m  
+[33m|[m *   [33m19de36b[m Merge pull request #24 from SzoubineDev/tailwind-to-custom-css-refactor-2b8fb
+[33m|[m [35m|[m[36m\[m  
+[33m|[m [35m|[m * [33m533b5a1[m[33m ([m[1;31morigin/tailwind-to-custom-css-refactor-2b8fb[m[33m)[m Fix repository by restoring missing rxjs ESM5 distribution files - Add core observable creation functions including forkJoin, from, fromEvent, generate, interval, merge, of, race, timer, and zip with source maps - Implement essential operators such as catchError, combineLatest, concat, debounce, distinct, filter, map, mergeMap, switchMap, take, and tap - Include utility modules for scheduling, subscription management, and error handling to ensure full library functionality
+[33m|[m [35m|[m * [33maa34e8d[m fix: role-based manager checks for president event create/publish (no Spatie permission dependency)
+* [35m|[m [36m|[m [33m0f5e8bd[m changes
+[35m|[m[35m/[m [36m/[m  
+* [36m|[m [33ma252227[m Update production assets

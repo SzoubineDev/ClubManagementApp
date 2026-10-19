@@ -5,7 +5,7 @@
         <div class="toolbar-inner">
             <a href="{{ route('dashboard') }}" class="toolbar-brand">
                 <span class="toolbar-logo-badge">UC</span>
-                {{ config('app.name', 'Uni Club') }}
+                {{ config('app.name', 'TGD FSTE Club') }}
             </a>
 
             <nav class="toolbar-nav">

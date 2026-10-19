@@ -1,1 +1,6 @@
-.phpunit.result.cache
+/node_modules
+/public/hot
+/vendor
+.env
+.env.*
+!.env.example
