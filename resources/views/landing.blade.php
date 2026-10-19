@@ -227,13 +227,13 @@
     // and they appear automatically; otherwise a typographic initials tile is shown.
     $teamMembers = [
         ['name' => 'Zoubine Soulaimane', 'role' => 'President', 'mark' => 'P'],
-        ['name' => '', 'Khaoula meggouri' => 'Vice President', 'mark' => 'VP'],
+        ['name' =>  'Khaoula meggouri', 'role'  => 'Vice President', 'mark' => 'VP'],
         ['name' => 'Fanta Ba', 'role' => 'Secretary General', 'mark' => 'SG'],
-        ['name' => '', 'Ghezlane Herraf' => 'Media Manager', 'mark' => 'MM'],
-        ['name' => '', 'Hammali imane' => 'Design Manager', 'mark' => 'DM'],
-        ['name' => '', 'Aymane Fassali' => 'English Section Lead', 'mark' => 'EN'],
-        ['name' => '', 'Wissal Jamal' => 'French Section Lead', 'mark' => 'FR'],
-        ['name' => '', 'Fatima ezahrae oubahou' => 'Arabic Section Lead', 'mark' => 'AR'],
+        ['name' =>  'Ghezlane Herraf', 'role'  => 'Media Manager', 'mark' => 'MM'],
+        ['name' =>  'Hammali imane', 'role'  => 'Design Manager', 'mark' => 'DM'],
+        ['name' =>  'Aymane Fassali', 'role'  => 'English Section Lead', 'mark' => 'EN'],
+        ['name' =>  'Wissal Jamal', 'role'  => 'French Section Lead', 'mark' => 'FR'],
+        ['name' =>  'Fatima ezahrae oubahou', 'role'  => 'Arabic Section Lead', 'mark' => 'AR'],
     ];
     $initials = fn (string $n) => collect(explode(' ', trim($n)))
         ->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
