@@ -1,1 +1,6 @@
-public/build/
+/node_modules/
+/vendor/
+/public/hot
+.env
+.env.*
+!.env.example
