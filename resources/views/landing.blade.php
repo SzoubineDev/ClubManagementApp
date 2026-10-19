@@ -27,6 +27,7 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#events">Events</a></li>
                 <li><a href="#team">Team</a></li>
+                <li><a href="#memories">Memories</a></li>
                 <li><a href="#join">Contact</a></li>
             </ul>
 
@@ -53,6 +54,7 @@
                 <li><a href="#about" @click="navOpen = false">About</a></li>
                 <li><a href="#events" @click="navOpen = false">Events</a></li>
                 <li><a href="#team" @click="navOpen = false">Team</a></li>
+                <li><a href="#memories" @click="navOpen = false">Memories</a></li>
                 <li><a href="#join" @click="navOpen = false">Contact</a></li>
                 <li><a href="{{ route('login') }}" @click="navOpen = false">Log in</a></li>
                 <li><a href="{{ route('register') }}" class="nb-btn nb-btn--secondary" style="width:auto;" @click="navOpen = false">Join the club</a></li>
@@ -221,6 +223,8 @@
 
         {{-- ======================= TEAM ======================= --}}
     @php
+    // Drop square photos into public/images/team/<slug>.jpg (e.g. zoubine-soulaimane.jpg)
+    // and they appear automatically; otherwise a typographic initials tile is shown.
     $teamMembers = [
         ['name' => 'Zoubine Soulaimane', 'role' => 'President', 'mark' => 'P'],
         ['name' => '', 'role' => 'Vice President', 'mark' => 'VP'],
@@ -231,6 +235,8 @@
         ['name' => '', 'role' => 'French Section Lead', 'mark' => 'FR'],
         ['name' => '', 'role' => 'Arabic Section Lead', 'mark' => 'AR'],
     ];
+    $initials = fn (string $n) => collect(explode(' ', trim($n)))
+        ->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
     @endphp
     <section class="nb-team" id="team" aria-labelledby="team-title">
         <div class="nb-container">
@@ -245,8 +251,19 @@
 
             <div class="nb-team-grid">
                 @foreach ($teamMembers as $member)
+                @php
+                $photo = $member['name'] !== '' && file_exists(public_path('images/team/' . Str::slug($member['name']) . '.jpg'));
+                $photoUrl = '/images/team/' . Str::slug($member['name']) . '.jpg';
+                @endphp
                 <article class="nb-team-card{{ $loop->first ? ' nb-team-card--lead' : '' }}">
-                    <span class="nb-team-mark" aria-hidden="true">{{ $member['mark'] }}</span>
+                    <div class="nb-team-photo{{ $loop->first ? ' nb-team-photo--lead' : '' }}">
+                        @if ($photo)
+                        <img src="{{ $photoUrl }}" alt="{{ $member['name'] }} — {{ $member['role'] }}" loading="lazy">
+                        @else
+                        <span class="nb-team-initials" aria-hidden="true">{{ $member['name'] !== '' ? $initials($member['name']) : '+' }}</span>
+                        @endif
+                        <span class="nb-team-mark" aria-hidden="true">{{ $member['mark'] }}</span>
+                    </div>
                     <h3>{{ $member['name'] !== '' ? $member['name'] : 'Seat open' }}</h3>
                     <span class="nb-team-role">{{ $member['role'] }}</span>
                     @if ($member['name'] === '')
@@ -258,12 +275,78 @@
         </div>
     </section>
 
+    {{-- ======================= CLUB MEMORIES CAROUSEL ======================= --}}
+    @php
+    $memoriesDir = public_path('images/memories');
+    $memoryImages = [];
+    if (is_dir($memoriesDir)) {
+        foreach (scandir($memoriesDir) ?: [] as $file) {
+            if (preg_match('/\.(jpe?g|png|webp|avif)$/i', $file)) {
+                $memoryImages[] = $file;
+            }
+        }
+    }
+    sort($memoryImages);
+    @endphp
+    <section class="nb-memories" id="memories" aria-labelledby="memories-title"
+        x-data="{
+            i: 0,
+            slides: {{ count($memoryImages) }},
+            perView() { return window.innerWidth <= 640 ? 1 : (window.innerWidth <= 1024 ? 2 : 3); },
+            maxIndex() { return Math.max(0, this.slides - this.perView()); },
+            next() { this.i = Math.min(this.maxIndex(), this.i + 1); },
+            prev() { this.i = Math.max(0, this.i - 1); },
+            trackX() { const w = this.$refs.track ? this.$refs.track.clientWidth / this.perView() : 0; return -(this.i * w); }
+        }"
+        x-init="$watch('slides', () => {})"
+        @keydown.arrow.right.window="next()" @keydown.arrow.left.window="prev()">
+        <div class="nb-container">
+            <div class="nb-events-head">
+                <div>
+                    <span class="nb-label nb-label--invert">Nº05 — Archive</span>
+                    <h2 class="nb-h2" id="memories-title" style="margin-top:16px;">Club <em>memories.</em></h2>
+                    <p class="nb-body">Snapshots from past rounds, workshops and nights we argued
+                        until the lights went out. Use the arrows — or your keyboard.</p>
+                </div>
+                <div class="nb-memories-controls">
+                    <button type="button" class="nb-mem-btn" @click="prev()"
+                        :disabled="i === 0" aria-label="Previous memories">←</button>
+                    <button type="button" class="nb-mem-btn" @click="next()"
+                        :disabled="i >= maxIndex()" aria-label="Next memories">→</button>
+                </div>
+            </div>
+
+            @if (count($memoryImages))
+            <div class="nb-memories-viewport">
+                <div class="nb-memories-track" x-ref="track"
+                    :style="'transform: translateX(' + trackX() + 'px)'">
+                    @foreach ($memoryImages as $index => $img)
+                    <figure class="nb-memory" role="group" aria-roledescription="slide"
+                        aria-label="Memory {{ $index + 1 }} of {{ count($memoryImages) }}">
+                        <img src="{{ asset('images/memories/' . $img) }}"
+                            alt="The Great Debaters Club — event memory {{ $index + 1 }}" loading="lazy">
+                        <figcaption>Nº{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }} — TGD archive</figcaption>
+                    </figure>
+                    @endforeach
+                </div>
+            </div>
+            <p class="nb-memories-note">{{ count($memoryImages) }} photo{{ count($memoryImages) > 1 ? 's' : '' }} in the archive · drop new ones in public/images/memories/</p>
+            @else
+            <div class="nb-events-empty">
+                <strong>The archive is being printed.</strong>
+                <span>No memories uploaded yet — add photos to <code>public/images/memories/</code>
+                    and they will appear here automatically.</span>
+            </div>
+            @endif
+        </div>
+    </section>
+
     {{-- ======================= FINAL CTA ======================= --}}
         <section class="nb-cta" id="join" aria-labelledby="cta-title">
             <div class="nb-container">
                 <div class="nb-cta-box">
                     <div>
-                        <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº05 — Last word</span>
+                        <span class="nb-label nb-label--flat" style="background:var(--nb-cream);">Nº06 — Last word</span>
                         <h2 id="cta-title" style="margin-top:16px;">Your voice<br><em>belongs here.</em></h2>
                         <p class="nb-body">One membership. Three languages. Zero excuses.
                             Pull up a chair, take the opposing side, and argue like it
@@ -294,6 +377,7 @@
                             <li><a href="#about">About</a></li>
                             <li><a href="#events">Events</a></li>
                             <li><a href="#team">Team</a></li>
+                            <li><a href="#memories">Memories</a></li>
                             <li><a href="#join">Contact</a></li>
                         </ul>
                     </div>
