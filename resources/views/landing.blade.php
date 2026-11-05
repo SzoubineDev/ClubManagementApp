@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/css/landing.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/landing.css','resources/css/recrute.css', 'resources/js/app.js'])
 </head>
 
 <body class="nb" x-data="{ navOpen: false }">
@@ -78,7 +78,36 @@
             </div>
         </div>
     </header>
+    {{-- ======================= RECRUITMENT ALERT BANNER ======================= --}}
+    <div class="nb-recruit-banner" role="status" aria-label="Recruitment announcement">
+        <div class="nb-container">
+            <div class="nb-recruit-banner-inner">
 
+                {{-- English row --}}
+                <div class="nb-recruit-row" dir="ltr" lang="en">
+                    <span class="nb-recruit-dot" aria-hidden="true"></span>
+                    <p class="nb-recruit-text">
+                        <strong>Recruitment is open</strong> — applications for the 2026/2027 season are now live.
+                    </p>
+                    <a href="{{ route('recrute') }}" class="nb-recruit-btn">
+                        Register Now <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+
+                {{-- Arabic row --}}
+                <div class="nb-recruit-row nb-recruit-row--ar" dir="rtl" lang="ar">
+                    <span class="nb-recruit-dot" aria-hidden="true"></span>
+                    <p class="nb-recruit-text">
+                        <strong>التسجيلات مفتوحة</strong> — باب الترشح لموسم 2026/2027 مفتوح الآن.
+                    </p>
+                    <a href="{{ route('recrute') }}" class="nb-recruit-btn">
+                        سجّل الآن <span aria-hidden="true">←</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
     {{-- ======================= HERO SECTION ======================= --}}
     <section class="nb-hero" id="top">
         <div class="nb-container">
@@ -408,92 +437,92 @@
     {{-- ======================= EVENTS CALENDAR ======================= --}}
     @php
     if (!isset($upcomingEvents)) {
-        try {
-            $upcomingEvents = \App\Models\Event::whereNotNull('published_at')
-                ->where('published_at', '<=', now())
-                ->where('starts_at', '>=', now())
-                ->orderBy('starts_at')
-                ->limit(3)
-                ->get();
+    try {
+    $upcomingEvents = \App\Models\Event::whereNotNull('published_at')
+    ->where('published_at', '<=', now())
+        ->where('starts_at', '>=', now())
+        ->orderBy('starts_at')
+        ->limit(3)
+        ->get();
         } catch (\Throwable $e) {
-            $upcomingEvents = collect();
+        $upcomingEvents = collect();
         }
-    }
-    @endphp
+        }
+        @endphp
 
-    <section class="nb-events" id="events" aria-labelledby="events-title">
-        <div class="nb-container">
-            <div class="nb-section-head">
-                <div>
-                    <span class="nb-badge nb-badge--gold">Nº04 — Live Calendar</span>
-                    <h2 class="nb-h2" id="events-title" style="margin-top:14px;">
-                        What's <em>Next</em> on the Floor?
-                    </h2>
-                    <p class="nb-section-sub">
-                        Check upcoming rounds, clinics, and championship dates. Club members can RSVP, view attendance sheets, and download motion briefings directly in the app.
-                    </p>
-                </div>
-
-                @auth
-                <a href="{{ route('events.index') }}" class="nb-btn nb-btn--gold nb-btn--sm">Open Full Calendar →</a>
-                @else
-                <a href="{{ route('login') }}" class="nb-btn nb-btn--gold nb-btn--sm">Log in to RSVP →</a>
-                @endauth
-            </div>
-
-            @if ($upcomingEvents->count())
-            <div class="nb-events-list">
-                @foreach ($upcomingEvents as $event)
-                <article class="nb-event-card">
+        <section class="nb-events" id="events" aria-labelledby="events-title">
+            <div class="nb-container">
+                <div class="nb-section-head">
                     <div>
-                        <div class="nb-event-date-block">
-                            <div class="nb-event-calendar-tile">
-                                <span class="nb-event-tile-month">{{ $event->starts_at->format('M') }}</span>
-                                <span class="nb-event-tile-day">{{ $event->starts_at->format('j') }}</span>
-                            </div>
-                            <div>
-                                <span class="nb-event-time">{{ $event->starts_at->translatedFormat('l · H:i') }}</span>
-                                <div class="nb-event-loc">📍 {{ $event->location ?: 'Campus Hall TBA' }}</div>
-                            </div>
-                        </div>
-
-                        <h3 class="nb-event-title">{{ $event->title }}</h3>
+                        <span class="nb-badge nb-badge--gold">Nº04 — Live Calendar</span>
+                        <h2 class="nb-h2" id="events-title" style="margin-top:14px;">
+                            What's <em>Next</em> on the Floor?
+                        </h2>
+                        <p class="nb-section-sub">
+                            Check upcoming rounds, clinics, and championship dates. Club members can RSVP, view attendance sheets, and download motion briefings directly in the app.
+                        </p>
                     </div>
 
-                    <div class="nb-event-footer">
-                        <span class="nb-badge nb-badge--burgundy" style="padding:3px 8px; font-size:10px;">
-                            {{ $event->team ? Str::upper($event->team) : 'Open Round' }}
-                        </span>
-
-                        @auth
-                        <a href="{{ route('events.show', $event) }}" class="nb-btn nb-btn--primary nb-btn--sm">View Details →</a>
-                        @else
-                        <a href="{{ route('register') }}" class="nb-btn nb-btn--primary nb-btn--sm">Join to Attend →</a>
-                        @endauth
-                    </div>
-                </article>
-                @endforeach
-            </div>
-            @else
-            <div class="nb-events-empty">
-                <h3>The floor is being prepared.</h3>
-                <p>
-                    New debates and clinics are currently being scheduled by the Bureau. Join the club today to receive motion briefings and dates the moment they are announced.
-                </p>
-                <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
-                    <a href="{{ route('recrute') }}" class="nb-btn nb-btn--gold nb-btn--sm">Apply for Recruitment</a>
                     @auth
-                    <a href="{{ route('events.index') }}" class="nb-btn nb-btn--outline-light nb-btn--sm">Browse Past Rounds</a>
+                    <a href="{{ route('events.index') }}" class="nb-btn nb-btn--gold nb-btn--sm">Open Full Calendar →</a>
+                    @else
+                    <a href="{{ route('login') }}" class="nb-btn nb-btn--gold nb-btn--sm">Log in to RSVP →</a>
                     @endauth
                 </div>
-            </div>
-            @endif
-        </div>
-    </section>
 
-    {{-- ======================= THE BUREAU (TEAM) ======================= --}}
-    @php
-    $teamMembers = [
+                @if ($upcomingEvents->count())
+                <div class="nb-events-list">
+                    @foreach ($upcomingEvents as $event)
+                    <article class="nb-event-card">
+                        <div>
+                            <div class="nb-event-date-block">
+                                <div class="nb-event-calendar-tile">
+                                    <span class="nb-event-tile-month">{{ $event->starts_at->format('M') }}</span>
+                                    <span class="nb-event-tile-day">{{ $event->starts_at->format('j') }}</span>
+                                </div>
+                                <div>
+                                    <span class="nb-event-time">{{ $event->starts_at->translatedFormat('l · H:i') }}</span>
+                                    <div class="nb-event-loc">📍 {{ $event->location ?: 'Campus Hall TBA' }}</div>
+                                </div>
+                            </div>
+
+                            <h3 class="nb-event-title">{{ $event->title }}</h3>
+                        </div>
+
+                        <div class="nb-event-footer">
+                            <span class="nb-badge nb-badge--burgundy" style="padding:3px 8px; font-size:10px;">
+                                {{ $event->team ? Str::upper($event->team) : 'Open Round' }}
+                            </span>
+
+                            @auth
+                            <a href="{{ route('events.show', $event) }}" class="nb-btn nb-btn--primary nb-btn--sm">View Details →</a>
+                            @else
+                            <a href="{{ route('register') }}" class="nb-btn nb-btn--primary nb-btn--sm">Join to Attend →</a>
+                            @endauth
+                        </div>
+                    </article>
+                    @endforeach
+                </div>
+                @else
+                <div class="nb-events-empty">
+                    <h3>The floor is being prepared.</h3>
+                    <p>
+                        New debates and clinics are currently being scheduled by the Bureau. Join the club today to receive motion briefings and dates the moment they are announced.
+                    </p>
+                    <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                        <a href="{{ route('recrute') }}" class="nb-btn nb-btn--gold nb-btn--sm">Apply for Recruitment</a>
+                        @auth
+                        <a href="{{ route('events.index') }}" class="nb-btn nb-btn--outline-light nb-btn--sm">Browse Past Rounds</a>
+                        @endauth
+                    </div>
+                </div>
+                @endif
+            </div>
+        </section>
+
+        {{-- ======================= THE BUREAU (TEAM) ======================= --}}
+        @php
+        $teamMembers = [
         ['name' => 'Zoubine Soulaimane', 'role' => 'President', 'mark' => 'P', 'dept' => 'Executive Office'],
         ['name' => 'Khaoula Meggouri', 'role' => 'Vice President', 'mark' => 'VP', 'dept' => 'Coordination'],
         ['name' => 'Fanta Ba', 'role' => 'Secretary General', 'mark' => 'SG', 'dept' => 'Administration'],
@@ -502,79 +531,79 @@
         ['name' => 'Aymane Fassali', 'role' => 'English Section Lead', 'mark' => 'EN', 'dept' => 'English BP Track'],
         ['name' => 'Wissal Jamal', 'role' => 'French Section Lead', 'mark' => 'FR', 'dept' => 'French Eloquence'],
         ['name' => 'Fatima Ezahrae Oubahou', 'role' => 'Arabic Section Lead', 'mark' => 'AR', 'dept' => 'Arabic Rhetoric'],
-    ];
+        ];
 
-    $initials = fn (string $n) => collect(explode(' ', trim($n)))
+        $initials = fn (string $n) => collect(explode(' ', trim($n)))
         ->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
-    @endphp
+        @endphp
 
-    <section class="nb-team" id="team" aria-labelledby="team-title">
-        <div class="nb-container">
-            <div class="nb-section-head">
-                <div>
-                    <span class="nb-badge nb-badge--burgundy">Nº05 — Leadership</span>
-                    <h2 class="nb-h2" id="team-title" style="margin-top:14px;">
-                        The Bureau Behind <em>the Mic.</em>
-                    </h2>
-                    <p class="nb-section-sub">
-                        Eight desks, one shared mission. Our student-elected bureau coordinates rounds, manages language tracks, books campus venues, and ensures every voice gets heard.
-                    </p>
+        <section class="nb-team" id="team" aria-labelledby="team-title">
+            <div class="nb-container">
+                <div class="nb-section-head">
+                    <div>
+                        <span class="nb-badge nb-badge--burgundy">Nº05 — Leadership</span>
+                        <h2 class="nb-h2" id="team-title" style="margin-top:14px;">
+                            The Bureau Behind <em>the Mic.</em>
+                        </h2>
+                        <p class="nb-section-sub">
+                            Eight desks, one shared mission. Our student-elected bureau coordinates rounds, manages language tracks, books campus venues, and ensures every voice gets heard.
+                        </p>
+                    </div>
+                    <span class="nb-badge nb-badge--gold">Elected 2026/2027</span>
                 </div>
-                <span class="nb-badge nb-badge--gold">Elected 2026/2027</span>
+
+                <div class="nb-team-grid">
+                    @foreach ($teamMembers as $member)
+                    @php
+                    $slug = Str::slug($member['name']);
+                    $hasPhoto = file_exists(public_path('images/team/' . $slug . '.jpg'));
+                    $photoUrl = asset('images/team/' . $slug . '.jpg');
+                    @endphp
+                    <article class="nb-team-card">
+                        <div class="nb-team-photo-wrapper">
+                            @if ($hasPhoto)
+                            <img src="{{ $photoUrl }}" alt="{{ $member['name'] }} — {{ $member['role'] }}" loading="lazy">
+                            @else
+                            <span class="nb-team-initials" aria-hidden="true">{{ $initials($member['name']) }}</span>
+                            @endif
+                            <span class="nb-team-mark" aria-hidden="true">{{ $member['mark'] }}</span>
+                        </div>
+
+                        <div class="nb-team-info">
+                            <h3>{{ $member['name'] }}</h3>
+                            <span class="nb-team-role">{{ $member['role'] }}</span>
+                            <span style="font-family:'Roboto Condensed'; font-size:11px; color:var(--nb-ink-muted); letter-spacing:.04em; text-transform:uppercase; margin-top:3px; display:block;">
+                                {{ $member['dept'] }}
+                            </span>
+                        </div>
+                    </article>
+                    @endforeach
+                </div>
             </div>
+        </section>
 
-            <div class="nb-team-grid">
-                @foreach ($teamMembers as $member)
-                @php
-                $slug = Str::slug($member['name']);
-                $hasPhoto = file_exists(public_path('images/team/' . $slug . '.jpg'));
-                $photoUrl = asset('images/team/' . $slug . '.jpg');
-                @endphp
-                <article class="nb-team-card">
-                    <div class="nb-team-photo-wrapper">
-                        @if ($hasPhoto)
-                        <img src="{{ $photoUrl }}" alt="{{ $member['name'] }} — {{ $member['role'] }}" loading="lazy">
-                        @else
-                        <span class="nb-team-initials" aria-hidden="true">{{ $initials($member['name']) }}</span>
-                        @endif
-                        <span class="nb-team-mark" aria-hidden="true">{{ $member['mark'] }}</span>
-                    </div>
-
-                    <div class="nb-team-info">
-                        <h3>{{ $member['name'] }}</h3>
-                        <span class="nb-team-role">{{ $member['role'] }}</span>
-                        <span style="font-family:'Roboto Condensed'; font-size:11px; color:var(--nb-ink-muted); letter-spacing:.04em; text-transform:uppercase; margin-top:3px; display:block;">
-                            {{ $member['dept'] }}
-                        </span>
-                    </div>
-                </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- ======================= PHOTO MEMORIES ======================= --}}
-    @php
-    $memoriesDir = public_path('images/memories');
-    $memoryImages = [];
-    if (is_dir($memoriesDir)) {
+        {{-- ======================= PHOTO MEMORIES ======================= --}}
+        @php
+        $memoriesDir = public_path('images/memories');
+        $memoryImages = [];
+        if (is_dir($memoriesDir)) {
         foreach (scandir($memoriesDir) ?: [] as $file) {
-            if (preg_match('/\.(jpe?g|png|webp|avif)$/i', $file)) {
-                $memoryImages[] = $file;
-            }
+        if (preg_match('/\.(jpe?g|png|webp|avif)$/i', $file)) {
+        $memoryImages[] = $file;
         }
-    }
-    sort($memoryImages);
+        }
+        }
+        sort($memoryImages);
 
-    $captions = [
+        $captions = [
         'Annual Debate Showdown in Amphithéâtre A',
         'Intensive Strategy & Rebuttal Preparation Session',
         'Grand Tournament Finale — Mutual Respect & Handshake',
-    ];
-    @endphp
+        ];
+        @endphp
 
-    <section class="nb-memories" id="memories" aria-labelledby="memories-title"
-        x-data="{
+        <section class="nb-memories" id="memories" aria-labelledby="memories-title"
+            x-data="{
             i: 0,
             slides: {{ count($memoryImages) }},
             perView() { return window.innerWidth <= 640 ? 1 : (window.innerWidth <= 1024 ? 2 : 3); },
@@ -583,210 +612,210 @@
             prev() { this.i = Math.max(0, this.i - 1); },
             trackX() { const w = this.$refs.track ? this.$refs.track.clientWidth / this.perView() : 0; return -(this.i * w); }
         }"
-        @keydown.arrow.right.window="next()" @keydown.arrow.left.window="prev()">
-        <div class="nb-container">
-            <div class="nb-section-head">
-                <div>
-                    <span class="nb-badge nb-badge--gold">Nº06 — Photo Archive</span>
-                    <h2 class="nb-h2" id="memories-title" style="margin-top:14px;">
-                        Snapshots from <em>the Floor.</em>
-                    </h2>
-                    <p class="nb-section-sub">
-                        Authentic memories from our tournaments, late-night argument jams, and award celebrations at FST Errachidia.
-                    </p>
+            @keydown.arrow.right.window="next()" @keydown.arrow.left.window="prev()">
+            <div class="nb-container">
+                <div class="nb-section-head">
+                    <div>
+                        <span class="nb-badge nb-badge--gold">Nº06 — Photo Archive</span>
+                        <h2 class="nb-h2" id="memories-title" style="margin-top:14px;">
+                            Snapshots from <em>the Floor.</em>
+                        </h2>
+                        <p class="nb-section-sub">
+                            Authentic memories from our tournaments, late-night argument jams, and award celebrations at FST Errachidia.
+                        </p>
+                    </div>
+                    <div class="nb-memories-controls">
+                        <button type="button" class="nb-mem-btn" @click="prev()" :disabled="i === 0" aria-label="Previous photo">←</button>
+                        <button type="button" class="nb-mem-btn" @click="next()" :disabled="i >= maxIndex()" aria-label="Next photo">→</button>
+                    </div>
                 </div>
-                <div class="nb-memories-controls">
-                    <button type="button" class="nb-mem-btn" @click="prev()" :disabled="i === 0" aria-label="Previous photo">←</button>
-                    <button type="button" class="nb-mem-btn" @click="next()" :disabled="i >= maxIndex()" aria-label="Next photo">→</button>
+
+                @if (count($memoryImages))
+                <div class="nb-memories-viewport">
+                    <div class="nb-memories-track" x-ref="track" :style="'transform: translateX(' + trackX() + 'px)'">
+                        @foreach ($memoryImages as $index => $img)
+                        <figure class="nb-memory-slide" role="group" aria-label="Memory {{ $index + 1 }} of {{ count($memoryImages) }}">
+                            <img src="{{ asset('images/memories/' . $img) }}" alt="TGD Event Photo {{ $index + 1 }}" loading="lazy">
+                            <figcaption class="nb-memory-caption">
+                                <span>{{ $captions[$index % count($captions)] ?? 'TGD Live Session' }}</span>
+                                <span class="nb-badge nb-badge--gold" style="padding:2px 6px; font-size:10px;">Nº{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                            </figcaption>
+                        </figure>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+        </section>
+
+        {{-- ======================= STUDENT VOICES ======================= --}}
+        <section class="nb-testimonials" id="testimonials" aria-labelledby="testimonials-title">
+            <div class="nb-container">
+                <div class="nb-section-head">
+                    <div>
+                        <span class="nb-badge nb-badge--burgundy">Nº07 — Student Voices</span>
+                        <h2 class="nb-h2" id="testimonials-title" style="margin-top:14px;">
+                            From First-Year to <em>the Podium.</em>
+                        </h2>
+                        <p class="nb-section-sub">
+                            Real stories from students across different faculties who unlocked their confidence and critical reasoning through TGD.
+                        </p>
+                    </div>
+                    <span class="nb-badge nb-badge--gold">100% Student Testimonials</span>
+                </div>
+
+                <div class="nb-testimonials-grid">
+                    <article class="nb-testimonial-card">
+                        <p class="nb-testimonial-quote">
+                            "I used to physically tremble whenever a professor asked me to present. After four months in the English division, I delivered a 7-minute opening speech in front of 120 students with zero notes."
+                        </p>
+                        <div class="nb-testimonial-author">
+                            <div class="nb-testimonial-avatar">SK</div>
+                            <div>
+                                <h4 class="nb-author-name">Sami K.</h4>
+                                <span class="nb-author-program">DEUST MIP · 2nd Year</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="nb-testimonial-card">
+                        <p class="nb-testimonial-quote">
+                            "In engineering, technical skills only get you so far if you can't defend your design decisions. TGD taught me how to dismantle weak arguments and persuade stakeholders with evidence and clarity."
+                        </p>
+                        <div class="nb-testimonial-author">
+                            <div class="nb-testimonial-avatar" style="background:var(--nb-wine); color:var(--nb-gold);">NE</div>
+                            <div>
+                                <h4 class="nb-author-name">Nour E.</h4>
+                                <span class="nb-author-program">Cycle Ingénieur Génie Informatique</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="nb-testimonial-card">
+                        <p class="nb-testimonial-quote">
+                            "The trilingual culture is unlike anything else on campus. Defending a motion in Arabic in the morning and debating in French in the afternoon makes you think in entirely new dimensions."
+                        </p>
+                        <div class="nb-testimonial-author">
+                            <div class="nb-testimonial-avatar">YM</div>
+                            <div>
+                                <h4 class="nb-author-name">Youssef M.</h4>
+                                <span class="nb-author-program">Master Sciences & Techniques</span>
+                            </div>
+                        </div>
+                    </article>
                 </div>
             </div>
+        </section>
 
-            @if (count($memoryImages))
-            <div class="nb-memories-viewport">
-                <div class="nb-memories-track" x-ref="track" :style="'transform: translateX(' + trackX() + 'px)'">
-                    @foreach ($memoryImages as $index => $img)
-                    <figure class="nb-memory-slide" role="group" aria-label="Memory {{ $index + 1 }} of {{ count($memoryImages) }}">
-                        <img src="{{ asset('images/memories/' . $img) }}" alt="TGD Event Photo {{ $index + 1 }}" loading="lazy">
-                        <figcaption class="nb-memory-caption">
-                            <span>{{ $captions[$index % count($captions)] ?? 'TGD Live Session' }}</span>
-                            <span class="nb-badge nb-badge--gold" style="padding:2px 6px; font-size:10px;">Nº{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
-                        </figcaption>
-                    </figure>
-                    @endforeach
+        {{-- ======================= FINAL CALL-TO-ACTION ======================= --}}
+        <section class="nb-cta" id="join" aria-labelledby="cta-title">
+            <div class="nb-container">
+                <div class="nb-cta-box">
+                    <div class="nb-cta-content">
+                        <span class="nb-badge nb-badge--gold">Nº08 — Take The Floor</span>
+                        <h2 id="cta-title">
+                            Your Voice<br><em>Belongs Here.</em>
+                        </h2>
+                        <p>
+                            One membership. Three languages. Infinite growth. Pull up a chair, take the opposite side, and argue like it matters — because in university and beyond, your voice shapes the future.
+                        </p>
+
+                        <ul class="nb-cta-checklist">
+                            <li>
+                                <span class="nb-checklist-icon">✓</span>
+                                <span>Open to all FST Errachidia students (all years & filières)</span>
+                            </li>
+                            <li>
+                                <span class="nb-checklist-icon">✓</span>
+                                <span>Free club membership — no prior debating experience necessary</span>
+                            </li>
+                            <li>
+                                <span class="nb-checklist-icon">✓</span>
+                                <span>Choose your tracks: English, French, or Arabic debates</span>
+                            </li>
+                            <li>
+                                <span class="nb-checklist-icon">✓</span>
+                                <span>Weekly practice rounds, guest clinics & annual tournaments</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nb-cta-actions-card">
+                        <h3 class="nb-cta-actions-title">Step up to the mic</h3>
+                        <p class="nb-cta-actions-sub">Submit your candidate recruitment application in under two minutes.</p>
+
+                        <a href="{{ route('recrute') }}" class="nb-btn nb-btn--gold" style="width:100%;">
+                            Join The Club — Free →
+                        </a>
+
+                        <a href="{{ route('login') }}" class="nb-btn nb-btn--outline-light" style="width:100%;">
+                            Already a member? Log in
+                        </a>
+                    </div>
                 </div>
             </div>
-            @endif
-        </div>
-    </section>
+        </section>
 
-    {{-- ======================= STUDENT VOICES ======================= --}}
-    <section class="nb-testimonials" id="testimonials" aria-labelledby="testimonials-title">
-        <div class="nb-container">
-            <div class="nb-section-head">
-                <div>
-                    <span class="nb-badge nb-badge--burgundy">Nº07 — Student Voices</span>
-                    <h2 class="nb-h2" id="testimonials-title" style="margin-top:14px;">
-                        From First-Year to <em>the Podium.</em>
-                    </h2>
-                    <p class="nb-section-sub">
-                        Real stories from students across different faculties who unlocked their confidence and critical reasoning through TGD.
-                    </p>
-                </div>
-                <span class="nb-badge nb-badge--gold">100% Student Testimonials</span>
-            </div>
-
-            <div class="nb-testimonials-grid">
-                <article class="nb-testimonial-card">
-                    <p class="nb-testimonial-quote">
-                        "I used to physically tremble whenever a professor asked me to present. After four months in the English division, I delivered a 7-minute opening speech in front of 120 students with zero notes."
-                    </p>
-                    <div class="nb-testimonial-author">
-                        <div class="nb-testimonial-avatar">SK</div>
-                        <div>
-                            <h4 class="nb-author-name">Sami K.</h4>
-                            <span class="nb-author-program">DEUST MIP · 2nd Year</span>
+        {{-- ======================= FOOTER ======================= --}}
+        <footer class="nb-footer">
+            <div class="nb-container">
+                <div class="nb-footer-grid">
+                    <div>
+                        <span class="nb-footer-brand-title">
+                            TGD<em>.</em> The Great Debaters
+                        </span>
+                        <p>
+                            The official student debate society at Faculté des Sciences et Techniques Errachidia, dedicated to public speaking, critical reasoning, and trilingual debate.
+                        </p>
+                        <div class="nb-footer-uni-badge">
+                            <span>🏛️ Faculté des Sciences et Techniques · Errachidia</span>
                         </div>
                     </div>
-                </article>
 
-                <article class="nb-testimonial-card">
-                    <p class="nb-testimonial-quote">
-                        "In engineering, technical skills only get you so far if you can't defend your design decisions. TGD taught me how to dismantle weak arguments and persuade stakeholders with evidence and clarity."
-                    </p>
-                    <div class="nb-testimonial-author">
-                        <div class="nb-testimonial-avatar" style="background:var(--nb-wine); color:var(--nb-gold);">NE</div>
-                        <div>
-                            <h4 class="nb-author-name">Nour E.</h4>
-                            <span class="nb-author-program">Cycle Ingénieur Génie Informatique</span>
-                        </div>
+                    <div class="nb-footer-col">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="#about">About the Club</a></li>
+                            <li><a href="#pillars">Three Pillars</a></li>
+                            <li><a href="#activities">Weekly Activities</a></li>
+                            <li><a href="#events">Events Calendar</a></li>
+                            <li><a href="#team">The Bureau</a></li>
+                            <li><a href="#memories">Photo Memories</a></li>
+                        </ul>
                     </div>
-                </article>
 
-                <article class="nb-testimonial-card">
-                    <p class="nb-testimonial-quote">
-                        "The trilingual culture is unlike anything else on campus. Defending a motion in Arabic in the morning and debating in French in the afternoon makes you think in entirely new dimensions."
-                    </p>
-                    <div class="nb-testimonial-author">
-                        <div class="nb-testimonial-avatar">YM</div>
-                        <div>
-                            <h4 class="nb-author-name">Youssef M.</h4>
-                            <span class="nb-author-program">Master Sciences & Techniques</span>
-                        </div>
+                    <div class="nb-footer-col">
+                        <h4>Language Tracks</h4>
+                        <ul>
+                            <li><a href="#activities">🇬🇧 English BP Track</a></li>
+                            <li><a href="#activities">🇫🇷 Section Française</a></li>
+                            <li><a href="#activities">🇲🇦 فرع المناظرة بالعربية</a></li>
+                            <li><a href="#activities">Bi-Weekly Masterclasses</a></li>
+                            <li><a href="#activities">Annual Championship Gala</a></li>
+                        </ul>
                     </div>
-                </article>
-            </div>
-        </div>
-    </section>
 
-    {{-- ======================= FINAL CALL-TO-ACTION ======================= --}}
-    <section class="nb-cta" id="join" aria-labelledby="cta-title">
-        <div class="nb-container">
-            <div class="nb-cta-box">
-                <div class="nb-cta-content">
-                    <span class="nb-badge nb-badge--gold">Nº08 — Take The Floor</span>
-                    <h2 id="cta-title">
-                        Your Voice<br><em>Belongs Here.</em>
-                    </h2>
-                    <p>
-                        One membership. Three languages. Infinite growth. Pull up a chair, take the opposite side, and argue like it matters — because in university and beyond, your voice shapes the future.
-                    </p>
-
-                    <ul class="nb-cta-checklist">
-                        <li>
-                            <span class="nb-checklist-icon">✓</span>
-                            <span>Open to all FST Errachidia students (all years & filières)</span>
-                        </li>
-                        <li>
-                            <span class="nb-checklist-icon">✓</span>
-                            <span>Free club membership — no prior debating experience necessary</span>
-                        </li>
-                        <li>
-                            <span class="nb-checklist-icon">✓</span>
-                            <span>Choose your tracks: English, French, or Arabic debates</span>
-                        </li>
-                        <li>
-                            <span class="nb-checklist-icon">✓</span>
-                            <span>Weekly practice rounds, guest clinics & annual tournaments</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="nb-cta-actions-card">
-                    <h3 class="nb-cta-actions-title">Step up to the mic</h3>
-                    <p class="nb-cta-actions-sub">Submit your candidate recruitment application in under two minutes.</p>
-
-                    <a href="{{ route('recrute') }}" class="nb-btn nb-btn--gold" style="width:100%;">
-                        Join The Club — Free →
-                    </a>
-
-                    <a href="{{ route('login') }}" class="nb-btn nb-btn--outline-light" style="width:100%;">
-                        Already a member? Log in
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- ======================= FOOTER ======================= --}}
-    <footer class="nb-footer">
-        <div class="nb-container">
-            <div class="nb-footer-grid">
-                <div>
-                    <span class="nb-footer-brand-title">
-                        TGD<em>.</em> The Great Debaters
-                    </span>
-                    <p>
-                        The official student debate society at Faculté des Sciences et Techniques Errachidia, dedicated to public speaking, critical reasoning, and trilingual debate.
-                    </p>
-                    <div class="nb-footer-uni-badge">
-                        <span>🏛️ Faculté des Sciences et Techniques · Errachidia</span>
+                    <div class="nb-footer-col">
+                        <h4>Members Portal</h4>
+                        <ul>
+                            <li><a href="{{ route('recrute') }}">Recruitment Application</a></li>
+                            <li><a href="{{ route('login') }}">Member Log in</a></li>
+                            <li><a href="{{ route('register') }}">Create Account</a></li>
+                            <li><a href="{{ route('password.recover') }}">Recover Password</a></li>
+                            @auth
+                            <li><a href="{{ route('dashboard') }}">My Dashboard</a></li>
+                            <li><a href="{{ route('events.index') }}">RSVP to Events</a></li>
+                            @endauth
+                        </ul>
                     </div>
                 </div>
 
-                <div class="nb-footer-col">
-                    <h4>Navigation</h4>
-                    <ul>
-                        <li><a href="#about">About the Club</a></li>
-                        <li><a href="#pillars">Three Pillars</a></li>
-                        <li><a href="#activities">Weekly Activities</a></li>
-                        <li><a href="#events">Events Calendar</a></li>
-                        <li><a href="#team">The Bureau</a></li>
-                        <li><a href="#memories">Photo Memories</a></li>
-                    </ul>
-                </div>
-
-                <div class="nb-footer-col">
-                    <h4>Language Tracks</h4>
-                    <ul>
-                        <li><a href="#activities">🇬🇧 English BP Track</a></li>
-                        <li><a href="#activities">🇫🇷 Section Française</a></li>
-                        <li><a href="#activities">🇲🇦 فرع المناظرة بالعربية</a></li>
-                        <li><a href="#activities">Bi-Weekly Masterclasses</a></li>
-                        <li><a href="#activities">Annual Championship Gala</a></li>
-                    </ul>
-                </div>
-
-                <div class="nb-footer-col">
-                    <h4>Members Portal</h4>
-                    <ul>
-                        <li><a href="{{ route('recrute') }}">Recruitment Application</a></li>
-                        <li><a href="{{ route('login') }}">Member Log in</a></li>
-                        <li><a href="{{ route('register') }}">Create Account</a></li>
-                        <li><a href="{{ route('password.recover') }}">Recover Password</a></li>
-                        @auth
-                        <li><a href="{{ route('dashboard') }}">My Dashboard</a></li>
-                        <li><a href="{{ route('events.index') }}">RSVP to Events</a></li>
-                        @endauth
-                    </ul>
+                <div class="nb-footer-bottom">
+                    <span>© {{ date('Y') }} The Great Debaters Club · FST Errachidia (UMI)</span>
+                    <span>Think. Speak. Change. · All Rights Reserved</span>
                 </div>
             </div>
-
-            <div class="nb-footer-bottom">
-                <span>© {{ date('Y') }} The Great Debaters Club · FST Errachidia (UMI)</span>
-                <span>Think. Speak. Change. · All Rights Reserved</span>
-            </div>
-        </div>
-    </footer>
+        </footer>
 
 </body>
 

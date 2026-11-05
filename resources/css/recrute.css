@@ -282,3 +282,202 @@
 @media (max-width: 380px) {
     .nb-nav--recrute .nb-login-link { display: none; }
 }
+/* ==========================================================================
+   RECRUITMENT ALERT BANNER — bilingual, appears between header & hero
+   ========================================================================== */
+
+.nb-recruit-banner {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+        135deg,
+        var(--bordeaux-800, #7A1531) 0%,
+        var(--bordeaux-700, #9B1B3F) 50%,
+        var(--bordeaux-950, #330713) 100%
+    );
+    color: #fff;
+    border-bottom: 2px solid var(--saffron-500, #F5A623);
+}
+
+/* Subtle dot pattern overlay for premium feel */
+.nb-recruit-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+        circle at 1px 1px,
+        rgba(255, 255, 255, 0.06) 1px,
+        transparent 0
+    );
+    background-size: 22px 22px;
+    pointer-events: none;
+}
+
+.nb-recruit-banner-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 0;
+    gap: 0;
+}
+
+/* ---------- Each language row ---------- */
+.nb-recruit-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 8px 0;
+}
+
+.nb-recruit-row--ar {
+    padding-top: 14px;
+    margin-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Pulsing gold dot ---------- */
+.nb-recruit-dot {
+    position: relative;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--saffron-500, #F5A623);
+    flex-shrink: 0;
+    animation: nb-recruit-pulse 2s ease-in-out infinite;
+}
+
+.nb-recruit-dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: var(--saffron-500, #F5A623);
+    opacity: 0;
+    animation: nb-recruit-pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes nb-recruit-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.2); }
+}
+
+@keyframes nb-recruit-pulse-ring {
+    0%   { transform: scale(0.5); opacity: 0.6; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nb-recruit-dot,
+    .nb-recruit-dot::after { animation: none; }
+}
+
+/* ---------- Text ---------- */
+.nb-recruit-text {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.nb-recruit-text strong {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+/* Arabic uses a slightly larger line-height for readability */
+.nb-recruit-row--ar .nb-recruit-text {
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* ---------- Register button ---------- */
+.nb-recruit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 18px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--bordeaux-950, #330713);
+    background: var(--saffron-500, #F5A623);
+    border: 0;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(245, 166, 35, 0.28);
+    transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.nb-recruit-btn:hover {
+    background: var(--saffron-300, #FCC94E);
+    color: var(--bordeaux-950, #330713);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(245, 166, 35, 0.45);
+}
+
+.nb-recruit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
+}
+
+/* Arabic button — letter-spacing off (Arabic script doesn't need it) */
+.nb-recruit-row--ar .nb-recruit-btn {
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 13px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .nb-recruit-banner-inner { padding: 12px 0; }
+
+    .nb-recruit-row {
+        gap: 10px;
+        padding: 6px 0;
+    }
+
+    .nb-recruit-row--ar {
+        padding-top: 12px;
+        margin-top: 4px;
+    }
+
+    .nb-recruit-text {
+        font-size: 13px;
+        /* Keep dot and text on one line; button wraps below */
+        flex: 1 1 calc(100% - 24px);
+    }
+
+    .nb-recruit-row--ar .nb-recruit-text {
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .nb-recruit-btn {
+        width: 100%;
+        padding: 11px 16px;
+        margin-top: 4px;
+        font-size: 12px;
+    }
+
+    .nb-recruit-row--ar .nb-recruit-btn {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 420px) {
+    .nb-recruit-text { font-size: 12.5px; }
+    .nb-recruit-row--ar .nb-recruit-text { font-size: 12.5px; }
+    .nb-recruit-btn { font-size: 11px; padding: 10px 14px; }
+    .nb-recruit-row--ar .nb-recruit-btn { font-size: 12px; }
+}

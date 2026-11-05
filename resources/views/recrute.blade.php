@@ -16,6 +16,7 @@
     'resources/css/app.css',
     'resources/css/landing.css',
     'resources/css/recrute.css',
+    'resources/js/app.js',
     ])
 </head>
 

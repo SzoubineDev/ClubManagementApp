@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/css/brutal.css',
                 'resources/css/landing.css',
                 'resources/css/auth.css',
+                'resources/css/recrute.css',
                 'resources/js/app.js',
             ],
             refresh: true,
