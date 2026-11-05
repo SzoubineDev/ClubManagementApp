@@ -3,9 +3,11 @@
 <x-base-layout :body-class="$bodyClass">
     <header class="toolbar">
         <div class="toolbar-inner">
-            <a href="{{ route('dashboard') }}" class="toolbar-brand">
-                <span class="toolbar-logo-badge">UC</span>
-                {{ config('app.name', 'TGD FSTE Club') }}
+            <a href="{{ route('dashboard') }}" class="toolbar-brand" style="display:flex; align-items:center; gap:12px;">
+                <span class="toolbar-logo-badge" style="border-radius:50%; overflow:hidden; padding:0; background:#FFF; border:2px solid var(--nb-ink); box-shadow:2px 2px 0 var(--nb-ink); width:42px; height:42px; display:flex; align-items:center; justify-content:center;">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="TGD" style="width:100%; height:100%; object-fit:cover;">
+                </span>
+                <span>The Great Debaters</span>
             </a>
 
             <nav class="toolbar-nav">

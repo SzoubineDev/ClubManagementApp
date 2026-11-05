@@ -6,6 +6,7 @@ use App\Http\Controllers\EventRsvpController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecruitmentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,6 +49,10 @@ Route::get('/', function () {
 
     return view('landing', compact('upcomingEvents'));
 })->name('landing');
+
+// Recruitment — Call for new members
+Route::get('/recrute', [RecruitmentController::class, 'create'])->name('recrute');
+Route::post('/recrute', [RecruitmentController::class, 'store'])->name('recrute.store');
 
 /*
 |--------------------------------------------------------------------------

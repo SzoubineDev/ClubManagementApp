@@ -10,7 +10,9 @@
             <div class="scrim"></div>
             <div class="auth-side-inner">
                 <a href="/" class="auth-side-brand">
-                    <span class="toolbar-logo-badge">TGD</span>
+                    <span class="toolbar-logo-badge" style="border-radius:50%; overflow:hidden; padding:0; background:#FFF; width:48px; height:48px; display:flex; align-items:center; justify-content:center;">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="TGD" style="width:100%; height:100%; object-fit:cover;">
+                    </span>
                     The Great<br>Debaters
                 </a>
                 <div>
