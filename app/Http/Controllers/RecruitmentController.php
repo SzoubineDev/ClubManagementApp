@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserRecrute;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -23,12 +24,24 @@ class RecruitmentController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Normalize the identity fields BEFORE validation so the unique check
+        // and the value we persist are compared in the same normalized form
+        // (case/whitespace differences can no longer slip past the rule and
+        // then explode against the table's UNIQUE index).
+        $email = $request->input('email');
+        $cne = $request->input('cne');
+
+        $request->merge([
+            'email' => is_string($email) ? strtolower(trim($email)) : $email,
+            'cne' => is_string($cne) ? strtoupper(trim($cne)) : $cne,
+        ]);
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'phone_number' => ['required', 'string', 'max:20'],
             'email' => ['required', 'string', 'email', 'max:255'],
-            'cne' => ['required', 'string', 'max:30'],
+            'cne' => ['required', 'string', 'max:30', 'unique:users_recrute,cne'],
             'filiere' => ['required', 'string', 'max:150'],
             'preferred_section' => ['required', 'string', 'in:AR,FR,EN'],
             'motivation' => ['required', 'string', 'min:15', 'max:2500'],
@@ -38,6 +51,7 @@ class RecruitmentController extends Controller
             'phone_number.required' => 'Please enter a valid phone number (WhatsApp preferred).',
             'email.required' => 'Please enter your email address.',
             'cne.required' => 'Please provide your CNE / Massar code.',
+            'cne.unique' => 'An application with this CNE / Massar code has already been submitted.',
             'filiere.required' => 'Please specify your filière / academic program.',
             'preferred_section.required' => 'Please select your preferred debate section.',
             'preferred_section.in' => 'Selected debate section is invalid.',
@@ -50,24 +64,23 @@ class RecruitmentController extends Controller
                 'first_name' => trim($validated['first_name']),
                 'last_name' => trim($validated['last_name']),
                 'phone_number' => trim($validated['phone_number']),
-                'email' => strtolower(trim($validated['email'])),
-                'cne' => strtoupper(trim($validated['cne'])),
+                'email' => $validated['email'],
+                'cne' => $validated['cne'],
                 'filiere' => trim($validated['filiere']),
                 'preferred_section' => $validated['preferred_section'],
                 'motivation' => trim($validated['motivation']),
             ]);
 
             return redirect()->route('recrute')->with('success', 'Your recruitment application has been received! Welcome to The Great Debaters community. The Bureau will contact you shortly via WhatsApp / email.');
-        } catch (\Throwable $e) {
-            Log::error('Failed to store recruitment application', [
-                'error' => $e->getMessage(),
-                'payload' => $request->except(['_token']),
-            ]);
+        } catch (QueryException $e) {
+            // Log the exception object only — never the request payload, which
+            // contains the applicant's personal data (name, email, phone, CNE).
+            Log::error('Failed to store recruitment application', ['exception' => $e]);
 
-            // If the table is not migrated yet in user's DB, still give clear guidance
+            // Never surface raw database errors to the applicant.
             return redirect()->route('recrute')
                 ->withInput()
-                ->with('error', 'Could not save your application right now (' . $e->getMessage() . '). Please ensure the database table "users_recrute" exists.');
+                ->with('error', 'We could not save your application right now. Please try again in a moment or contact the club directly.');
         }
     }
 }

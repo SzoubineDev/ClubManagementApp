@@ -454,6 +454,150 @@
     gap: 10px;
 }
 
+/* ======================= RECRUITMENT ALERT BANNER ======================= */
+/* Sits between the sticky nav and the hero. Bold "alert" strip:
+   burgundy field + gold hazard stripe + pulsing live dot + gold CTA. */
+.nb-recruit-banner {
+    position: relative;
+    z-index: 20;
+    background: var(--nb-burgundy);
+    color: var(--nb-cream);
+    border-bottom: var(--nb-border);
+}
+
+/* Gold hazard stripe — signals "live / action required" */
+.nb-recruit-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--nb-gold) 0 12px,
+        transparent 12px 24px
+    );
+}
+
+.nb-recruit-banner-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 16px 0 14px;
+}
+
+.nb-recruit-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 0;
+    flex-wrap: wrap;
+}
+
+/* Live status dot */
+.nb-recruit-dot {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--nb-gold);
+    animation: nb-recruit-pulse 1.9s ease-in-out infinite;
+}
+@keyframes nb-recruit-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(228, 184, 92, .55); }
+    70%      { box-shadow: 0 0 0 8px rgba(228, 184, 92, 0); }
+}
+
+.nb-recruit-text {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--nb-cream);
+}
+.nb-recruit-text strong {
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--nb-gold);
+    margin-inline-end: 6px;
+}
+
+/* Action button — higher specificity than the global `.nb a` rule */
+.nb-recruit-banner .nb-recruit-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-family: "Archivo Black", "Roboto Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 2px solid var(--nb-ink);
+    border-radius: var(--radius-md);
+    background: var(--nb-gold);
+    color: var(--nb-ink);
+    box-shadow: 3px 3px 0 var(--nb-ink);
+    transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease;
+}
+.nb-recruit-banner .nb-recruit-btn:hover,
+.nb-recruit-banner .nb-recruit-btn:focus-visible {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--nb-ink);
+    background: var(--nb-gold-light);
+    color: var(--nb-ink);
+}
+.nb-recruit-banner .nb-recruit-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--nb-ink);
+}
+.nb-recruit-banner .nb-recruit-btn:focus-visible {
+    outline: 3px solid var(--nb-cream);
+    outline-offset: 2px;
+}
+
+/* Two columns on wide screens */
+@media (min-width: 1024px) {
+    .nb-recruit-banner-inner {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        padding: 16px 0;
+    }
+    .nb-recruit-row { padding: 6px 0; }
+    .nb-recruit-row:first-child {
+        border-inline-end: 1.5px dashed rgba(245, 235, 215, .3);
+        padding-inline-end: 28px;
+    }
+    .nb-recruit-row:last-child { padding-inline-start: 28px; }
+}
+
+/* Divider between stacked rows on narrow screens */
+@media (max-width: 1023px) {
+    .nb-recruit-row + .nb-recruit-row {
+        border-top: 1.5px dashed rgba(245, 235, 215, .3);
+    }
+}
+
+/* Full-width CTA once the row can no longer fit on one line */
+@media (max-width: 480px) {
+    .nb-recruit-banner-inner { padding: 13px 0 12px; }
+    .nb-recruit-row { padding: 8px 0; gap: 10px; }
+    .nb-recruit-text { font-size: 13.5px; line-height: 1.4; }
+    .nb-recruit-banner .nb-recruit-btn { width: 100%; padding: 9px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nb-recruit-dot { animation: none; }
+}
+
 /* ======================= HERO SECTION ======================= */
 .nb-hero {
     padding: 64px 0 80px;
