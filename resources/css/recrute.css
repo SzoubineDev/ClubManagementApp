@@ -1,483 +1,320 @@
-/* ==========================================================================
-   RECRUITMENT PAGE — header rebuild + sidebar polish + responsive
-   Overrides landing.css where needed (uses higher specificity, no @import).
-   ========================================================================== */
-
-/* ------------------------------------------------------------------ Header
-   Slim, sticky, white, single login CTA. Overrides whatever landing.css
-   had for .nb-nav--recrute.
-   ------------------------------------------------------------------ */
-.nb-nav.nb-nav--recrute {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 50 !important;
-    background: #fff !important;
-    border-bottom: 1px solid var(--gray-200, #EEE) !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-    padding: 0 !important;
-    min-height: 0 !important;
-    backdrop-filter: none !important;
-}
-
-.nb-nav--recrute .nb-nav-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-    height: 60px;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.nb-nav--recrute .nb-wordmark {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    min-width: 0;
-}
-
-.nb-nav--recrute .nb-wordmark-crest {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: var(--bordeaux-700, #9B1B3F);
-}
-
-.nb-nav--recrute .nb-wordmark-crest img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.nb-nav--recrute .nb-wordmark-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15;
-    gap: 2px;
-    min-width: 0;
-}
-
-.nb-nav--recrute .nb-wordmark-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ink, #1A1416);
-    letter-spacing: -0.01em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.nb-nav--recrute .nb-wordmark-sub {
-    font-size: 10px;
-    color: var(--mauve, #8A6672);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-}
-
-.nb-nav--recrute .nb-nav-actions--recrute {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.nb-nav--recrute .nb-login-link {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--gray-600, #757575);
-    text-decoration: none;
-    transition: color 0.15s;
-    white-space: nowrap;
-}
-
-.nb-nav--recrute .nb-login-link:hover {
-    color: var(--bordeaux-700, #9B1B3F);
-}
-
-.nb-nav--recrute .nb-btn--outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 32px;
-    padding: 0 14px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--bordeaux-700, #9B1B3F);
-    background: #fff;
-    border: 1px solid var(--bordeaux-200, #F9CFD8);
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.15s;
-    white-space: nowrap;
-    box-shadow: none;
-    line-height: 1;
-}
-
-.nb-nav--recrute .nb-btn--outline:hover {
-    background: var(--bordeaux-50, #FDF2F5);
-    border-color: var(--bordeaux-400, #E76D89);
-    color: var(--bordeaux-800, #7A1531);
-}
-
-/* ---------------------------------------------------- Sidebar card polish */
-.nb-recrute-sidebar .nb-sidebar-box {
-    background: #fff;
-    border: 1px solid var(--gray-200, #EEE);
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.nb-sidebar-title {
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--gray-900, #212121);
-    margin: 12px 0 18px;
-    letter-spacing: -0.01em;
-}
-
-.nb-sidebar-text {
-    display: none; /* dropped the yapping paragraph */
-}
-
-.nb-sidebar-perks {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* Angular Material-inspired recruitment form */
+.recruit-page {
+    --form-primary: #681522;
+    --form-primary-dark: #4f101a;
+    --form-text: #242126;
+    --form-muted: #77727a;
+    --form-border: #c9c5ca;
+    --form-surface: #fff;
+    --form-background: #f7f6f5;
+    min-height: 100vh;
     margin: 0;
-    padding: 0;
-    list-style: none;
+    color: var(--form-text);
+    background: var(--form-background);
+    font-family: "Roboto", "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-.nb-sidebar-perks li {
+.recruit-header {
+    min-height: 72px;
+    padding: 0 clamp(20px, 5vw, 72px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-bottom: 1px solid #e8e5e7;
+}
+
+.recruit-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    text-decoration: none;
+}
+.recruit-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.recruit-brand span { display: grid; gap: 3px; }
+.recruit-brand strong { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
+.recruit-brand small { color: var(--form-muted); font-size: 11px; }
+.recruit-back {
+    color: var(--form-primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.recruit-back:hover { text-decoration: underline; }
+
+.recruit-main {
+    width: min(100% - 36px, 790px);
+    margin: 48px auto 64px;
+}
+.recruit-heading { margin: 0 0 24px; }
+.recruit-eyebrow {
+    margin: 0 0 9px;
+    color: var(--form-primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+}
+.recruit-heading h1 {
+    margin: 0;
+    font-size: clamp(27px, 4vw, 34px);
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -.8px;
+}
+.recruit-heading > p:last-child {
+    margin: 9px 0 0;
+    color: var(--form-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.recruit-form {
+    padding: clamp(22px, 4vw, 38px);
+    background: var(--form-surface);
+    border: 1px solid #e6e2e5;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(30 20 25 / 4%);
+}
+.form-section + .form-section {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid #eeebed;
+}
+.form-section-heading {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 0;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+.section-index {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--form-primary);
+    background: #f6eaed;
+    font-size: 11px;
+    font-weight: 700;
+}
+.form-section-heading h2 {
+    margin: 1px 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -.2px;
+}
+.form-section-heading p {
     margin: 0;
+    color: var(--form-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 18px;
+}
+
+/* Outlined fields, restrained focus ring, and persistent labels */
+.material-field {
+    position: relative;
+    min-width: 0;
+}
+.material-field label {
+    display: block;
+    margin: 0 0 7px 1px;
+    color: #4d4850;
+    font-size: 12px;
+    font-weight: 600;
+}
+.material-field label span,
+.form-actions > p span { color: var(--form-primary); }
+.material-field input,
+.material-field select,
+.material-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    box-sizing: border-box;
+    padding: 0 13px;
+    border: 1px solid var(--form-border);
+    border-radius: 4px;
+    outline: none;
+    background: #fff;
+    color: var(--form-text);
+    font: inherit;
     font-size: 13px;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.material-field input::placeholder,
+.material-field textarea::placeholder { color: #aaa5ac; opacity: 1; }
+.material-field select {
+    appearance: none;
+    padding-right: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2377727a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+}
+.material-field textarea {
+    min-height: 126px;
+    padding: 12px 13px;
+    resize: vertical;
+    line-height: 1.6;
+}
+.material-field input:hover,
+.material-field select:hover,
+.material-field textarea:hover { border-color: #817a83; }
+.material-field input:focus,
+.material-field select:focus,
+.material-field textarea:focus {
+    border: 2px solid var(--form-primary);
+    padding-left: 12px;
+    box-shadow: 0 0 0 2px rgb(104 21 34 / 8%);
+}
+.material-field select:focus { padding-left: 12px; }
+.material-field textarea:focus { padding-top: 11px; }
+.material-field .is-invalid { border-color: #c62828; }
+.material-field .is-invalid:focus {
+    border-color: #c62828;
+    box-shadow: 0 0 0 2px rgb(198 40 40 / 8%);
+}
+.field-error {
+    display: block;
+    margin: 6px 1px 0;
+    color: #b42318;
+    font-size: 11px;
     line-height: 1.4;
 }
 
-.nb-sidebar-perks strong {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gray-900, #212121);
-    margin-bottom: 1px;
+/* Material-style radio rows */
+.radio-fieldset {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
 }
-
-.nb-sidebar-perks span {
-    display: block;
-    font-size: 12px;
-    color: var(--gray-500, #9E9E9E);
-    line-height: 1.35;
-}
-
-.nb-sidebar-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--gray-200, #EEE);
-}
-
-.nb-meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    font-size: 12.5px;
-    padding: 0;
-    border: 0;
-}
-
-.nb-meta-label {
-    color: var(--gray-500, #9E9E9E);
-}
-
-.nb-meta-val {
-    color: var(--gray-900, #212121);
-    font-weight: 600;
-    text-align: right;
-}
-
-/* --------------------------------------------------------------- Responsive */
-@media (max-width: 900px) {
-    .nb-recrute-split {
-        display: flex !important;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .nb-recrute-sidebar,
-    .nb-recrute-form-card {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-    .nb-recrute-form-card { order: 1; }
-    .nb-recrute-sidebar   { order: 2; }
-
-    .nb-section-choice-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px;
-    }
-}
-
-@media (max-width: 640px) {
-    .nb-nav--recrute .nb-nav-inner {
-        padding: 0 16px;
-        height: 56px;
-        gap: 10px;
-    }
-    .nb-nav--recrute .nb-wordmark-title { font-size: 13px; }
-    .nb-nav--recrute .nb-wordmark-sub   { font-size: 9px; }
-    .nb-nav--recrute .nb-login-link     { font-size: 12px; }
-    .nb-nav--recrute .nb-btn--outline {
-        height: 30px;
-        padding: 0 10px;
-        font-size: 10px;
-    }
-
-    .nb-recrute-page .nb-container {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .nb-h2 {
-        font-size: clamp(24px, 7vw, 32px) !important;
-        line-height: 1.15;
-    }
-
-    .nb-form-row--2col {
-        display: flex !important;
-        flex-direction: column;
-        gap: 14px;
-    }
-
-    .nb-input,
-    .nb-select,
-    .nb-textarea {
-        font-size: 16px !important; /* prevents iOS zoom on focus */
-    }
-
-    .nb-section-choice-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    .nb-recrute-sidebar .nb-sidebar-box { padding: 20px; }
-    .nb-sidebar-title { font-size: 16px; }
-}
-
-@media (max-width: 380px) {
-    .nb-nav--recrute .nb-login-link { display: none; }
-}
-/* ==========================================================================
-   RECRUITMENT ALERT BANNER — bilingual, appears between header & hero
-   ========================================================================== */
-
-.nb-recruit-banner {
+.radio-option {
     position: relative;
-    overflow: hidden;
-    background: linear-gradient(
-        135deg,
-        var(--bordeaux-800, #7A1531) 0%,
-        var(--bordeaux-700, #9B1B3F) 50%,
-        var(--bordeaux-950, #330713) 100%
-    );
-    color: #fff;
-    border-bottom: 2px solid var(--saffron-500, #F5A623);
-}
-
-/* Subtle dot pattern overlay for premium feel */
-.nb-recruit-banner::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(
-        circle at 1px 1px,
-        rgba(255, 255, 255, 0.06) 1px,
-        transparent 0
-    );
-    background-size: 22px 22px;
-    pointer-events: none;
-}
-
-.nb-recruit-banner-inner {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 14px 0;
-    gap: 0;
-}
-
-/* ---------- Each language row ---------- */
-.nb-recruit-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    padding: 8px 0;
+    gap: 11px;
+    min-height: 66px;
+    padding: 10px 12px;
+    border: 1px solid var(--form-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
 }
-
-.nb-recruit-row--ar {
-    padding-top: 14px;
-    margin-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+.radio-option:hover { border-color: #817a83; background: #fdfcfc; }
+.radio-option:has(input:checked) {
+    border: 2px solid var(--form-primary);
+    padding: 9px 11px;
+    background: #fffafb;
 }
-
-/* ---------- Pulsing gold dot ---------- */
-.nb-recruit-dot {
-    position: relative;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--saffron-500, #F5A623);
-    flex-shrink: 0;
-    animation: nb-recruit-pulse 2s ease-in-out infinite;
-}
-
-.nb-recruit-dot::after {
-    content: "";
+.radio-option input {
     position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: var(--saffron-500, #F5A623);
+    width: 1px;
+    height: 1px;
     opacity: 0;
-    animation: nb-recruit-pulse-ring 2s ease-in-out infinite;
 }
-
-@keyframes nb-recruit-pulse {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.2); }
+.radio-control {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    border: 2px solid #77717a;
+    border-radius: 50%;
+    box-sizing: border-box;
 }
-
-@keyframes nb-recruit-pulse-ring {
-    0%   { transform: scale(0.5); opacity: 0.6; }
-    100% { transform: scale(2.4); opacity: 0; }
+.radio-option input:checked + .radio-control { border-color: var(--form-primary); }
+.radio-option input:checked + .radio-control::after {
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--form-primary);
+    content: "";
 }
-
-@media (prefers-reduced-motion: reduce) {
-    .nb-recruit-dot,
-    .nb-recruit-dot::after { animation: none; }
+.radio-option input:focus-visible + .radio-control {
+    outline: 3px solid rgb(104 21 34 / 18%);
+    outline-offset: 3px;
 }
+.radio-copy { display: grid; gap: 4px; }
+.radio-copy strong { font-size: 12px; font-weight: 600; }
+.radio-copy small { color: var(--form-muted); font-size: 10px; }
 
-/* ---------- Text ---------- */
-.nb-recruit-text {
-    margin: 0;
-    flex: 1;
-    min-width: 0;
-    font-size: 14px;
-    line-height: 1.45;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.nb-recruit-text strong {
-    color: #fff;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-}
-
-/* Arabic uses a slightly larger line-height for readability */
-.nb-recruit-row--ar .nb-recruit-text {
-    line-height: 1.6;
-    font-size: 14px;
-}
-
-/* ---------- Register button ---------- */
-.nb-recruit-btn {
-    display: inline-flex;
+.form-actions {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 9px 18px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    line-height: 1;
-    color: var(--bordeaux-950, #330713);
-    background: var(--saffron-500, #F5A623);
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #eeebed;
+}
+.form-actions > p {
+    margin: 0;
+    color: var(--form-muted);
+    font-size: 11px;
+}
+.form-actions button {
+    min-height: 46px;
+    padding: 0 22px;
     border: 0;
-    border-radius: 6px;
-    text-decoration: none;
-    white-space: nowrap;
-    flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(245, 166, 35, 0.28);
-    transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
-}
-
-.nb-recruit-btn:hover {
-    background: var(--saffron-300, #FCC94E);
-    color: var(--bordeaux-950, #330713);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(245, 166, 35, 0.45);
-}
-
-.nb-recruit-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
-}
-
-/* Arabic button — letter-spacing off (Arabic script doesn't need it) */
-.nb-recruit-row--ar .nb-recruit-btn {
-    letter-spacing: 0;
-    text-transform: none;
+    border-radius: 4px;
+    background: var(--form-primary);
+    color: #fff;
+    font: inherit;
     font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+}
+.form-actions button:hover { background: var(--form-primary-dark); }
+.form-actions button:active { transform: translateY(1px); }
+.form-actions button span { margin-left: 12px; font-size: 17px; }
+.form-privacy {
+    margin: 13px 0 0;
+    color: #8b858d;
+    text-align: right;
+    font-size: 10px;
+}
+.recruit-alert {
+    margin: 0 0 16px;
+    padding: 13px 15px;
+    border: 1px solid;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.recruit-alert--success { color: #246b45; border-color: #b9ddc8; background: #f1faf4; }
+.recruit-alert--error { color: #a12626; border-color: #efc4c4; background: #fff6f6; }
+.recruit-footer {
+    padding: 20px;
+    border-top: 1px solid #e8e5e7;
+    color: #89838b;
+    text-align: center;
+    font-size: 11px;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 768px) {
-    .nb-recruit-banner-inner { padding: 12px 0; }
-
-    .nb-recruit-row {
-        gap: 10px;
-        padding: 6px 0;
-    }
-
-    .nb-recruit-row--ar {
-        padding-top: 12px;
-        margin-top: 4px;
-    }
-
-    .nb-recruit-text {
-        font-size: 13px;
-        /* Keep dot and text on one line; button wraps below */
-        flex: 1 1 calc(100% - 24px);
-    }
-
-    .nb-recruit-row--ar .nb-recruit-text {
-        font-size: 13px;
-        line-height: 1.65;
-    }
-
-    .nb-recruit-btn {
-        width: 100%;
-        padding: 11px 16px;
-        margin-top: 4px;
-        font-size: 12px;
-    }
-
-    .nb-recruit-row--ar .nb-recruit-btn {
-        font-size: 13px;
-    }
-}
-
-@media (max-width: 420px) {
-    .nb-recruit-text { font-size: 12.5px; }
-    .nb-recruit-row--ar .nb-recruit-text { font-size: 12.5px; }
-    .nb-recruit-btn { font-size: 11px; padding: 10px 14px; }
-    .nb-recruit-row--ar .nb-recruit-btn { font-size: 12px; }
+@media (max-width: 620px) {
+    .recruit-header { min-height: 64px; padding: 0 18px; }
+    .recruit-brand img { width: 35px; height: 35px; }
+    .recruit-brand strong { font-size: 12px; }
+    .recruit-brand small { font-size: 10px; }
+    .recruit-back { font-size: 11px; }
+    .recruit-main { width: min(100% - 24px, 790px); margin: 30px auto 42px; }
+    .recruit-form { padding: 22px 17px; }
+    .form-grid { grid-template-columns: 1fr; gap: 17px; }
+    .radio-fieldset { grid-template-columns: 1fr; gap: 8px; }
+    .radio-option { min-height: 58px; }
+    .form-actions { align-items: stretch; flex-direction: column; }
+    .form-actions button { width: 100%; }
+    .form-privacy { text-align: center; }
 }
