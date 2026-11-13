@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\UserRecrute;
+use App\Policies\ApplicationPolicy;
 use App\Policies\MemberPolicy;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(User::class, MemberPolicy::class);
+        Gate::policy(UserRecrute::class, ApplicationPolicy::class);
 
         // Allow {member} route binding to find soft-deleted users too
         Route::bind('member', function ($value) {

@@ -402,7 +402,11 @@ table { border-collapse: collapse; width: 100%; }
 
 /* KPI grid (members index) */
 .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-@media (min-width: 1024px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 640px) and (max-width: 1023px) { .kpi-grid--5 { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) {
+    .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    .kpi-grid--5 { grid-template-columns: repeat(5, 1fr); }
+}
 .kpi-card { background: var(--white); border-radius: var(--radius-card); box-shadow: var(--elevation-1); padding: 20px 24px; }
 .kpi-card .stat-value { font-size: 28px; }
 
@@ -1428,3 +1432,259 @@ body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; 
 }
 
 .menu-panel button[disabled] { opacity: .55; cursor: progress; }
+
+/* ==========================================================================
+   Applications console — status badges, filter tabs, dialog internals
+   (Additive: reuses the existing burgundy/ink/cream design tokens.)
+   ========================================================================== */
+
+/* --- Status badges (distinct colour per review status) ------------------- */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 2px solid var(--nb-ink, #171411);
+    box-shadow: 2px 2px 0 var(--nb-ink, #171411);
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.status-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+.status-badge--pending  { background: #FBE3A6; color: #6B4A00; }
+.status-badge--accepted { background: #BFE9DE; color: #0F5148; }
+.status-badge--rejected { background: #E7B4B9; color: #6B1020; }
+.status-badge--passed   { background: #D6D3F0; color: #3B3470; }
+
+/* --- Status filter tabs --------------------------------------------------- */
+.app-filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.app-filter-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    border: 2px solid var(--nb-ink, #171411);
+    border-radius: 100px;
+    background: var(--nb-paper, #FFF9EF);
+    color: var(--nb-ink, #171411) !important;
+    box-shadow: 2px 2px 0 var(--nb-ink, #171411);
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.app-filter-tab:hover {
+    background: var(--nb-gold, #E4B85C);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--nb-ink, #171411);
+}
+.app-filter-tab.is-active {
+    background: var(--nb-burgundy, #660C1B);
+    color: var(--nb-cream, #F5EBD7) !important;
+}
+.app-filter-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: 100px;
+    background: var(--nb-ink, #171411);
+    color: var(--nb-gold, #E4B85C);
+    font-size: 11px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+.app-filter-tab.is-active .app-filter-tab-count {
+    background: var(--nb-gold, #E4B85C);
+    color: var(--nb-ink, #171411);
+}
+
+/* --- Confirmation / detail dialog internals ------------------------------ */
+.dialog-root { position: relative; z-index: 79; }
+body.dialog-open { overflow: hidden; }
+
+.dialog-head { padding: 24px 24px 0; }
+.dialog-head .dialog-title { padding: 0; }
+.dialog-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--gray-600, #757575);
+}
+
+.dialog--danger .dialog-title { color: var(--danger, #DC2626); }
+
+.dialog-subject {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    background: var(--gray-50, #FAFAFA);
+    border: 1px solid var(--gray-200, #EEEEEE);
+    border-radius: var(--radius-card, 4px);
+}
+.dialog-subject-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gray-500, #9E9E9E);
+}
+.dialog-subject-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gray-900, #212121);
+}
+
+.dialog-message {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray-700, #616161);
+}
+
+.dialog-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 22px;
+}
+.dialog-field { min-width: 0; }
+.dialog-field--wide { grid-column: 1 / -1; }
+.dialog-field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gray-500, #9E9E9E);
+}
+.dialog-field-value {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-900, #212121);
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+@media (max-width: 560px) {
+    .dialog-fields { grid-template-columns: 1fr; }
+}
+
+/* --- Applications table: keep the action buttons tidy -------------------- */
+.app-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+@media (max-width: 639px) {
+    .app-actions { justify-content: flex-start; }
+}
+
+/* ==========================================================================
+   Manage card — centered operations dialog over a blurred page
+   ========================================================================== */
+
+/* Blur the page behind the operations card more than a plain dialog. */
+.dialog-root--menu .dialog-backdrop {
+    backdrop-filter: blur(7px) saturate(115%);
+    -webkit-backdrop-filter: blur(7px) saturate(115%);
+}
+.dialog-root--menu .dialog { max-width: 460px; }
+
+.dialog-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.dialog-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px 15px;
+    text-align: left;
+    background: var(--white, #FFFFFF);
+    border: 2px solid var(--nb-ink, #171411);
+    border-radius: var(--nb-radius-sm, 8px);
+    box-shadow: 3px 3px 0 var(--nb-ink, #171411);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+}
+.dialog-menu-item:hover,
+.dialog-menu-item:focus-visible {
+    background: var(--nb-gold, #E4B85C);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--nb-ink, #171411);
+}
+.dialog-menu-item:focus-visible {
+    outline: 3px solid var(--nb-burgundy, #660C1B);
+    outline-offset: 2px;
+}
+.dialog-menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border: 2px solid var(--nb-ink, #171411);
+    border-radius: 50%;
+    background: var(--nb-paper, #FFF9EF);
+    color: var(--nb-ink, #171411);
+}
+.dialog-menu-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dialog-menu-label {
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--nb-ink, #171411);
+}
+.dialog-menu-hint { font-size: 12px; color: var(--gray-600, #757575); }
+
+/* Destructive operation: burgundy accent, inverts on hover/focus. */
+.dialog-menu-item--danger {
+    border-color: var(--nb-burgundy, #660C1B);
+    box-shadow: 3px 3px 0 var(--nb-burgundy, #660C1B);
+}
+.dialog-menu-item--danger .dialog-menu-icon {
+    border-color: var(--nb-burgundy, #660C1B);
+    color: var(--nb-burgundy, #660C1B);
+}
+.dialog-menu-item--danger .dialog-menu-label { color: var(--nb-burgundy, #660C1B); }
+.dialog-menu-item--danger:hover,
+.dialog-menu-item--danger:focus-visible {
+    background: var(--nb-burgundy, #660C1B);
+    box-shadow: 4px 4px 0 var(--nb-ink, #171411);
+}
+.dialog-menu-item--danger:hover .dialog-menu-label,
+.dialog-menu-item--danger:focus-visible .dialog-menu-label,
+.dialog-menu-item--danger:hover .dialog-menu-hint,
+.dialog-menu-item--danger:focus-visible .dialog-menu-hint { color: var(--nb-cream, #F5EBD7); }
+.dialog-menu-item--danger:hover .dialog-menu-icon,
+.dialog-menu-item--danger:focus-visible .dialog-menu-icon {
+    border-color: var(--nb-cream, #F5EBD7);
+    color: var(--nb-cream, #F5EBD7);
+    background: transparent;
+}
+
+/* Keep the operations card centered on phones (dialogs are bottom-sheets by
+   default there, but this card reads better in the middle of the page). */
+@media (max-width: 767px) {
+    .dialog-root--menu .dialog-container { align-items: center; }
+}
+

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -151,7 +152,7 @@ class MemberController extends Controller
             ->with('status', 'Member updated.');
     }
 
-    public function suspend(Request $request, User $member): RedirectResponse
+    public function suspend(Request $request, User $member): RedirectResponse|JsonResponse
     {
         $this->authorize('suspend', $member);
 
@@ -164,19 +165,27 @@ class MemberController extends Controller
         // Kick the suspended user out of any live session immediately.
         \DB::table('sessions')->where('user_id', $member->id)->delete();
 
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'message' => "{$member->name} has been suspended."]);
+        }
+
         return back()->with('status', "{$member->name} has been suspended.");
     }
 
-    public function unsuspend(User $member): RedirectResponse
+    public function unsuspend(User $member): RedirectResponse|JsonResponse
     {
         $this->authorize('unsuspend', $member);
 
         $member->unsuspend();
 
+        if (request()->expectsJson()) {
+            return response()->json(['ok' => true, 'message' => "{$member->name} has been reactivated."]);
+        }
+
         return back()->with('status', "{$member->name} has been reactivated.");
     }
 
-    public function destroy(User $member): RedirectResponse
+    public function destroy(User $member): RedirectResponse|JsonResponse
     {
         $this->authorize('delete', $member);
 
@@ -192,7 +201,7 @@ class MemberController extends Controller
             ->with('status', "{$member->name} has been deleted.");
     }
 
-    public function restore(User $member): RedirectResponse
+    public function restore(User $member): RedirectResponse|JsonResponse
     {
         $this->authorize('restore', $member);
 
@@ -209,7 +218,7 @@ class MemberController extends Controller
      * Promote a member to president (or demote a president back to member).
      * Used by the Manage menu on the members page via fetch().
      */
-    public function promote(Request $request, User $member): RedirectResponse|\Illuminate\Http\JsonResponse
+    public function promote(Request $request, User $member): RedirectResponse|JsonResponse
     {
         $this->authorize('updateRoles', $member);
 

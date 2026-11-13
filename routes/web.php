@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRsvpController;
@@ -120,6 +121,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsActive::class])->gro
     Route::post('members/{member}/promote', [MemberController::class, 'promote'])->name('members.promote');
     Route::delete('members/{member}', [MemberController::class, 'destroy'])->name('members.destroy');
     Route::post('members/{member}/restore', [MemberController::class, 'restore'])->name('members.restore');
+
+    // Applications console — recruitment applications (policies enforce access)
+    Route::get('applications', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::patch('applications/{application}', [ApplicationController::class, 'updateStatus'])->name('applications.status');
+    Route::delete('applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

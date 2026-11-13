@@ -22,6 +22,29 @@ class UserRecrute extends Model
     const UPDATED_AT = null;
 
     /**
+     * Application review statuses (exact database values).
+     */
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_ACCEPTED = 'accepted';
+
+    public const STATUS_REJECTED = 'rejected';
+
+    public const STATUS_PASSED_TO_TEST = 'passed_to_test';
+
+    /**
+     * Every allowed status, in workflow order.
+     *
+     * @var array<int, string>
+     */
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_ACCEPTED,
+        self::STATUS_REJECTED,
+        self::STATUS_PASSED_TO_TEST,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -35,6 +58,7 @@ class UserRecrute extends Model
         'filiere',
         'preferred_section',
         'motivation',
+        'status',
     ];
 
     /**
@@ -52,5 +76,44 @@ class UserRecrute extends Model
     public function getFullNameAttribute(): string
     {
         return trim($this->first_name . ' ' . $this->last_name);
+    }
+
+    /**
+     * Human-readable label for the current status.
+     */
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            self::STATUS_ACCEPTED => 'Accepted',
+            self::STATUS_REJECTED => 'Rejected',
+            self::STATUS_PASSED_TO_TEST => 'Passed to test',
+            default => 'Pending',
+        };
+    }
+
+    /**
+     * Design-system class used to colour the status badge.
+     */
+    public function statusBadgeClass(): string
+    {
+        return match ($this->status) {
+            self::STATUS_ACCEPTED => 'status-badge--accepted',
+            self::STATUS_REJECTED => 'status-badge--rejected',
+            self::STATUS_PASSED_TO_TEST => 'status-badge--passed',
+            default => 'status-badge--pending',
+        };
+    }
+
+    /**
+     * Human-readable label for the preferred debate section.
+     */
+    public function sectionLabel(): string
+    {
+        return match ($this->preferred_section) {
+            'AR' => 'Arabic',
+            'FR' => 'French',
+            'EN' => 'English',
+            default => $this->preferred_section ?: '—',
+        };
     }
 }

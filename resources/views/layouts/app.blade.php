@@ -24,6 +24,12 @@
                     {{ __('Members') }}
                 </x-nav-link>
                 @endcan
+
+                @can('viewAny', \App\Models\UserRecrute::class)
+                <x-nav-link :href="route('applications.index')" :active="request()->routeIs('applications.*')">
+                    {{ __('Applications') }}
+                </x-nav-link>
+                @endcan
             </nav>
 
             <div class="toolbar-spacer"></div>
@@ -83,6 +89,11 @@
                 @can('viewAny', \App\Models\User::class)
                 <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')" @click="mobileOpen = false">
                     {{ __('Members') }}
+                </x-responsive-nav-link>
+                @endcan
+                @can('viewAny', \App\Models\UserRecrute::class)
+                <x-responsive-nav-link :href="route('applications.index')" :active="request()->routeIs('applications.*')" @click="mobileOpen = false">
+                    {{ __('Applications') }}
                 </x-responsive-nav-link>
                 @endcan
                 <div class="mobile-nav-section">

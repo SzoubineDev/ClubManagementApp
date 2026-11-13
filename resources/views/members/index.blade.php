@@ -191,82 +191,50 @@
                                  </div>
                              </td>
 
-                             <td
-                                 class="td-right td-nowrap"
-                                 x-data="{ open: false }"
-                                 @click.outside="open = false"
-                                 @keydown.escape.window="open = false"
-                                 style="position: relative;">
-                                 <a href="{{ route('members.show', $member) }}" class="text-action">View</a>
+                             <td class="td-right td-nowrap">
+                                 <div class="app-actions">
+                                     <a href="{{ route('members.show', $member) }}" class="text-action">View</a>
 
-                                 @can('manage', $member)
-                                 <button
-                                     type="button"
-                                     class="manage-trigger ml-2"
-                                     :aria-expanded="open"
-                                     aria-haspopup="menu"
-                                     @click="open = !open">
-                                     Manage ▾
-                                 </button>
-
-                                 <div
-                                     class="menu-panel nb-menu"
-                                     x-cloak
-                                     x-show="open"
-                                     x-transition.opacity.duration.120ms
-                                     role="menu"
-                                     style="position: absolute; right: 0; top: calc(100% + 6px); z-index: 40;">
-                                     <a href="{{ route('members.edit', $member) }}" role="menuitem">
-                                         ✎ Edit profile &amp; team
-                                     </a>
-
-                                     @can('updateRoles', $member)
-                                     <button type="button" role="menuitem" data-action="promote"
-                                         data-url="{{ route('members.promote', $member) }}"
-                                         data-role="{{ $member->hasRole('president') ? 'member' : 'president' }}"
-                                         data-confirm="{{ $member->hasRole('president')
-                                             ? 'Return ' . $member->name . ' to the regular member role?'
-                                             : 'Make ' . $member->name . ' the club president? The current president will be demoted to member.' }}">
-                                         {{ $member->hasRole('president') ? '↓ Return to member' : '★ Promote to president' }}
+                                     @can('manage', $member)
+                                     <button
+                                         type="button"
+                                         class="manage-trigger"
+                                         data-manage-member
+                                         data-name="{{ $member->name }}"
+                                         data-edit-url="{{ route('members.edit', $member) }}"
+                                         @can('updateRoles', $member)
+                                         data-promote-url="{{ route('members.promote', $member) }}"
+                                         data-is-president="{{ $member->hasRole('president') ? '1' : '0' }}"
+                                         @endcan
+                                         @if ($member->is_suspended)
+                                         @can('unsuspend', $member)
+                                         data-unsuspend-url="{{ route('members.unsuspend', $member) }}"
+                                         @endcan
+                                         @else
+                                         @can('suspend', $member)
+                                         data-suspend-url="{{ route('members.suspend', $member) }}"
+                                         @endcan
+                                         @endif
+                                         @can('delete', $member)
+                                         data-delete-url="{{ route('members.destroy', $member) }}"
+                                         @endcan>
+                                         Manage
                                      </button>
                                      @endcan
 
-                                     <hr>
-
-                                     @if ($member->is_suspended)
-                                     @can('unsuspend', $member)
-                                     <button type="button" role="menuitem" data-action="post"
-                                         data-url="{{ route('members.unsuspend', $member) }}"
-                                         data-confirm="">▶ Reactivate account</button>
-                                     @endcan
-                                     @else
-                                     @can('suspend', $member)
-                                     <button type="button" role="menuitem" data-action="post"
-                                         data-url="{{ route('members.suspend', $member) }}"
-                                         data-confirm="Suspend {{ $member->name }}? Their existing sessions will be invalidated.">⏸ Suspend account</button>
+                                     @if ($member->trashed())
+                                     @can('restore', $member)
+                                     <form
+                                         method="POST"
+                                         action="{{ route('members.restore', $member) }}"
+                                         class="inline-form"
+                                         style="display: inline;">
+                                         @csrf
+                                         <button type="submit" class="btn btn-sm btn-secondary">Restore</button>
+                                     </form>
                                      @endcan
                                      @endif
-
-                                     @can('delete', $member)
-                                     <button type="button" role="menuitem" class="nb-menu-danger" data-action="delete"
-                                         data-url="{{ route('members.destroy', $member) }}"
-                                         data-confirm="Delete {{ $member->name }}? This can be restored later from the Deleted filter.">✕ Delete member</button>
-                                     @endcan
                                  </div>
-                                 @endcan
-
-                                 @if ($member->trashed())
-                                 @can('restore', $member)
-                                 <form
-                                     method="POST"
-                                     action="{{ route('members.restore', $member) }}"
-                                     class="inline-form ml-2"
-                                     style="display: inline;">
-                                     @csrf
-                                     <button type="submit" class="btn btn-sm btn-secondary">Restore</button>
-                                 </form>
-                                 @endcan
-                                 @endif
                              </td>
                          </tr>
                          @endforeach
@@ -303,91 +271,219 @@
 
      <script>
          (function () {
-             const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
-             const stack = document.getElementById('member-toasts');
+             function init() {
+                 const TGD = window.TGD;
+                 if (!TGD) return;
 
-             function toast(message, type = 'success') {
-                 if (!stack) return;
-                 const el = document.createElement('div');
-                 el.className = 'toast toast--' + type;
-                 el.setAttribute('role', 'status');
-                 el.textContent = message;
-                 stack.appendChild(el);
-                setTimeout(() => { el.classList.add('toast--out'); }, 3800);
-                 setTimeout(() => el.remove(), 4300);
-             }
+                 const csrf = TGD.csrf || document.querySelector('meta[name="csrf-token"]')?.content;
 
-             async function memberAction(url, method, body) {
-                 const res = await fetch(url, {
-                     method,
-                     headers: {
-                         'X-CSRF-TOKEN': csrf,
-                         'X-Requested-With': 'XMLHttpRequest',
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json',
-                     },
-                     body: body ? JSON.stringify(body) : undefined,
+                 // Shared SVG icons matching the applications manage menu design
+                 const svg = (path) => '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+                 const ICONS = {
+                     edit: svg('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>'),
+                     promote: svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'),
+                     demote: svg('<path d="M12 5v14M19 12l-7 7-7-7"/>'),
+                     unsuspend: svg('<polygon points="5 3 19 12 5 21 5 3"/>'),
+                     suspend: svg('<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'),
+                     delete: svg('<path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/>'),
+                 };
+
+                 async function memberAction(url, method, body) {
+                     const res = await fetch(url, {
+                         method,
+                         headers: {
+                             'X-CSRF-TOKEN': csrf,
+                             'X-Requested-With': 'XMLHttpRequest',
+                             'Accept': 'application/json',
+                             'Content-Type': 'application/json',
+                         },
+                         body: body ? JSON.stringify(body) : undefined,
+                     });
+
+                     let data = {};
+                     try { data = await res.json(); } catch (e) { /* empty body */ }
+
+                     if (!res.ok) {
+                         let message = 'Request failed (' + res.status + ')';
+                         if (data.errors) {
+                             const first = Object.values(data.errors)[0];
+                             if (Array.isArray(first) && first[0]) message = first[0];
+                         } else if (data.message) {
+                             message = data.message;
+                         }
+                         throw new Error(message);
+                     }
+
+                     return data;
+                 }
+
+                 document.addEventListener('click', async (e) => {
+                     const manageBtn = e.target.closest('[data-manage-member]');
+                     if (!manageBtn) return;
+                     e.preventDefault();
+
+                     if (manageBtn.disabled) return;
+                     manageBtn.disabled = true;
+
+                     const d = manageBtn.dataset;
+                     const name = d.name || 'this member';
+                     const isPresident = d.isPresident === '1';
+
+                     const options = [];
+
+                     if (d.editUrl) {
+                         options.push({
+                             key: 'edit',
+                             label: 'Edit profile & team',
+                             hint: 'Update personal details, team, and roles',
+                             icon: ICONS.edit,
+                         });
+                     }
+
+                     if (d.promoteUrl) {
+                         if (isPresident) {
+                             options.push({
+                                 key: 'demote',
+                                 label: 'Return to member role',
+                                 hint: 'Remove president role from this member',
+                                 icon: ICONS.demote,
+                             });
+                         } else {
+                             options.push({
+                                 key: 'promote',
+                                 label: 'Promote to president',
+                                 hint: 'Make this member the club president',
+                                 icon: ICONS.promote,
+                             });
+                         }
+                     }
+
+                     if (d.unsuspendUrl) {
+                         options.push({
+                             key: 'unsuspend',
+                             label: 'Reactivate account',
+                             hint: 'Restore login access for this account',
+                             icon: ICONS.unsuspend,
+                         });
+                     } else if (d.suspendUrl) {
+                         options.push({
+                             key: 'suspend',
+                             label: 'Suspend account',
+                             hint: 'Invalidate active sessions and block sign in',
+                             icon: ICONS.suspend,
+                             danger: true,
+                         });
+                     }
+
+                     if (d.deleteUrl) {
+                         options.push({
+                             key: 'delete',
+                             label: 'Delete member',
+                             hint: 'Soft delete — can be restored later',
+                             icon: ICONS.delete,
+                             danger: true,
+                         });
+                     }
+
+                     try {
+                         const action = await TGD.menu({
+                             title: 'Manage member',
+                             subject: name,
+                             subjectLabel: 'Member',
+                             options,
+                         });
+
+                         if (!action) return;
+
+                         if (action === 'edit') {
+                             window.location.href = d.editUrl;
+                             return;
+                         }
+
+                         if (action === 'promote') {
+                             const confirmed = await TGD.confirm({
+                                 title: 'Promote to president?',
+                                 subject: name,
+                                 message: `Make ${name} the club president? The current president will be demoted to member.`,
+                                 confirmLabel: 'Promote to president',
+                             });
+                             if (!confirmed) return;
+
+                             const data = await memberAction(d.promoteUrl, 'POST', { role: 'president' });
+                             d.isPresident = '1';
+                             const chipRow = manageBtn.closest('tr')?.querySelector('.chip-row');
+                             if (chipRow) {
+                                 chipRow.innerHTML = '<span class="chip chip--primary-solid" style="font-size:11px;padding:2px 10px;">president</span>';
+                             }
+                             TGD.toast(data.message || `${name} is now the club president.`, 'success');
+                         } else if (action === 'demote') {
+                             const confirmed = await TGD.confirm({
+                                 title: 'Return to member role?',
+                                 subject: name,
+                                 message: `Return ${name} to the regular member role?`,
+                                 confirmLabel: 'Return to member',
+                             });
+                             if (!confirmed) return;
+
+                             const data = await memberAction(d.promoteUrl, 'POST', { role: 'member' });
+                             d.isPresident = '0';
+                             const chipRow = manageBtn.closest('tr')?.querySelector('.chip-row');
+                             if (chipRow) {
+                                 chipRow.innerHTML = '<span class="chip" style="font-size:11px;padding:2px 10px;">member</span>';
+                             }
+                             TGD.toast(data.message || `${name} returned to member role.`, 'success');
+                         } else if (action === 'suspend') {
+                             const confirmed = await TGD.confirm({
+                                 title: 'Suspend account?',
+                                 subject: name,
+                                 message: `Suspend ${name}? Their active sessions will be invalidated immediately.`,
+                                 confirmLabel: 'Suspend account',
+                                 danger: true,
+                             });
+                             if (!confirmed) return;
+
+                             const data = await memberAction(d.suspendUrl, 'POST');
+                             TGD.toast(data.message || `${name} has been suspended.`, 'success');
+                             setTimeout(() => window.location.reload(), 600);
+                         } else if (action === 'unsuspend') {
+                             const confirmed = await TGD.confirm({
+                                 title: 'Reactivate account?',
+                                 subject: name,
+                                 message: `Reactivate ${name}'s account? They will be able to log in again.`,
+                                 confirmLabel: 'Reactivate account',
+                             });
+                             if (!confirmed) return;
+
+                             const data = await memberAction(d.unsuspendUrl, 'POST');
+                             TGD.toast(data.message || `${name} has been reactivated.`, 'success');
+                             setTimeout(() => window.location.reload(), 600);
+                         } else if (action === 'delete') {
+                             const confirmed = await TGD.confirm({
+                                 title: 'Delete member?',
+                                 subject: name,
+                                 message: `Delete ${name}? This account can be restored later from the Deleted filter.`,
+                                 confirmLabel: 'Delete member',
+                                 danger: true,
+                             });
+                             if (!confirmed) return;
+
+                             const data = await memberAction(d.deleteUrl, 'DELETE');
+                             manageBtn.closest('tr')?.remove();
+                             TGD.toast(data.message || `${name} has been deleted.`, 'success');
+                         }
+                     } catch (err) {
+                         TGD.toast(err.message || 'Something went wrong.', 'error');
+                     } finally {
+                         manageBtn.disabled = false;
+                     }
                  });
-                 let data = {};
-                 try { data = await res.json(); } catch (e) { /* empty body */ }
-                 if (!res.ok) {
-                     throw new Error(data.message || data.errors
-                         ? Object.values(data.errors || {})[0]?.[0] || data.message
-                         : 'Request failed (' + res.status + ')');
-                 }
-                 return data;
              }
 
-             document.addEventListener('click', async (e) => {
-                 const btn = e.target.closest('[data-action]');
-                 if (!btn) return;
-                 e.preventDefault();
-
-                 const { action, url, confirm: msg, role } = btn.dataset;
-                 if (msg && !window.confirm(msg)) return;
-
-                 const original = btn.textContent;
-                 btn.disabled = true;
-                 btn.textContent = 'Working…';
-
-                 try {
-                     let data;
-                     if (action === 'promote') {
-                         data = await memberAction(url, 'POST', { role });
-                     } else if (action === 'delete') {
-                         data = await memberAction(url, 'DELETE');
-                     } else {
-                         data = await memberAction(url, 'POST');
-                     }
-
-                     toast(data.message || 'Done.', 'success');
-
-                     // Update UI in place where possible.
-                     if (action === 'promote') {
-                         btn.textContent = role === 'president'
-                             ? '↓ Return to member'
-                             : '★ Promote to president';
-                         btn.dataset.role = role === 'president' ? 'member' : 'president';
-                         btn.dataset.confirm = role === 'president'
-                             ? 'Return this member to the regular member role?'
-                             : 'Make this member the club president? The current president will be demoted to member.';
-                         const chipRow = btn.closest('tr')?.querySelector('.chip-row');
-                         if (chipRow) chipRow.innerHTML = '<span class="chip chip--primary-solid" style="font-size:11px;padding:2px 10px;">'
-                             + (role === 'president' ? 'president' : 'member') + '</span>';
-                     } else if (action === 'delete') {
-                         btn.closest('tr')?.remove();
-                     } else if (action === 'post') {
-                         // Suspend/unsuspend: reload so status chips stay accurate.
-                         window.location.reload();
-                         return;
-                     }
-                 } catch (err) {
-                     toast(err.message || 'Something went wrong.', 'error');
-                 } finally {
-                     btn.disabled = false;
-                     if (btn.isConnected && action !== 'promote') btn.textContent = original;
-                 }
-             });
+             if (document.readyState === 'loading') {
+                 document.addEventListener('DOMContentLoaded', init);
+             } else {
+                 init();
+             }
          })();
      </script>
  </x-app-layout>

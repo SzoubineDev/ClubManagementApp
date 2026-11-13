@@ -83,7 +83,7 @@ class EventPolicy
         return true;
     }
 
-    public function publish(User $user, Event $event): bool
+    public function publish(User $user, ?Event $event = null): bool
     {
         // Managers can always publish/unpublish drafts.
         return $user->isManager() || $user->can('events.publish');
