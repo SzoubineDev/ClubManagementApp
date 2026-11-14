@@ -10,12 +10,12 @@
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/css/landing.css','resources/css/recrute.css', 'resources/js/app.js'])
 </head>
 
-<body class="nb" x-data="{ navOpen: false }">
+<body class="nb" x-data="{ navOpen: {{ request('nav') ? 'true' : 'false' }} }">
 
     {{-- ======================= NAVIGATION BAR ======================= --}}
     <header class="nb-nav" aria-label="Main navigation">
@@ -90,7 +90,7 @@
                         <strong>Recruitment is open</strong> — applications for the 2026/2027 season are now live.
                     </p>
                     <a href="{{ route('recrute') }}" class="nb-recruit-btn">
-                        Register Now <span aria-hidden="true">→</span>
+                        Register Now →
                     </a>
                 </div>
 
@@ -101,7 +101,7 @@
                         <strong>التسجيلات مفتوحة</strong> — باب الترشح لموسم 2026/2027 مفتوح الآن.
                     </p>
                     <a href="{{ route('recrute') }}" class="nb-recruit-btn">
-                        سجّل الآن <span aria-hidden="true">←</span>
+                        سجّل الآن ←
                     </a>
                 </div>
 
@@ -111,104 +111,47 @@
     {{-- ======================= HERO SECTION ======================= --}}
     <section class="nb-hero" id="top">
         <div class="nb-container">
-            <div class="nb-hero-grid">
-                {{-- Narrative Column --}}
-                <div>
-                    <div class="nb-hero-kicker">
-                        <span class="nb-badge nb-badge--burgundy nb-badge--dot">2026/2027 Season</span>
-                        <span class="nb-badge nb-badge--gold">FST Errachidia</span>
-                    </div>
-
-                    <h1 class="nb-hero-title">
-                        THINK. SPEAK.<br>
-                        <span class="line-burg">CHANGE<span class="dot">.</span></span>
-                    </h1>
-
-                    <p class="nb-hero-sub">
-                        The premier student debate society at Faculté des Sciences et Techniques Errachidia. We train students to master public speaking, dismantle logical fallacies, and argue with conviction across English, French, and Arabic.
-                    </p>
-
-                    <div class="nb-hero-actions">
-                        <a href="{{ route('recrute') }}" class="nb-btn nb-btn--primary">
-                            Join the Club — Free →
-                        </a>
-                        <a href="#events" class="nb-btn nb-btn--outline">
-                            Upcoming Events ↓
-                        </a>
-                    </div>
-
-                    <div class="nb-hero-proof">
-                        <div class="nb-proof-item">
-                            <span class="nb-proof-num">150+</span>
-                            <span class="nb-proof-label">Active Debaters</span>
-                        </div>
-                        <div class="nb-proof-item">
-                            <span class="nb-proof-num">3</span>
-                            <span class="nb-proof-label">Languages (AR · FR · EN)</span>
-                        </div>
-                        <div class="nb-proof-item">
-                            <span class="nb-proof-num">Weekly</span>
-                            <span class="nb-proof-label">Open Rounds</span>
-                        </div>
-                    </div>
+            <div class="nb-hero-content">
+                <div class="nb-hero-kicker">
+                    <span class="nb-badge">2026/2027 Season</span>
+                    <span class="nb-badge">FST Errachidia</span>
                 </div>
 
-                {{-- Structured Visual Showcase Column --}}
-                <div class="nb-hero-showcase">
-                    <div class="nb-showcase-frame">
-                        <img src="{{ asset('images/memories/debate-round-01.jpg') }}" alt="Student debating at FST podium">
-                        <div class="nb-showcase-scrim"></div>
-                        <div class="nb-showcase-bar">
-                            <div class="nb-showcase-caption">
-                                <span class="nb-showcase-title">Amphithéâtre A · FST Errachidia</span>
-                                <span class="nb-showcase-sub">Weekly Parliamentary Sessions</span>
-                            </div>
-                            <span class="nb-badge nb-badge--gold" style="font-size:11px;">● Wednesdays 15:00</span>
-                        </div>
-                    </div>
+                <h1 class="nb-hero-title">
+                    Think. Speak.<br>
+                    <span class="line-burg">Change<span class="dot">.</span></span>
+                </h1>
 
-                    {{-- Docked Motion Card --}}
-                    <div class="nb-showcase-motion">
-                        <div class="nb-motion-top">
-                            <span class="nb-motion-tag">● Motion of the Week</span>
-                            <span class="nb-badge nb-badge--burgundy" style="padding:2px 8px; font-size:10px;">BP Round</span>
-                        </div>
-                        <p class="nb-motion-quote">
-                            "This House Would Mandate Ethics Training for AI Engineers in Moroccan Universities."
-                        </p>
-                        <div class="nb-motion-footer">
-                            <span>Gov: Cycle Ingénieur</span>
-                            <span>vs</span>
-                            <span>Opp: DEUST Team</span>
-                        </div>
-                    </div>
+                <p class="nb-hero-sub">
+                    A student-run debate club at FST Errachidia. We meet every Wednesday at 15:00 in Amphithéâtre A to debate in English, French and Arabic — no experience needed.
+                </p>
+
+                <div class="nb-hero-actions">
+                    <a href="{{ route('recrute') }}" class="nb-btn nb-btn--primary">
+                        Join the Club — Free →
+                    </a>
+                    <a href="#events" class="nb-btn nb-btn--outline">
+                        Upcoming Events ↓
+                    </a>
+                </div>
+
+                <div class="nb-hero-proof">
+                    <span class="nb-proof-item">
+                        <span class="nb-proof-num">150+</span>
+                        <span class="nb-proof-label">Active Debaters</span>
+                    </span>
+                    <span class="nb-proof-item">
+                        <span class="nb-proof-num">3</span>
+                        <span class="nb-proof-label">Languages</span>
+                    </span>
+                    <span class="nb-proof-item">
+                        <span class="nb-proof-num">Weekly</span>
+                        <span class="nb-proof-label">Open Rounds</span>
+                    </span>
                 </div>
             </div>
         </div>
     </section>
-
-    {{-- ======================= RUNNING MARQUEE ======================= --}}
-    <div class="nb-marquee" aria-hidden="true">
-        <div class="nb-marquee-track">
-            <span class="nb-marquee-item">THINK CRITICALLY <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">SPEAK WITH CONVICTION <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">3 LANGUAGES: ARABIC · FRENCH · ENGLISH <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">FST ERRACHIDIA <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">BRITISH PARLIAMENTARY DEBATE <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">ZERO PRE-REQUISITES <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">YOUR VOICE MATTERS <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">WEEKLY ORATORY CLINICS <span class="nb-marquee-dot"></span></span>
-            {{-- Duplication for continuous scroll --}}
-            <span class="nb-marquee-item">THINK CRITICALLY <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">SPEAK WITH CONVICTION <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">3 LANGUAGES: ARABIC · FRENCH · ENGLISH <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">FST ERRACHIDIA <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">BRITISH PARLIAMENTARY DEBATE <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">ZERO PRE-REQUISITES <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">YOUR VOICE MATTERS <span class="nb-marquee-dot"></span></span>
-            <span class="nb-marquee-item">WEEKLY ORATORY CLINICS <span class="nb-marquee-dot"></span></span>
-        </div>
-    </div>
 
     {{-- ======================= ABOUT SECTION ======================= --}}
     <section class="nb-about" id="about" aria-labelledby="about-title">
@@ -217,14 +160,14 @@
                 {{-- Narrative --}}
                 <div class="nb-about-narrative">
                     <span class="nb-badge nb-badge--burgundy">Nº01 — Who We Are</span>
-                    <h2 class="nb-h2" id="about-title" style="margin-top:16px;">
-                        More than speeches.<br><em>A gymnasium for the mind.</em>
+                    <h2 class="nb-h2" id="about-title">
+                        We meet to argue.<br><em>And to get better at it.</em>
                     </h2>
                     <p>
-                        TGD is not a passive lecture hall. It is a live arena. Every week, university students from all faculties step up to the podium, take an unexpected side — often the one they instinctively disagree with — and defend it under strict timing and rigorous counter-arguments.
+                        Every week we put a motion on the table. Two teams take a side, fifteen minutes to prepare, seven minutes each to speak. You learn to make a case, take a point of information, and change your mind when the argument demands it.
                     </p>
                     <p>
-                        We build unwavering confidence, dismantle rhetorical fallacies, debate as collaborative parliamentary teams, and trade ideas that stand the test of scrutiny.
+                        Members come from every department and every year. Some arrive terrified of the microphone; most leave able to hold a room. The rest is practice, and there is plenty of it.
                     </p>
 
                     <blockquote class="nb-charter-quote">
@@ -233,8 +176,13 @@
                     </blockquote>
                 </div>
 
-                {{-- Values Stack --}}
+                {{-- Portrait & Values Stack --}}
                 <div class="nb-about-stack">
+                    <figure class="nb-about-photo">
+                        <img src="{{ asset('images/memories/tournament-finale-03.jpg') }}" alt="Two TGD debaters shaking hands after the grand finale" loading="lazy">
+                        <figcaption>The Grand FST Debate Gala · Tournament Finale</figcaption>
+                    </figure>
+
                     <div class="nb-value-card">
                         <div class="nb-value-num">01</div>
                         <div>
@@ -269,11 +217,11 @@
             <div class="nb-section-head">
                 <div>
                     <span class="nb-badge nb-badge--gold">Nº02 — The Methodology</span>
-                    <h2 class="nb-h2" id="pillars-title" style="margin-top:14px;">
-                        Three <em>Pillars</em> of Mastery.
+                    <h2 class="nb-h2" id="pillars-title">
+                        Voice, logic<br>and <em>language.</em>
                     </h2>
                     <p class="nb-section-sub">
-                        Our structured training curriculum turns raw enthusiasm into eloquent, articulate persuasion that benefits your academic, professional, and personal life.
+                        Three things we practise every week: how you sound, how you think, and how you argue in more than one language.
                     </p>
                 </div>
                 <a href="{{ route('recrute') }}" class="nb-btn nb-btn--primary nb-btn--sm">Join This Season →</a>
@@ -287,7 +235,7 @@
                             <span class="nb-badge nb-badge--burgundy">01 / Voice</span>
                             <span class="nb-pillar-num">01</span>
                         </div>
-                        <h3>Public Speaking & Presence</h3>
+                        <h3>Public Speaking and Presence</h3>
                         <p>Improvisation drills, vocal modulation, cadence, and non-verbal mastery that convert anxiety into authentic commanding presence.</p>
                     </div>
                     <div class="nb-pillar-tags">
@@ -304,7 +252,7 @@
                             <span class="nb-badge nb-badge--gold">02 / Mind</span>
                             <span class="nb-pillar-num">02</span>
                         </div>
-                        <h3>Critical Thinking & Logic</h3>
+                        <h3>Critical Thinking and Logic</h3>
                         <p>Every claim must withstand scrutiny. Master structural syllogisms, identify cognitive biases, and deconstruct fallacies under tight pressure.</p>
                     </div>
                     <div class="nb-pillar-tags">
@@ -340,11 +288,11 @@
             <div class="nb-section-head">
                 <div>
                     <span class="nb-badge nb-badge--burgundy">Nº03 — Student Life</span>
-                    <h2 class="nb-h2" id="activities-title" style="margin-top:14px;">
+                    <h2 class="nb-h2" id="activities-title">
                         What We <em>Do</em> Each Week.
                     </h2>
                     <p class="nb-section-sub">
-                        Debate is just the beginning. Our calendar is packed with hands-on formats, masterclasses, and campus showdowns that bring students together across all disciplines.
+                        Beyond the weekly round, we run workshops, language-track sessions and the annual gala. Everything is open to every faculty.
                     </p>
                 </div>
                 <span class="nb-badge nb-badge--gold">Open to All Faculties</span>
@@ -355,7 +303,7 @@
                 <div class="nb-activity-card">
                     <div class="nb-activity-banner nb-activity-banner--burgundy">
                         <span class="nb-badge nb-badge--gold">Weekly Round</span>
-                        <span style="font-family:'Roboto Condensed'; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Wednesdays · 15:00</span>
+                        <span>Wednesdays · 15:00</span>
                     </div>
                     <div class="nb-activity-body">
                         <div>
@@ -363,10 +311,10 @@
                             <p>Four teams of two. 15 minutes of preparation after the motion is announced. 7 minutes per speaker. High adrenaline, strategic alliances, and intense points of information.</p>
                         </div>
                         <ul class="nb-activity-specs">
-                            <li>📍 Amphithéâtre A</li>
-                            <li>👥 8 Debaters + Jury</li>
-                            <li>⏱ 15m Prep · 7m Speeches</li>
-                            <li>🏆 Speaker Point Awards</li>
+                            <li>Amphithéâtre A</li>
+                            <li>8 Debaters + Jury</li>
+                            <li>15m Prep · 7m Speeches</li>
+                            <li>Speaker Point Awards</li>
                         </ul>
                     </div>
                 </div>
@@ -375,18 +323,18 @@
                 <div class="nb-activity-card">
                     <div class="nb-activity-banner nb-activity-banner--gold">
                         <span class="nb-badge nb-badge--burgundy">Skill Workshop</span>
-                        <span style="font-family:'Roboto Condensed'; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Bi-Weekly Sessions</span>
+                        <span>Bi-Weekly Sessions</span>
                     </div>
                     <div class="nb-activity-body">
                         <div>
-                            <h3>Rhetoric & Speech Clinics</h3>
+                            <h3>Rhetoric and Speech Clinics</h3>
                             <p>Interactive coaching sessions led by professors, guest debaters, and alumni. We analyze historical speeches, train breath and body language, and run spontaneous table topics.</p>
                         </div>
                         <ul class="nb-activity-specs">
-                            <li>📍 Library Conference Hall</li>
-                            <li>🎙 Mic Techniques</li>
-                            <li>🎭 Body Language</li>
-                            <li>📝 Speech Structure</li>
+                            <li>Library Conference Hall</li>
+                            <li>Mic Techniques</li>
+                            <li>Body Language</li>
+                            <li>Speech Structure</li>
                         </ul>
                     </div>
                 </div>
@@ -395,7 +343,7 @@
                 <div class="nb-activity-card">
                     <div class="nb-activity-banner nb-activity-banner--wine">
                         <span class="nb-badge nb-badge--gold">Multilingual</span>
-                        <span style="font-family:'Roboto Condensed'; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">3 Active Tracks</span>
+                        <span>3 Active Tracks</span>
                     </div>
                     <div class="nb-activity-body">
                         <div>
@@ -403,10 +351,10 @@
                             <p>Rotate between our English, French, and Arabic tracks. Gain conversational fluency, expand your technical vocabulary, and tailor arguments across distinct cultural perspectives.</p>
                         </div>
                         <ul class="nb-activity-specs">
-                            <li>🌐 English · FR · العربية</li>
-                            <li>🏅 Section Badges</li>
-                            <li>🤝 Cultural Exchange</li>
-                            <li>📈 Language Fluency</li>
+                            <li>English · French · Arabic</li>
+                            <li>Section Badges</li>
+                            <li>Cultural Exchange</li>
+                            <li>Language Fluency</li>
                         </ul>
                     </div>
                 </div>
@@ -415,7 +363,7 @@
                 <div class="nb-activity-card">
                     <div class="nb-activity-banner nb-activity-banner--dark">
                         <span class="nb-badge nb-badge--gold">Flagship Event</span>
-                        <span style="font-family:'Roboto Condensed'; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Spring Term</span>
+                        <span>Spring Term</span>
                     </div>
                     <div class="nb-activity-body">
                         <div>
@@ -423,10 +371,10 @@
                             <p>The crown jewel of our campus year. The finest debaters compete before an open auditorium of over 300 students, faculty deans, and external guests, culminating in an awards ceremony.</p>
                         </div>
                         <ul class="nb-activity-specs">
-                            <li>📍 Grand Auditorium</li>
-                            <li>👥 300+ Attendees</li>
-                            <li>🥇 TGD Championship Cup</li>
-                            <li>✨ Formal Ceremony</li>
+                            <li>Grand Auditorium</li>
+                            <li>300+ Attendees</li>
+                            <li>TGD Championship Cup</li>
+                            <li>Formal Ceremony</li>
                         </ul>
                     </div>
                 </div>
@@ -455,7 +403,7 @@
                 <div class="nb-section-head">
                     <div>
                         <span class="nb-badge nb-badge--gold">Nº04 — Live Calendar</span>
-                        <h2 class="nb-h2" id="events-title" style="margin-top:14px;">
+                        <h2 class="nb-h2" id="events-title">
                             What's <em>Next</em> on the Floor?
                         </h2>
                         <p class="nb-section-sub">
@@ -482,7 +430,7 @@
                                 </div>
                                 <div>
                                     <span class="nb-event-time">{{ $event->starts_at->translatedFormat('l · H:i') }}</span>
-                                    <div class="nb-event-loc">📍 {{ $event->location ?: 'Campus Hall TBA' }}</div>
+                                    <div class="nb-event-loc">{{ $event->location ?: 'Campus Hall TBA' }}</div>
                                 </div>
                             </div>
 
@@ -490,7 +438,7 @@
                         </div>
 
                         <div class="nb-event-footer">
-                            <span class="nb-badge nb-badge--burgundy" style="padding:3px 8px; font-size:10px;">
+                            <span class="nb-badge nb-badge--burgundy">
                                 {{ $event->team ? Str::upper($event->team) : 'Open Round' }}
                             </span>
 
@@ -524,13 +472,15 @@
         @php
         $teamMembers = [
         ['name' => 'Zoubine Soulaimane', 'role' => 'President', 'mark' => 'P', 'dept' => 'Executive Office'],
-        ['name' => 'Khaoula Meggouri', 'role' => 'Vice President', 'mark' => 'VP', 'dept' => 'Coordination'],
-        ['name' => 'Fanta Ba', 'role' => 'Secretary General', 'mark' => 'SG', 'dept' => 'Administration'],
-        ['name' => 'Ghezlane Herraf', 'role' => 'Media Manager', 'mark' => 'MM', 'dept' => 'Public Relations'],
-        ['name' => 'Hammali Imane', 'role' => 'Design Manager', 'mark' => 'DM', 'dept' => 'Brand & Creative'],
+        ['name' => 'Wissal Jamal', 'role' => 'Vice President', 'mark' => 'VP', 'dept' => 'Coordination'],
+        ['name' => 'Fanta Ba', 'role' => 'General assistant', 'mark' => 'SG', 'dept' => 'Administration'],
+        ['name' => 'Baidi oussama', 'role' => 'RH Manager', 'mark' => 'MM', 'dept' => 'Public Relations'],
+        ['name' => 'Hammali Imane', 'role' => 'Media Manager', 'mark' => 'DM', 'dept' => 'Brand & Creative'],
+        ['name' => 'Ghezlane Herraf', 'role' => 'Design Manager', 'mark' => 'MM', 'dept' => 'Public Relations'],
+        ['name' => 'Abdousse NourEddine', 'role' => 'Event Manager ', 'mark' => 'FR', 'dept' => 'French Eloquence'],
+        ['name' => 'Khaoula Meggouri', 'role' => 'Event Manager Assistant ', 'mark' => 'FR', 'dept' => 'French Eloquence'],
         ['name' => 'Aymane Fassali', 'role' => 'English Section Lead', 'mark' => 'EN', 'dept' => 'English BP Track'],
-        ['name' => 'Wissal Jamal', 'role' => 'French Section Lead', 'mark' => 'FR', 'dept' => 'French Eloquence'],
-        ['name' => 'Fatima Ezahrae Oubahou', 'role' => 'Arabic Section Lead', 'mark' => 'AR', 'dept' => 'Arabic Rhetoric'],
+        ['name' => 'Oubahou Fatima Ezahrae', 'role' => 'Arabic Section Lead', 'mark' => 'AR', 'dept' => 'Arabic Rhetoric'],
         ];
 
         $initials = fn (string $n) => collect(explode(' ', trim($n)))
@@ -542,11 +492,11 @@
                 <div class="nb-section-head">
                     <div>
                         <span class="nb-badge nb-badge--burgundy">Nº05 — Leadership</span>
-                        <h2 class="nb-h2" id="team-title" style="margin-top:14px;">
-                            The Bureau Behind <em>the Mic.</em>
+                        <h2 class="nb-h2" id="team-title">
+                            The students behind <em>the club.</em>
                         </h2>
                         <p class="nb-section-sub">
-                            Eight desks, one shared mission. Our student-elected bureau coordinates rounds, manages language tracks, books campus venues, and ensures every voice gets heard.
+                            The people who schedule rounds, keep the three language tracks going, and make sure newcomers get a seat.
                         </p>
                     </div>
                     <span class="nb-badge nb-badge--gold">Elected 2026/2027</span>
@@ -572,9 +522,7 @@
                         <div class="nb-team-info">
                             <h3>{{ $member['name'] }}</h3>
                             <span class="nb-team-role">{{ $member['role'] }}</span>
-                            <span style="font-family:'Roboto Condensed'; font-size:11px; color:var(--nb-ink-muted); letter-spacing:.04em; text-transform:uppercase; margin-top:3px; display:block;">
-                                {{ $member['dept'] }}
-                            </span>
+                            <span class="nb-team-dept">{{ $member['dept'] }}</span>
                         </div>
                     </article>
                     @endforeach
@@ -617,11 +565,11 @@
                 <div class="nb-section-head">
                     <div>
                         <span class="nb-badge nb-badge--gold">Nº06 — Photo Archive</span>
-                        <h2 class="nb-h2" id="memories-title" style="margin-top:14px;">
+                        <h2 class="nb-h2" id="memories-title">
                             Snapshots from <em>the Floor.</em>
                         </h2>
                         <p class="nb-section-sub">
-                            Authentic memories from our tournaments, late-night argument jams, and award celebrations at FST Errachidia.
+                            Photos from our rounds, workshops and the annual gala at FST Errachidia.
                         </p>
                     </div>
                     <div class="nb-memories-controls">
@@ -638,7 +586,7 @@
                             <img src="{{ asset('images/memories/' . $img) }}" alt="TGD Event Photo {{ $index + 1 }}" loading="lazy">
                             <figcaption class="nb-memory-caption">
                                 <span>{{ $captions[$index % count($captions)] ?? 'TGD Live Session' }}</span>
-                                <span class="nb-badge nb-badge--gold" style="padding:2px 6px; font-size:10px;">Nº{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                <span class="nb-badge nb-badge--gold">Nº{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
                             </figcaption>
                         </figure>
                         @endforeach
@@ -654,11 +602,11 @@
                 <div class="nb-section-head">
                     <div>
                         <span class="nb-badge nb-badge--burgundy">Nº07 — Student Voices</span>
-                        <h2 class="nb-h2" id="testimonials-title" style="margin-top:14px;">
+                        <h2 class="nb-h2" id="testimonials-title">
                             From First-Year to <em>the Podium.</em>
                         </h2>
                         <p class="nb-section-sub">
-                            Real stories from students across different faculties who unlocked their confidence and critical reasoning through TGD.
+                            Members on what changed after a few months at the podium.
                         </p>
                     </div>
                     <span class="nb-badge nb-badge--gold">100% Student Testimonials</span>
@@ -717,7 +665,7 @@
                             Your Voice<br><em>Belongs Here.</em>
                         </h2>
                         <p>
-                            One membership. Three languages. Infinite growth. Pull up a chair, take the opposite side, and argue like it matters — because in university and beyond, your voice shapes the future.
+                            Membership is free and open to every FST student. Come to one session or come to all of them — the floor is yours.
                         </p>
 
                         <ul class="nb-cta-checklist">
@@ -768,7 +716,7 @@
                             The official student debate society at Faculté des Sciences et Techniques Errachidia, dedicated to public speaking, critical reasoning, and trilingual debate.
                         </p>
                         <div class="nb-footer-uni-badge">
-                            <span>🏛️ Faculté des Sciences et Techniques · Errachidia</span>
+                            <span>Faculté des Sciences et Techniques · Errachidia</span>
                         </div>
                     </div>
 
@@ -787,9 +735,9 @@
                     <div class="nb-footer-col">
                         <h4>Language Tracks</h4>
                         <ul>
-                            <li><a href="#activities">🇬🇧 English BP Track</a></li>
-                            <li><a href="#activities">🇫🇷 Section Française</a></li>
-                            <li><a href="#activities">🇲🇦 فرع المناظرة بالعربية</a></li>
+                            <li><a href="#activities">English BP Track</a></li>
+                            <li><a href="#activities">Section Française</a></li>
+                            <li><a href="#activities">فرع المناظرة بالعربية</a></li>
                             <li><a href="#activities">Bi-Weekly Masterclasses</a></li>
                             <li><a href="#activities">Annual Championship Gala</a></li>
                         </ul>

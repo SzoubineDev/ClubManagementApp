@@ -16,13 +16,14 @@ class EnsureNotSuspended
             return $next($request);
         }
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Your account has been suspended.'], 403);
+        }
+
         // Allowed routes for suspended users
         $allowed = [
             'suspended',
             'logout',
-            'profile.edit',
-            'profile.update',
-            'profile.destroy',
         ];
 
         if ($request->routeIs($allowed)) {

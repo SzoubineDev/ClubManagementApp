@@ -162,9 +162,6 @@ class MemberController extends Controller
 
         $member->suspend($request->input('reason'));
 
-        // Kick the suspended user out of any live session immediately.
-        \DB::table('sessions')->where('user_id', $member->id)->delete();
-
         if ($request->expectsJson()) {
             return response()->json(['ok' => true, 'message' => "{$member->name} has been suspended."]);
         }

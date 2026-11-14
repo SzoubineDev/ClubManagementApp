@@ -130,8 +130,8 @@
                              <th class="hide-mobile col-secondary">CNE</th>
                              <th class="only-desktop col-optional">Filière</th>
                              <th class="hide-mobile col-optional">Team</th>
-                             <th>Roles</th>
-                             <th></th>
+                             <th class="hide-mobile">Roles</th>
+                             <th class="td-right">Action</th>
                          </tr>
                      </thead>
 
@@ -162,6 +162,14 @@
                                          </div>
 
                                          <p class="cell-sub truncate">{{ $member->email }}</p>
+                                         <div class="mobile-member-chips hide-desktop" style="display: none;">
+                                             @if ($member->team)
+                                             <span class="chip chip--sm capitalize">{{ $member->team }}</span>
+                                             @endif
+                                             @foreach ($member->roles as $role)
+                                             <span class="chip chip--sm {{ $role->name === 'president' ? 'chip--primary-solid' : '' }}">{{ str_replace('_', ' ', $role->name) }}</span>
+                                             @endforeach
+                                         </div>
                                      </div>
                                  </div>
                              </td>
@@ -177,7 +185,7 @@
                                  @endif
                              </td>
 
-                             <td>
+                             <td class="hide-mobile">
                                  <div class="chip-row">
                                      @forelse ($member->roles as $role)
                                      <span

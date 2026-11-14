@@ -106,9 +106,9 @@
                         <tr>
                             <th>Applicant</th>
                             <th class="hide-mobile col-secondary">Phone</th>
-                            <th class="col-optional">CNE</th>
+                            <th class="hide-mobile col-optional">CNE</th>
                             <th class="hide-mobile col-optional">Section</th>
-                            <th class="col-optional">Filière</th>
+                            <th class="hide-mobile col-optional">Filière</th>
                             <th class="hide-mobile col-secondary">Submitted</th>
                             <th>Status</th>
                             <th class="td-right">Actions</th>
@@ -122,13 +122,16 @@
                                 <div class="min-w-0">
                                     <div class="cell-title truncate">{{ $application->full_name }}</div>
                                     <p class="cell-sub truncate">{{ $application->email }}</p>
+                                    <p class="cell-sub hide-desktop" style="display: none; margin-top: 2px; font-size: 11.5px;">
+                                        {{ $application->cne }} · {{ $application->filiere }}
+                                    </p>
                                 </div>
                             </td>
 
                             <td class="hide-mobile col-secondary tabular">{{ $application->phone_number }}</td>
-                            <td class="col-optional tabular">{{ $application->cne }}</td>
+                            <td class="hide-mobile col-optional tabular">{{ $application->cne }}</td>
                             <td class="hide-mobile col-optional">{{ $application->sectionLabel() }}</td>
-                            <td class="col-optional">{{ $application->filiere }}</td>
+                            <td class="hide-mobile col-optional">{{ $application->filiere }}</td>
                             <td class="hide-mobile col-secondary tabular">{{ $application->created_at?->format('M j, Y') }}</td>
 
                             <td>

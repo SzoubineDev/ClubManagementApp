@@ -2,8 +2,8 @@
 {{-- Page-level Alpine scope so `loading` is shared with the submit button --}}
 <div x-data="{ loading: false }">
 
-    <div style="margin-bottom:14px;">
-        <span style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--nb-gold);color:var(--nb-ink);border:2px solid var(--nb-ink);padding:4px 10px;box-shadow:2px 2px 0 var(--nb-ink);">New members · Join the club</span>
+    <div>
+        <span class="auth-eyebrow auth-eyebrow--accent">New members · Join the club</span>
     </div>
     <div class="mb-6">
         <h1 class="auth-title">Create your account</h1>

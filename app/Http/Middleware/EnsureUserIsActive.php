@@ -19,12 +19,11 @@ class EnsureUserIsActive
         $user = $request->user();
 
         if ($user && $user->isSuspended()) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Your account has been suspended.'], 403);
+            }
 
-            return redirect()->route('suspended.guest')
-                ->with('status', 'Your account has been suspended.');
+            return redirect()->route('suspended');
         }
 
         return $next($request);

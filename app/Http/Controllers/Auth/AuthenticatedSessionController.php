@@ -26,17 +26,12 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        // Suspended accounts cannot sign in — log them out immediately and
-        // send them to the suspension notice page.
-        if ($request->user()->isSuspended()) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('suspended.guest');
-        }
-
         $request->session()->regenerate();
+
+        // Suspended accounts are redirected straight to their dedicated suspension notice.
+        if ($request->user()->isSuspended()) {
+            return redirect()->route('suspended');
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

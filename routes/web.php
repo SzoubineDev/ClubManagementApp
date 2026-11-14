@@ -23,15 +23,32 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 
-// Suspension notice — viewable by guests (e.g. right after a blocked login)
-// and by suspended users bounced out of the app by EnsureUserIsActive.
-Route::middleware('guest')->get('/account-suspended', function () {
-    return view('suspended');
+// Suspension notice — viewable by guests or as a fallback
+Route::get('/account-suspended', function () {
+    if (auth()->check()) {
+        return redirect()->route('suspended');
+    }
+
+    return view('suspended', [
+        'user' => null,
+        'reason' => session('suspension_reason') ?? session('reason'),
+        'suspended_at' => session('suspended_at'),
+    ]);
 })->name('suspended.guest');
 
-// Suspended users who still hold a session land here instead of the app.
+// Suspended users land here with full context
 Route::middleware('auth')->get('/suspended', function () {
-    return view('suspended');
+    $user = auth()->user();
+
+    if (! $user->isSuspended()) {
+        return redirect()->route('dashboard');
+    }
+
+    return view('suspended', [
+        'user' => $user,
+        'reason' => $user->suspension_reason,
+        'suspended_at' => $user->suspended_at,
+    ]);
 })->name('suspended');
 
 // Landing page — logged-in users get redirected straight to the app

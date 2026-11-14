@@ -173,4 +173,80 @@ class EventWorkflowTest extends TestCase
         $index = $this->actingAs($this->member())->get(route('events.index'))->getContent();
         $this->assertStringNotContainsString('Revert me', $index);
     }
+
+    public function test_create_event_page_renders_form_fields(): void
+    {
+        $response = $this->actingAs($this->president())
+            ->get(route('events.create'));
+
+        $response->assertOk();
+        $response->assertSee('Event Title');
+        $response->assertSee('Location / Venue');
+        $response->assertSee('Starts at');
+        $response->assertSee('Ends at');
+        $response->assertSee('Capacity');
+        $response->assertSee('Audience Restriction');
+        $response->assertSee('Open to All');
+        $response->assertSee('Restrict to Team');
+        $response->assertSee('Restrict to Filière', false);
+    }
+
+    public function test_president_can_create_event_with_team_targeting(): void
+    {
+        $response = $this->actingAs($this->president())->post(route('events.store'), [
+            'title' => 'Arabic Debate Workshop',
+            'starts_at' => now()->addDays(2)->format('Y-m-d H:i:s'),
+            'team' => 'arabic',
+            'submit_action' => 'publish',
+        ]);
+
+        $response->assertRedirect();
+        $event = Event::firstWhere('title', 'Arabic Debate Workshop');
+        $this->assertNotNull($event);
+        $this->assertSame('arabic', $event->team);
+        $this->assertNull($event->filiere);
+    }
+
+    public function test_president_can_create_event_with_filiere_targeting(): void
+    {
+        $response = $this->actingAs($this->president())->post(route('events.store'), [
+            'title' => 'Master Student Research Talk',
+            'starts_at' => now()->addDays(3)->format('Y-m-d H:i:s'),
+            'filiere' => 'Master',
+            'submit_action' => 'draft',
+        ]);
+
+        $response->assertRedirect();
+        $event = Event::firstWhere('title', 'Master Student Research Talk');
+        $this->assertNotNull($event);
+        $this->assertSame('Master', $event->filiere);
+        $this->assertNull($event->team);
+    }
+
+    public function test_president_can_create_event_with_capacity(): void
+    {
+        $response = $this->actingAs($this->president())->post(route('events.store'), [
+            'title' => 'Exclusive Round Table',
+            'starts_at' => now()->addDays(4)->format('Y-m-d H:i:s'),
+            'capacity' => 30,
+            'submit_action' => 'publish',
+        ]);
+
+        $response->assertRedirect();
+        $event = Event::firstWhere('title', 'Exclusive Round Table');
+        $this->assertNotNull($event);
+        $this->assertSame(30, $event->capacity);
+    }
+
+    public function test_event_form_rejects_conflicting_team_and_filiere(): void
+    {
+        $response = $this->actingAs($this->president())->post(route('events.store'), [
+            'title' => 'Invalid Event',
+            'starts_at' => now()->addDays(2)->format('Y-m-d H:i:s'),
+            'team' => 'french',
+            'filiere' => 'LICENSE',
+        ]);
+
+        $response->assertSessionHasErrors('filiere');
+    }
 }

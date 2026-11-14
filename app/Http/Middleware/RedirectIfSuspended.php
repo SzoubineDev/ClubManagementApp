@@ -17,11 +17,7 @@ class RedirectIfSuspended
         $user = $request->user();
 
         if ($user && $user->isSuspended()) {
-            auth()->guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('suspended.guest');
+            return redirect()->route('suspended');
         }
 
         return $next($request);

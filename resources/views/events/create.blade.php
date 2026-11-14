@@ -1,9 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div>
-            <a href="{{ route('events.index') }}" class="breadcrumb-link">← Events</a>
-            <h1 class="page-header-title mt-1">Create event</h1>
-            <p class="page-header-sub">Fill in the details below</p>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+                <a href="{{ route('events.index') }}" class="breadcrumb-link">← Events</a>
+                <h1 class="page-header-title mt-1">Create Event</h1>
+                <p class="page-header-sub">Fill in the event details below.</p>
+            </div>
         </div>
     </x-slot>
 
@@ -31,7 +33,7 @@
 
             @include('events._form', ['event' => null])
 
-            <div class="card-footer">
+            <div class="card-footer flex items-center justify-between gap-3 flex-wrap">
                 <a href="{{ route('events.index') }}" class="text-action">Cancel</a>
 
                 <div class="flex gap-2 flex-wrap">
@@ -39,9 +41,6 @@
                         Save as draft
                     </button>
                     <button type="submit" name="submit_action" value="publish" class="btn btn-primary">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
                         Publish event
                     </button>
                 </div>

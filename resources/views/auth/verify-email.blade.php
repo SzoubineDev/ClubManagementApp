@@ -14,7 +14,7 @@
 </div>
 @endif
 
-<form method="POST" action="{{ route('verification.resend') }}" class="auth-form">
+<form method="POST" action="{{ route('verification.send') }}" class="auth-form">
     @csrf
     <x-primary-button class="btn-block">
         {{ __('Resend Verification Email') }}
