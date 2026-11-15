@@ -127,6 +127,40 @@
 
         {{-- RSVP --}}
         @php $alreadyRegistered = auth()->user()->isRegisteredFor($event); @endphp
+
+        @if (! $event->isPublished())
+        {{--
+            Draft event — registration is closed server-side
+            (EventRsvpController::store() returns 403), so the button is
+            disabled and explains why on hover and click.
+        --}}
+        <div class="card animate-fade-in-up delay-100">
+            <div class="card-body flex items-center justify-between gap-4 flex-wrap">
+                <div class="min-w-0">
+                    <p class="text-base font-medium text-ink">Not open for registration</p>
+                    <p class="cell-sub" id="rsvp-draft-note">
+                        This event is still a draft. RSVP opens once it is published.
+                    </p>
+                </div>
+
+                <span
+                    class="rsvp-draft-control"
+                    title="This event is not published yet."
+                    aria-describedby="rsvp-draft-note"
+                    style="display:inline-block; cursor:not-allowed;"
+                    onclick="window.alert('This event is not published yet. RSVP will open once it is published.')">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        style="min-width: 140px;"
+                        disabled
+                        aria-describedby="rsvp-draft-note">
+                        RSVP
+                    </button>
+                </span>
+            </div>
+        </div>
+        @else
         <div class="card animate-fade-in-up delay-100">
             <div class="card-body flex items-center justify-between gap-4 flex-wrap">
                 <div class="min-w-0">
@@ -161,6 +195,7 @@
                 @endif
             </div>
         </div>
+        @endif
 
         {{-- Attendees --}}
         @if ($event->attendees->isNotEmpty())

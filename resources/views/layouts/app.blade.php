@@ -30,6 +30,30 @@
                     {{ __('Applications') }}
                 </x-nav-link>
                 @endcan
+
+                @if (Auth::user()->isSectionChef() && Auth::user()->sectionTeam())
+                <x-nav-link :href="route('section.attendance.index')" :active="request()->routeIs('section.attendance.*')">
+                    {{ __('My Section') }}
+                </x-nav-link>
+                @endif
+
+                @can('viewAny', \App\Models\Video::class)
+                <x-nav-link :href="route('videos.index')" :active="request()->routeIs('videos.*')">
+                    {{ __('Media') }}
+                </x-nav-link>
+                @endcan
+
+                @can('viewDesignAny', \App\Models\Video::class)
+                <x-nav-link :href="route('design.videos.index')" :active="request()->routeIs('design.videos.*')">
+                    {{ __('Design') }}
+                </x-nav-link>
+                @endcan
+
+                @can('documents.download')
+                <x-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.*')">
+                    {{ __('Documents') }}
+                </x-nav-link>
+                @endcan
             </nav>
 
             <div class="toolbar-spacer"></div>
@@ -94,6 +118,30 @@
                 @can('viewAny', \App\Models\UserRecrute::class)
                 <x-responsive-nav-link :href="route('applications.index')" :active="request()->routeIs('applications.*')" @click="mobileOpen = false">
                     {{ __('Applications') }}
+                </x-responsive-nav-link>
+                @endcan
+
+                @if (Auth::user()->isSectionChef() && Auth::user()->sectionTeam())
+                <x-responsive-nav-link :href="route('section.attendance.index')" :active="request()->routeIs('section.attendance.*')" @click="mobileOpen = false">
+                    {{ __('My Section') }}
+                </x-responsive-nav-link>
+                @endif
+
+                @can('viewAny', \App\Models\Video::class)
+                <x-responsive-nav-link :href="route('videos.index')" :active="request()->routeIs('videos.*')" @click="mobileOpen = false">
+                    {{ __('Media') }}
+                </x-responsive-nav-link>
+                @endcan
+
+                @can('viewDesignAny', \App\Models\Video::class)
+                <x-responsive-nav-link :href="route('design.videos.index')" :active="request()->routeIs('design.videos.*')" @click="mobileOpen = false">
+                    {{ __('Design') }}
+                </x-responsive-nav-link>
+                @endcan
+
+                @can('documents.download')
+                <x-responsive-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.*')" @click="mobileOpen = false">
+                    {{ __('Documents') }}
                 </x-responsive-nav-link>
                 @endcan
                 <div class="mobile-nav-section">

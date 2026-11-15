@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
         // Roles & permissions first — the test user needs the member role to exist
         $this->call([
             RolePermissionSeeder::class,
+            VideoSeeder::class,
+            DesignVideoSeeder::class,
         ]);
 
         $president = User::factory()->create([

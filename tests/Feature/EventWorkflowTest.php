@@ -95,6 +95,59 @@ class EventWorkflowTest extends TestCase
         $this->actingAs($president)->get(route('events.show', $event))->assertOk();
     }
 
+    public function test_draft_event_page_disables_rsvp_and_explains_why(): void
+    {
+        $president = $this->president();
+
+        $event = Event::create([
+            'title' => 'Unpublished workshop',
+            'starts_at' => now()->addDays(3),
+            'created_by' => $president->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($president)->get(route('events.show', $event));
+
+        $response->assertOk();
+        // The button is disabled and both the hover tooltip and the visible
+        // helper text explain that the event is not published yet.
+        $response->assertSee('disabled', false);
+        $response->assertSee('This event is not published yet.', false);
+        $response->assertSee('This event is still a draft. RSVP opens once it is published.');
+
+        // No active RSVP form is rendered for a draft.
+        $response->assertDontSee(route('events.rsvp', $event), false);
+
+        // The server keeps rejecting direct RSVP attempts for drafts.
+        $this->actingAs($president)
+            ->post(route('events.rsvp', $event))
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('event_user', [
+            'event_id' => $event->id,
+            'user_id' => $president->id,
+        ]);
+    }
+
+    public function test_published_event_page_keeps_the_active_rsvp_form(): void
+    {
+        $president = $this->president();
+
+        $event = Event::create([
+            'title' => 'Published workshop',
+            'starts_at' => now()->addDays(3),
+            'created_by' => $president->id,
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->member())->get(route('events.show', $event));
+
+        $response->assertOk();
+        $response->assertSee(route('events.rsvp', $event), false);
+        $response->assertDontSee('This event is still a draft. RSVP opens once it is published.');
+    }
+
     public function test_president_can_publish_immediately_on_creation(): void
     {
         $response = $this->actingAs($this->president())->post(route('events.store'), [

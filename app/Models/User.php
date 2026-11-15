@@ -43,7 +43,56 @@ class User extends Authenticatable
 
     public function isTeamLeadOf(string $team): bool
     {
-        return $this->hasRole('team_lead') && $this->team === $team;
+        return $this->hasAnyRole(['team_lead', 'section_chef']) && $this->team === $team;
+    }
+
+    /**
+     * Is this user the chef (lead) of a debate section?
+     *
+     * `section_chef` is the production role; `team_lead` is kept as a
+     * backwards-compatible alias for older data.
+     */
+    public function isSectionChef(): bool
+    {
+        return $this->hasAnyRole(['section_chef', 'team_lead']);
+    }
+
+    /**
+     * The section this user leads, as a lowercase team name.
+     */
+    public function sectionTeam(): ?string
+    {
+        if (! $this->isSectionChef()) {
+            return null;
+        }
+
+        return in_array($this->team, ['arabic', 'english', 'french'], true)
+            ? $this->team
+            : null;
+    }
+
+    /**
+     * Human-readable section name for the chef's own section.
+     */
+    public function sectionName(): ?string
+    {
+        return match ($this->sectionTeam()) {
+            'arabic' => 'Arabic',
+            'english' => 'English',
+            'french' => 'French',
+            default => null,
+        };
+    }
+
+    /**
+     * The recruitment section code (AR / EN / FR) this user leads, if any.
+     *
+     * Section chefs store their section as a lowercase team name
+     * (arabic / english / french).
+     */
+    public function recruitmentSection(): ?string
+    {
+        return UserRecrute::SECTION_BY_TEAM[$this->sectionTeam()] ?? null;
     }
 
     public function events()
@@ -56,6 +105,14 @@ class User extends Authenticatable
     public function isRegisteredFor(Event $event): bool
     {
         return $this->events()->where('event_id', $event->id)->exists();
+    }
+
+    /**
+     * Daily section-presence records (separate from event attendance).
+     */
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class);
     }
 
     public function isPresident(): bool

@@ -52,7 +52,10 @@
                     {{-- Team --}}
                     @can('updateTeam', $member)
                     <div x-data="{ selectedTeam: '{{ old('team', $member->team ?? '') }}' }">
-                        <label class="field-label static">Team</label>
+                        <label class="field-label static">Team / Section</label>
+                        <p class="text-sm text-muted" style="margin: -4px 0 10px;">
+                            Section chefs must choose Arabic, English, or French here.
+                        </p>
 
                         @php
                         $teamOptions = [
@@ -86,6 +89,9 @@
                     @can('updateRoles', $member)
                     <div>
                         <label class="field-label static">Roles</label>
+                        <p class="text-sm text-muted" style="margin: -4px 0 10px;">
+                            Assign a section chef together with a section above. There can only be one president.
+                        </p>
 
                         @php
                         $allRoles = \Spatie\Permission\Models\Role::orderBy('name')->pluck('name');

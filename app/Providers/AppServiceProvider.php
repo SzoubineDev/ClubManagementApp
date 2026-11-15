@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Models\UserRecrute;
+use App\Models\Video;
 use App\Policies\ApplicationPolicy;
 use App\Policies\MemberPolicy;
+use App\Policies\VideoPolicy;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(User::class, MemberPolicy::class);
         Gate::policy(UserRecrute::class, ApplicationPolicy::class);
+        Gate::policy(Video::class, VideoPolicy::class);
+
+        // Official documents (e.g. room requests) are handled by the
+        // assistant general, with managers keeping oversight access.
+        Gate::define('documents.download', function (User $user) {
+            return $user->isManager() || $user->hasRole('assistant_general');
+        });
 
         // Allow {member} route binding to find soft-deleted users too
         Route::bind('member', function ($value) {

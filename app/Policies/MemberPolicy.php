@@ -8,7 +8,7 @@ class MemberPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['president', 'vice_president', 'rh', 'admin']);
+        return $user->hasAnyRole(['president', 'vice_president', 'rh', 'rh_manager', 'admin']);
     }
 
     public function view(User $user, User $member): bool
@@ -17,7 +17,7 @@ class MemberPolicy
             return true;
         }
 
-        return $user->hasAnyRole(['president', 'vice_president', 'rh', 'admin']);
+        return $user->hasAnyRole(['president', 'vice_president', 'rh', 'rh_manager', 'admin']);
     }
 
     /**

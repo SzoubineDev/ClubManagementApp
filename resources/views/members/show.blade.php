@@ -155,6 +155,45 @@
                         </div>
                         @endif
                     </div>
+
+                    {{-- Daily section presence (RH managers) --}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Daily presence history</h2>
+                            <span class="chip chip--outline tabular">
+                                {{ $attendanceSummary['present'] }} / {{ $attendanceSummary['recorded'] }} present
+                            </span>
+                        </div>
+
+                        @if ($attendanceHistory->isEmpty())
+                        <div class="empty-state">No daily presence recorded yet.</div>
+                        @else
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th class="td-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($attendanceHistory as $record)
+                                    <tr>
+                                        <td class="cell-title">{{ $record->date->format('M j, Y') }}</td>
+                                        <td class="td-right">
+                                            @if ($record->present)
+                                            <span class="status-label status-label--on">Present</span>
+                                            @else
+                                            <span class="status-label text-muted">Absent</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endif
+                    </div>
                 </div>
 
                 {{-- Right --}}

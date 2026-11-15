@@ -54,6 +54,15 @@ class RolePermissionSeeder extends Seeder
             'documents.create',
             'documents.update',
             'documents.delete',
+            'documents.download',
+
+            'attendance.viewAny',
+            'attendance.manageSection',
+
+            'videos.viewAny',
+            'videos.create',
+            'videos.update',
+            'videos.delete',
 
             'settings.manage',
         ];
@@ -91,6 +100,48 @@ class RolePermissionSeeder extends Seeder
             'teams.manageMembers',
             'documents.create',
             'documents.update',
+        ]);
+
+        // section_chef — leads one debate section (Arabic / English / French)
+        $sectionChef = Role::firstOrCreate(['name' => 'section_chef']);
+        $sectionChef->syncPermissions([
+            ...$member->permissions->pluck('name')->toArray(),
+            'members.viewAny',
+            'members.view',
+            'attendance.manageSection',
+        ]);
+
+        // rh_manager — read-only member directory + daily presence history
+        $rhManager = Role::firstOrCreate(['name' => 'rh_manager']);
+        $rhManager->syncPermissions([
+            ...$member->permissions->pluck('name')->toArray(),
+            'members.viewAny',
+            'members.view',
+            'attendance.viewAny',
+        ]);
+
+        // media_manager — owns the YouTube media library
+        $mediaManager = Role::firstOrCreate(['name' => 'media_manager']);
+        $mediaManager->syncPermissions([
+            ...$member->permissions->pluck('name')->toArray(),
+            'videos.viewAny',
+            'videos.create',
+            'videos.update',
+            'videos.delete',
+        ]);
+
+        // design_manager — creative/branding role (no extra permissions yet)
+        $designManager = Role::firstOrCreate(['name' => 'design_manager']);
+        $designManager->syncPermissions([
+            ...$member->permissions->pluck('name')->toArray(),
+        ]);
+
+        // assistant_general — official document downloads
+        $assistantGeneral = Role::firstOrCreate(['name' => 'assistant_general']);
+        $assistantGeneral->syncPermissions([
+            ...$member->permissions->pluck('name')->toArray(),
+            'documents.viewAny',
+            'documents.download',
         ]);
 
         // social_media_manager
@@ -160,6 +211,13 @@ class RolePermissionSeeder extends Seeder
             'teams.manageMembers',
             'documents.create',
             'documents.update',
+            'documents.download',
+            'attendance.viewAny',
+            'attendance.manageSection',
+            'videos.viewAny',
+            'videos.create',
+            'videos.update',
+            'videos.delete',
         ]);
 
         // vice_president — everything except settings + role assignment

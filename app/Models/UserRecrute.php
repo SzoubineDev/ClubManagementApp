@@ -45,6 +45,17 @@ class UserRecrute extends Model
     ];
 
     /**
+     * Maps a section lead's `team` value to the application section code.
+     *
+     * @var array<string, string>
+     */
+    public const SECTION_BY_TEAM = [
+        'arabic' => 'AR',
+        'english' => 'EN',
+        'french' => 'FR',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

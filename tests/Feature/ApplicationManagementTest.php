@@ -17,7 +17,7 @@ class ApplicationManagementTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['member', 'president', 'vice_president', 'secretary_general', 'admin'] as $role) {
+        foreach (['member', 'president', 'vice_president', 'secretary_general', 'admin', 'team_lead'] as $role) {
             Role::findOrCreate($role, 'web');
         }
     }
@@ -40,6 +40,18 @@ class ApplicationManagementTest extends TestCase
             'email_verified_at' => now(),
         ]);
         $user->assignRole('member');
+
+        return $user;
+    }
+
+    private function sectionLead(string $team): User
+    {
+        $user = User::factory()->create([
+            'is_suspended' => false,
+            'email_verified_at' => now(),
+            'team' => $team,
+        ]);
+        $user->assignRole('team_lead');
 
         return $user;
     }
@@ -116,6 +128,93 @@ class ApplicationManagementTest extends TestCase
         $this->actingAs($this->member())
             ->get(route('applications.index'))
             ->assertForbidden();
+    }
+
+    public function test_section_lead_sees_only_applications_from_their_section(): void
+    {
+        $this->application(['first_name' => 'English', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'French', 'preferred_section' => 'FR']);
+        $this->application(['first_name' => 'Arabic', 'preferred_section' => 'AR']);
+
+        $this->actingAs($this->sectionLead('english'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertSee('English')
+            ->assertDontSee('French')
+            ->assertDontSee('Arabic');
+
+        $this->actingAs($this->sectionLead('french'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertSee('French')
+            ->assertDontSee('English')
+            ->assertDontSee('Arabic');
+
+        $this->actingAs($this->sectionLead('arabic'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertSee('Arabic')
+            ->assertDontSee('English')
+            ->assertDontSee('French');
+    }
+
+    public function test_section_lead_counts_are_scoped_to_their_section(): void
+    {
+        $this->application(['preferred_section' => 'EN', 'status' => 'accepted']);
+        $this->application(['preferred_section' => 'EN', 'status' => 'rejected']);
+        $this->application(['preferred_section' => 'FR', 'status' => 'accepted']);
+        $this->application(['preferred_section' => 'AR', 'status' => 'pending']);
+
+        $this->actingAs($this->sectionLead('english'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertViewHas('counts', function (array $counts) {
+                return $counts['all'] === 2
+                    && $counts['accepted'] === 1
+                    && $counts['rejected'] === 1
+                    && $counts['pending'] === 0
+                    && $counts['passed_to_test'] === 0;
+            });
+    }
+
+    public function test_president_still_sees_every_section(): void
+    {
+        $this->application(['first_name' => 'English', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'French', 'preferred_section' => 'FR']);
+        $this->application(['first_name' => 'Arabic', 'preferred_section' => 'AR']);
+
+        $this->actingAs($this->manager('president'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertSee('English')
+            ->assertSee('French')
+            ->assertSee('Arabic');
+    }
+
+    public function test_section_lead_cannot_view_another_sections_application(): void
+    {
+        $application = $this->application(['preferred_section' => 'FR']);
+
+        $this->assertFalse(
+            $this->sectionLead('english')->can('view', $application)
+        );
+    }
+
+    public function test_section_lead_can_only_view_not_manage_applications(): void
+    {
+        $application = $this->application(['preferred_section' => 'EN']);
+
+        $sectionLead = $this->sectionLead('english');
+
+        $this->assertTrue($sectionLead->can('view', $application));
+        $this->assertFalse($sectionLead->can('updateStatus', $application));
+        $this->assertFalse($sectionLead->can('delete', $application));
+
+        $this->actingAs($sectionLead)
+            ->patchJson(route('applications.status', $application), ['status' => 'accepted'])
+            ->assertForbidden();
+
+        $this->assertSame('pending', $application->fresh()->status);
     }
 
     public function test_guest_is_redirected_to_login(): void

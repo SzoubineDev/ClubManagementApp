@@ -3,7 +3,9 @@
          <div class="flex items-start justify-between gap-4 w-full flex-wrap">
              <div>
                  <h1 class="page-header-title">Members</h1>
-                 <p class="page-header-sub">Manage club members, roles, and teams</p>
+                 <p class="page-header-sub">
+                     {{ Auth::user()->isManager() ? 'Manage club members, roles, and teams' : 'View members and presence history' }}
+                 </p>
              </div>
              <span class="chip chip--brand">
                  {{ $members->total() }} {{ Str::plural('member', $members->total()) }}

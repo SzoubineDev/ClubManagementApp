@@ -156,6 +156,7 @@
                                         data-created="{{ $application->created_at?->format('M j, Y · H:i') }}"
                                         data-motivation="{{ $application->motivation }}">View</button>
 
+                                    @can('updateStatus', $application)
                                     <button
                                         type="button"
                                         class="manage-trigger"
@@ -165,6 +166,7 @@
                                         data-delete-url="{{ route('applications.destroy', $application) }}">
                                         Manage
                                     </button>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

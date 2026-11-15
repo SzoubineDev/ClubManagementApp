@@ -35,6 +35,57 @@
             </div>
         </section>
 
+        {{-- Role-specific quick actions --}}
+        @php
+            $quickActions = [];
+
+            if (Auth::user()->isSectionChef() && Auth::user()->sectionTeam()) {
+                $quickActions[] = [
+                    'label' => 'My Section Attendance',
+                    'url' => route('section.attendance.index'),
+                ];
+            }
+
+            if (Auth::user()->hasRole('media_manager')) {
+                $quickActions[] = [
+                    'label' => 'Media Library',
+                    'url' => route('videos.index'),
+                ];
+            }
+
+            if (Auth::user()->hasRole('design_manager')) {
+                $quickActions[] = [
+                    'label' => 'Design Library',
+                    'url' => route('design.videos.index'),
+                ];
+            }
+
+            if (Auth::user()->hasRole('assistant_general')) {
+                $quickActions[] = [
+                    'label' => 'Documents',
+                    'url' => route('documents.index'),
+                ];
+            }
+
+            if (Auth::user()->hasRole('rh_manager')) {
+                $quickActions[] = [
+                    'label' => 'Member Directory',
+                    'url' => route('members.index'),
+                ];
+            }
+        @endphp
+
+        @if (count($quickActions) > 0)
+        <section class="card animate-fade-in-up delay-100">
+            <div class="card-body flex items-center gap-3 flex-wrap">
+                <span class="text-sm text-muted" style="margin-right: 4px;">Quick actions:</span>
+                @foreach ($quickActions as $action)
+                <a href="{{ $action['url'] }}" class="btn btn-outline btn-sm">{{ $action['label'] }}</a>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
         {{-- Stats strip --}}
         <section class="stats-strip animate-fade-in-up delay-100">
             <div class="stat-cell">
@@ -131,7 +182,7 @@
                     </div>
                 </div>
 
-                @can('viewAny', \App\Models\User::class)
+                @if (Auth::user()->isManager())
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title">Administration</h3>
@@ -141,7 +192,7 @@
                         <a href="{{ route('members.index') }}" class="btn btn-outline w-full mt-4">Open Members Console</a>
                     </div>
                 </div>
-                @endcan
+                @endif
             </aside>
         </div>
     </div>

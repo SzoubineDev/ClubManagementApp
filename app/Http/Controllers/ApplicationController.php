@@ -30,7 +30,17 @@ class ApplicationController extends Controller
 
         $search = trim((string) $request->input('q'));
 
+        // Managers keep full visibility; a section lead only sees applicants
+        // who picked their own section.
+        $section = $request->user()->isManager()
+            ? null
+            : $request->user()->recruitmentSection();
+
         $query = UserRecrute::query();
+
+        if ($section !== null) {
+            $query->where('preferred_section', $section);
+        }
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -53,7 +63,7 @@ class ApplicationController extends Controller
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
-        $counts = $this->statusCounts();
+        $counts = $this->statusCounts($section);
 
         return view('applications.index', [
             'applications' => $applications,
@@ -115,11 +125,20 @@ class ApplicationController extends Controller
     /**
      * Application totals grouped by status, plus the grand total.
      *
+     * When a section is given, only that section's applications are counted
+     * so the dashboard KPIs never leak other sections' totals.
+     *
      * @return array<string, int>
      */
-    private function statusCounts(): array
+    private function statusCounts(?string $section = null): array
     {
-        $rows = UserRecrute::query()
+        $query = UserRecrute::query();
+
+        if ($section !== null) {
+            $query->where('preferred_section', $section);
+        }
+
+        $rows = $query
             ->selectRaw('status, COUNT(*) as aggregate')
             ->groupBy('status')
             ->pluck('aggregate', 'status');

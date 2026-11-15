@@ -95,7 +95,24 @@ class MemberController extends Controller
             ->limit(5)
             ->get();
 
-        return view('members.show', compact('member', 'attendedEvents', 'upcomingRsvps'));
+        // Daily section presence history (RH managers rely on this view).
+        $attendanceHistory = $member->attendanceRecords()
+            ->orderByDesc('date')
+            ->limit(30)
+            ->get();
+
+        $attendanceSummary = [
+            'recorded' => $member->attendanceRecords()->count(),
+            'present' => $member->attendanceRecords()->where('present', true)->count(),
+        ];
+
+        return view('members.show', compact(
+            'member',
+            'attendedEvents',
+            'upcomingRsvps',
+            'attendanceHistory',
+            'attendanceSummary',
+        ));
     }
 
     public function edit(User $member): View
@@ -114,19 +131,9 @@ class MemberController extends Controller
     {
         $this->authorize('manage', $member);
 
-        // ---- Team ----
-        if ($request->filled('team') || $request->input('team') === '') {
-            $this->authorize('updateTeam', $member);
+        // ---- Roles (validated first so the section check sees the new roles) ----
+        $newRoles = null;
 
-            $request->validate([
-                'team' => ['nullable', 'in:arabic,english,french'],
-            ]);
-
-            $member->team = $request->input('team') ?: null;
-            $member->save();
-        }
-
-        // ---- Roles ----
         if ($request->has('roles')) {
             $this->authorize('updateRoles', $member);
 
@@ -138,18 +145,74 @@ class MemberController extends Controller
             $newRoles = collect($request->input('roles', []))->unique()->values()->all();
 
             // President role is untouchable — never removed
-            if ($member->hasRole('president') && ! in_array('president', $newRoles)) {
+            if ($member->hasRole('president') && ! in_array('president', $newRoles, true)) {
                 return back()->withErrors([
                     'roles' => 'The president role cannot be removed.',
                 ]);
             }
+        }
 
+        // ---- Team / section ----
+        $teamChanged = $request->filled('team') || $request->input('team') === '';
+
+        if ($teamChanged) {
+            $this->authorize('updateTeam', $member);
+
+            $request->validate([
+                'team' => ['nullable', 'in:arabic,english,french'],
+            ]);
+        }
+
+        $rolesAfterUpdate = $newRoles ?? $member->roles->pluck('name')->all();
+        $willLeadSection = in_array('section_chef', $rolesAfterUpdate, true)
+            || in_array('team_lead', $rolesAfterUpdate, true);
+
+        $newTeam = $teamChanged
+            ? ($request->input('team') ?: null)
+            : $member->team;
+
+        if ($willLeadSection && ! in_array($newTeam, ['arabic', 'english', 'french'], true)) {
+            return back()->withErrors([
+                'team' => 'Choose a section (Arabic, English, or French) for a section chef.',
+            ])->withInput();
+        }
+
+        // ---- President is exclusive: promote this member, demote the old one ----
+        if ($newRoles !== null && in_array('president', $newRoles, true) && ! $member->hasRole('president')) {
+            $this->demoteOtherPresidents($member);
+        }
+
+        if ($teamChanged) {
+            $member->team = $newTeam;
+            $member->save();
+        }
+
+        if ($newRoles !== null) {
             $member->syncRoles($newRoles);
         }
 
         return redirect()
             ->route('members.show', $member)
             ->with('status', 'Member updated.');
+    }
+
+    /**
+     * Keep a single club president: assigning the role to one member strips
+     * it from every other president (falling back to `member`).
+     */
+    private function demoteOtherPresidents(User $promoted): void
+    {
+        foreach (User::role('president')->get() as $current) {
+            if ($current->id === $promoted->id) {
+                continue;
+            }
+
+            $current->removeRole('president');
+
+            if (! $current->roles()->exists()) {
+                $current->assignRole('member');
+            }
+        }
     }
 
     public function suspend(Request $request, User $member): RedirectResponse|JsonResponse

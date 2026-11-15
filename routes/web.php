@@ -2,12 +2,19 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DesignVideoController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRsvpController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecruitmentController;
+use App\Http\Controllers\SectionAttendanceController;
+use App\Http\Controllers\VideoController;
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\RedirectIfSuspended;
+use App\Models\Event;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,8 +65,10 @@ Route::get('/', function () {
     }
 
     // Published upcoming events shown on the landing "What's next?" section.
-    $upcomingEvents = \App\Models\Event::query()
-        ->where(function ($q) { \App\Models\Event::publishedScope($q); })
+    $upcomingEvents = Event::query()
+        ->where(function ($q) {
+            Event::publishedScope($q);
+        })
         ->where('starts_at', '>=', now())
         ->orderBy('starts_at')
         ->take(3)
@@ -80,7 +89,7 @@ Route::post('/recrute', [RecruitmentController::class, 'store'])->name('recrute.
 | Step 2: GET /password/reset          -> new-password form (session grant)
 | Step 3: POST /password/reset         -> apply new password, burn grant
 */
-Route::middleware(['guest', \App\Http\Middleware\RedirectIfSuspended::class])
+Route::middleware(['guest', RedirectIfSuspended::class])
     ->group(function () {
         Route::get('password/recover', [PasswordRecoveryController::class, 'show'])
             ->name('password.recover');
@@ -103,7 +112,7 @@ Route::middleware(['guest', \App\Http\Middleware\RedirectIfSuspended::class])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsActive::class])->group(function () {
+Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -143,6 +152,20 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsActive::class])->gro
     Route::get('applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::patch('applications/{application}', [ApplicationController::class, 'updateStatus'])->name('applications.status');
     Route::delete('applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+
+    // Section chef — daily presence register for their own section
+    Route::get('section/attendance', [SectionAttendanceController::class, 'index'])->name('section.attendance.index');
+    Route::post('section/attendance', [SectionAttendanceController::class, 'store'])->name('section.attendance.store');
+
+    // Media library — read-only, visible to the media manager
+    Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
+
+    // Design library — read-only video-editing tutorials for the design manager
+    Route::get('design/videos', [DesignVideoController::class, 'index'])->name('design.videos.index');
+
+    // Official documents — assistant general (policies enforce access)
+    Route::get('documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('documents/room-request', [DocumentController::class, 'downloadRoomRequest'])->name('documents.room-request');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
