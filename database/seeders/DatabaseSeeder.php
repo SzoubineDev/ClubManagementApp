@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             VideoSeeder::class,
             DesignVideoSeeder::class,
+            MyPlaceSeeder::class,
         ]);
 
         $president = User::factory()->create([

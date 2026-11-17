@@ -302,4 +302,33 @@ class EventWorkflowTest extends TestCase
 
         $response->assertSessionHasErrors('filiere');
     }
+
+    public function test_events_page_survives_a_deleted_creator_account(): void
+    {
+        $author = $this->president();
+
+        $event = Event::create([
+            'title' => 'Legacy Gathering',
+            'starts_at' => now()->addDay(),
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'created_by' => $author->id,
+        ]);
+
+        // Users are soft-deleted; the relation must still resolve the name.
+        $author->delete();
+
+        $viewer = $this->president();
+
+        $this->actingAs($viewer)
+            ->get(route('events.index'))
+            ->assertOk()
+            ->assertSee('Legacy Gathering')
+            ->assertSee($author->name);
+
+        $this->actingAs($viewer)
+            ->get(route('events.show', $event))
+            ->assertOk()
+            ->assertSee($author->name);
+    }
 }

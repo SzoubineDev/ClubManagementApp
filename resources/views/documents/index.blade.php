@@ -18,7 +18,8 @@
                     <h2 class="card-title">Demande de salle</h2>
                     <p class="text-sm text-muted mt-1">
                         Generate a formal room-request letter addressed to the faculty dean.
-                        Fill in the details below (all fields are optional) and download the document.
+                        Fill in the details below (all fields are optional) and download
+                        the document as a PDF.
                     </p>
                 </div>
 
@@ -54,7 +55,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            Download demande de salle
+                            Download demande de salle (PDF)
                         </button>
                     </div>
                 </form>

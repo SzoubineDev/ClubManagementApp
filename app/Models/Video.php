@@ -13,6 +13,13 @@ class Video extends Model
 
     public const LIBRARY_DESIGN = 'design';
 
+    /**
+     * The vice-president's personal library: 100 English and 100 Arabic
+     * videos about motivation, letting go of the past and focusing on
+     * the future.
+     */
+    public const LIBRARY_MY_PLACE = 'my_place';
+
     protected $fillable = [
         'title',
         'description',

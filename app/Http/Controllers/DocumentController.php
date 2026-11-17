@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -10,8 +11,8 @@ use Illuminate\View\View;
 /**
  * Official documents available to the assistant general.
  *
- * Documents are generated server-side and downloaded as Word-compatible
- * files, so no PDF package is required.
+ * Documents are generated server-side from a Blade template and downloaded
+ * as PDF files via barryvdh/laravel-dompdf.
  */
 class DocumentController extends Controller
 {
@@ -39,18 +40,15 @@ class DocumentController extends Controller
             $requestedDate = Carbon::parse($validated['date'])->translatedFormat('d F Y');
         }
 
-        $content = view('documents.room-request', [
+        $pdf = Pdf::loadView('documents.room-request', [
             'requester' => $request->user(),
             'room' => $validated['room'] ?? null,
             'requestedDate' => $requestedDate,
             'time' => $validated['time'] ?? null,
             'purpose' => $validated['purpose'] ?? null,
             'today' => now()->translatedFormat('d F Y'),
-        ])->render();
+        ])->setPaper('a4', 'portrait');
 
-        return response($content, 200, [
-            'Content-Type' => 'application/msword; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="demande-de-salle.doc"',
-        ]);
+        return $pdf->download('demande-de-salle.pdf');
     }
 }

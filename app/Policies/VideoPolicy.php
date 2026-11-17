@@ -24,4 +24,13 @@ class VideoPolicy
     {
         return $user->hasRole('design_manager');
     }
+
+    /**
+     * The vice-president's personal curation (motivation, Dostoevsky in
+     * Arabic, and energy-management support for women).
+     */
+    public function viewMyPlaceAny(User $user): bool
+    {
+        return $user->hasRole('vice_president');
+    }
 }

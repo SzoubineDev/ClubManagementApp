@@ -49,6 +49,12 @@
                 </x-nav-link>
                 @endcan
 
+                @can('viewMyPlaceAny', \App\Models\Video::class)
+                <x-nav-link :href="route('my-place.index')" :active="request()->routeIs('my-place.*')">
+                    {{ __('My Place') }}
+                </x-nav-link>
+                @endcan
+
                 @can('documents.download')
                 <x-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.*')">
                     {{ __('Documents') }}
@@ -136,6 +142,12 @@
                 @can('viewDesignAny', \App\Models\Video::class)
                 <x-responsive-nav-link :href="route('design.videos.index')" :active="request()->routeIs('design.videos.*')" @click="mobileOpen = false">
                     {{ __('Design') }}
+                </x-responsive-nav-link>
+                @endcan
+
+                @can('viewMyPlaceAny', \App\Models\Video::class)
+                <x-responsive-nav-link :href="route('my-place.index')" :active="request()->routeIs('my-place.*')" @click="mobileOpen = false">
+                    {{ __('My Place') }}
                 </x-responsive-nav-link>
                 @endcan
 

@@ -58,7 +58,7 @@
                         <tr data-event-row="{{ $event->id }}">
                             <td>
                                 <p class="cell-title"><a href="{{ route('events.show', $event) }}">{{ $event->title }}</a></p>
-                                <p class="cell-sub">by {{ $event->creator->name }}</p>
+                                <p class="cell-sub">by {{ $event->creator?->name ?? 'Unknown member' }}</p>
                             </td>
 
                             <td class="hide-mobile col-secondary td-nowrap">

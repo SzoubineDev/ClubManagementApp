@@ -67,6 +67,13 @@
                 ];
             }
 
+            if (Auth::user()->hasRole('vice_president')) {
+                $quickActions[] = [
+                    'label' => 'My Place',
+                    'url' => route('my-place.index'),
+                ];
+            }
+
             if (Auth::user()->hasRole('rh_manager')) {
                 $quickActions[] = [
                     'label' => 'Member Directory',

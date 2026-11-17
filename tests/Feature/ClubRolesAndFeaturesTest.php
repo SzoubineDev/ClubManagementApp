@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserRecrute;
 use App\Models\Video;
 use Database\Seeders\DesignVideoSeeder;
+use Database\Seeders\MyPlaceSeeder;
 use Database\Seeders\VideoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -21,9 +22,9 @@ class ClubRolesAndFeaturesTest extends TestCase
     {
         parent::setUp();
 
-        // The migration creates the new management roles; base roles still
+        // The migrations create the management roles; base roles still
         // need to exist for role assignment in these tests.
-        foreach (['member', 'president', 'admin', 'vice_president', 'secretary_general'] as $role) {
+        foreach (['member', 'president', 'admin', 'secretary_general'] as $role) {
             Role::findOrCreate($role, 'web');
         }
     }
@@ -44,11 +45,53 @@ class ClubRolesAndFeaturesTest extends TestCase
 
     public function test_requested_management_roles_exist(): void
     {
-        foreach (['section_chef', 'rh_manager', 'media_manager', 'design_manager', 'assistant_general'] as $role) {
+        foreach (['vice_president', 'section_chef', 'rh_manager', 'media_manager', 'design_manager', 'assistant_general'] as $role) {
             $this->assertTrue(
                 Role::where('name', $role)->where('guard_name', 'web')->exists(),
                 "Role [{$role}] should exist."
             );
+        }
+    }
+
+    // --- Vice president ---------------------------------------------------
+
+    public function test_vice_president_is_a_manager_and_can_access_my_place(): void
+    {
+        $vice = $this->userWithRole('vice_president');
+
+        $this->assertTrue($vice->isManager());
+
+        $this->actingAs($vice)
+            ->get(route('my-place.index'))
+            ->assertOk()
+            ->assertSee('My Place');
+
+        $this->actingAs($vice)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('My Place');
+    }
+
+    public function test_vice_president_role_can_be_assigned_from_member_management(): void
+    {
+        $president = $this->userWithRole('president');
+        $target = $this->userWithRole('member', ['name' => 'Future Vice']);
+
+        $this->actingAs($president)
+            ->put(route('members.update', $target), ['roles' => ['member', 'vice_president']])
+            ->assertRedirect(route('members.show', $target));
+
+        $this->assertTrue($target->fresh()->hasRole('vice_president'));
+    }
+
+    public function test_other_roles_cannot_access_my_place(): void
+    {
+        foreach (['president', 'admin', 'member', 'media_manager', 'design_manager'] as $role) {
+            $user = $this->userWithRole($role);
+
+            $this->actingAs($user)
+                ->get(route('my-place.index'))
+                ->assertForbidden();
         }
     }
 
@@ -414,6 +457,68 @@ class ClubRolesAndFeaturesTest extends TestCase
         );
     }
 
+    // --- Vice-president "My Place" library --------------------------------
+
+    public function test_my_place_seeder_provides_two_hundred_videos_in_two_languages(): void
+    {
+        $this->seed(MyPlaceSeeder::class);
+
+        $videos = Video::query()->inLibrary(Video::LIBRARY_MY_PLACE)->get();
+
+        $this->assertSame(200, $videos->count());
+        $this->assertSame(200, $videos->pluck('youtube_url')->unique()->count());
+
+        $arabic = $videos->filter(fn (Video $video) => preg_match('/\p{Arabic}/u', $video->title));
+        $this->assertSame(100, $arabic->count(), '100 titles should be in Arabic.');
+        $this->assertSame(100, $videos->count() - $arabic->count(), '100 titles should be in English.');
+    }
+
+    public function test_my_place_shows_twelve_random_videos_per_request(): void
+    {
+        $vice = $this->userWithRole('vice_president');
+
+        $this->seed(MyPlaceSeeder::class);
+
+        $response = $this->actingAs($vice)->get(route('my-place.index'));
+
+        $response->assertOk();
+        $response->assertSee('12 random picks from 200');
+        $this->assertSame(12, substr_count($response->getContent(), 'data-video-card'));
+    }
+
+    public function test_my_place_videos_do_not_leak_into_media_or_design(): void
+    {
+        $media = $this->userWithRole('media_manager');
+        $design = $this->userWithRole('design_manager');
+
+        $this->seed(MyPlaceSeeder::class);
+
+        $myPlaceTitle = Video::query()->inLibrary(Video::LIBRARY_MY_PLACE)->value('title');
+
+        Video::create([
+            'title' => 'Media only video',
+            'youtube_url' => 'https://www.youtube.com/watch?v=iCvmsMzlF7o',
+            'library' => Video::LIBRARY_MEDIA,
+        ]);
+
+        Video::create([
+            'title' => 'Design only tutorial',
+            'youtube_url' => 'https://www.youtube.com/watch?v=Ks-_Mh1QhMc',
+            'library' => Video::LIBRARY_DESIGN,
+        ]);
+
+        $this->actingAs($media)
+            ->get(route('videos.index'))
+            ->assertOk()
+            ->assertSee('Media only video')
+            ->assertDontSee($myPlaceTitle);
+
+        $this->actingAs($design)
+            ->get(route('design.videos.index'))
+            ->assertOk()
+            ->assertSee('Design only tutorial');
+    }
+
     public function test_media_and_design_libraries_are_isolated(): void
     {
         $media = $this->userWithRole('media_manager');
@@ -483,9 +588,9 @@ class ClubRolesAndFeaturesTest extends TestCase
             ]));
 
         $response->assertOk();
-        $this->assertStringContainsString('attachment; filename="demande-de-salle.doc"', $response->headers->get('Content-Disposition'));
-        $this->assertStringContainsString('application/msword', $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('Demande de salle', $response->getContent());
+        $this->assertStringContainsString('attachment; filename=demande-de-salle.pdf', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertSame('%PDF-', substr($response->getContent(), 0, 5));
     }
 
     public function test_ordinary_member_cannot_download_official_documents(): void

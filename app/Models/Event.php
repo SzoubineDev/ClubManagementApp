@@ -34,7 +34,11 @@ class Event extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        // Users are soft-deleted, so an event can outlive its author. Without
+        // withTrashed() the relation resolves to null and every view that
+        // prints "by {{ $event->creator->name }}" crashes with
+        // "Attempt to read property 'name' on null".
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
 
     public function attendees()

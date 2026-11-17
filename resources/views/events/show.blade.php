@@ -98,10 +98,10 @@
 
             <div class="def-row">
                 <div class="person-cell">
-                    <span class="avatar">{{ strtoupper(substr($event->creator->name, 0, 1)) }}</span>
+                    <span class="avatar">{{ strtoupper(substr($event->creator?->name ?? '?', 0, 1)) }}</span>
                     <div class="min-w-0">
                         <p class="cell-sub" style="margin-top:0;">Organized by</p>
-                        <p class="cell-title truncate">{{ $event->creator->name }}</p>
+                        <p class="cell-title truncate">{{ $event->creator?->name ?? 'Unknown member' }}</p>
                     </div>
                 </div>
                 <div class="text-right flex-shrink-0">

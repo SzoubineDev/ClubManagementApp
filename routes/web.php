@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MyPlaceController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignVideoController;
@@ -159,6 +160,9 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
 
     // Media library — read-only, visible to the media manager
     Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
+
+    // My Place — the vice-president's personal curation
+    Route::get('my-place', [MyPlaceController::class, 'index'])->name('my-place.index');
 
     // Design library — read-only video-editing tutorials for the design manager
     Route::get('design/videos', [DesignVideoController::class, 'index'])->name('design.videos.index');
