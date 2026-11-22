@@ -45,6 +45,24 @@ class UserRecrute extends Model
     ];
 
     /**
+     * Every debate section code an applicant can choose.
+     *
+     * @var array<int, string>
+     */
+    public const SECTIONS = ['AR', 'FR', 'EN'];
+
+    /**
+     * Human-readable labels for each debate section.
+     *
+     * @var array<string, string>
+     */
+    public const SECTION_LABELS = [
+        'EN' => 'English',
+        'FR' => 'French',
+        'AR' => 'Arabic',
+    ];
+
+    /**
      * Maps a section lead's `team` value to the application section code.
      *
      * @var array<string, string>
@@ -86,7 +104,7 @@ class UserRecrute extends Model
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 
     /**
@@ -120,11 +138,6 @@ class UserRecrute extends Model
      */
     public function sectionLabel(): string
     {
-        return match ($this->preferred_section) {
-            'AR' => 'Arabic',
-            'FR' => 'French',
-            'EN' => 'English',
-            default => $this->preferred_section ?: '—',
-        };
+        return self::SECTION_LABELS[$this->preferred_section] ?? ($this->preferred_section ?: '—');
     }
 }

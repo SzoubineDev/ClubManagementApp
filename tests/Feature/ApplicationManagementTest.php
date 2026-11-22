@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserRecrute;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -66,10 +67,10 @@ class ApplicationManagementTest extends TestCase
 
         return UserRecrute::create(array_merge([
             'first_name' => 'Applicant',
-            'last_name' => 'Number' . $n,
-            'phone_number' => '06000000' . str_pad((string) $n, 2, '0', STR_PAD_LEFT),
+            'last_name' => 'Number'.$n,
+            'phone_number' => '06000000'.str_pad((string) $n, 2, '0', STR_PAD_LEFT),
             'email' => "applicant{$n}@example.com",
-            'cne' => 'CNE' . str_pad((string) $n, 5, '0', STR_PAD_LEFT),
+            'cne' => 'CNE'.str_pad((string) $n, 5, '0', STR_PAD_LEFT),
             'filiere' => 'Cycle Ingénieur',
             'preferred_section' => 'EN',
             'motivation' => 'I want to debate.',
@@ -81,7 +82,7 @@ class ApplicationManagementTest extends TestCase
     public function test_status_column_exists_with_pending_default(): void
     {
         $this->assertTrue(
-            \Illuminate\Support\Facades\Schema::hasColumn('users_recrute', 'status'),
+            Schema::hasColumn('users_recrute', 'status'),
             'users_recrute should have a status column.'
         );
 
@@ -189,6 +190,83 @@ class ApplicationManagementTest extends TestCase
             ->assertSee('English')
             ->assertSee('French')
             ->assertSee('Arabic');
+    }
+
+    public function test_president_can_filter_applications_by_section(): void
+    {
+        $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+        $this->application(['first_name' => 'ArOnly', 'preferred_section' => 'AR']);
+
+        $manager = $this->manager('president');
+
+        $this->actingAs($manager)
+            ->get(route('applications.index', ['section' => 'EN']))
+            ->assertOk()
+            ->assertSee('EnOnly')
+            ->assertDontSee('FrOnly')
+            ->assertDontSee('ArOnly')
+            ->assertViewHas('activeSection', 'EN');
+
+        $this->actingAs($manager)
+            ->get(route('applications.index', ['section' => 'FR']))
+            ->assertOk()
+            ->assertSee('FrOnly')
+            ->assertDontSee('EnOnly')
+            ->assertDontSee('ArOnly');
+
+        $this->actingAs($manager)
+            ->get(route('applications.index', ['section' => 'AR']))
+            ->assertOk()
+            ->assertSee('ArOnly')
+            ->assertDontSee('EnOnly')
+            ->assertDontSee('FrOnly');
+    }
+
+    public function test_section_filter_is_combined_with_status_and_counts(): void
+    {
+        $this->application(['first_name' => 'EnglishPending', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'EnglishAccepted', 'preferred_section' => 'EN', 'status' => 'accepted']);
+        $this->application(['first_name' => 'FrenchAccepted', 'preferred_section' => 'FR', 'status' => 'accepted']);
+
+        $this->actingAs($this->manager('president'))
+            ->get(route('applications.index', ['section' => 'EN', 'status' => 'accepted']))
+            ->assertOk()
+            ->assertSee('EnglishAccepted')
+            ->assertDontSee('EnglishPending')
+            ->assertDontSee('FrenchAccepted')
+            ->assertViewHas('counts', function (array $counts) {
+                return $counts['all'] === 2
+                    && $counts['accepted'] === 1
+                    && $counts['pending'] === 1;
+            });
+    }
+
+    public function test_invalid_section_filter_is_ignored(): void
+    {
+        $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+
+        $this->actingAs($this->manager('president'))
+            ->get(route('applications.index', ['section' => 'XX']))
+            ->assertOk()
+            ->assertSee('EnOnly')
+            ->assertSee('FrOnly')
+            ->assertViewHas('activeSection', null);
+    }
+
+    public function test_section_lead_cannot_override_their_section_filter(): void
+    {
+        $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+
+        $this->actingAs($this->sectionLead('english'))
+            ->get(route('applications.index', ['section' => 'FR']))
+            ->assertOk()
+            ->assertSee('EnOnly')
+            ->assertDontSee('FrOnly')
+            ->assertViewHas('activeSection', 'EN')
+            ->assertViewHas('canFilterSections', false);
     }
 
     public function test_section_lead_cannot_view_another_sections_application(): void
@@ -300,7 +378,7 @@ class ApplicationManagementTest extends TestCase
     public function test_search_and_pagination_work_together_and_preserve_query(): void
     {
         for ($i = 0; $i < 18; $i++) {
-            $this->application(['last_name' => 'Matchable' . $i, 'email' => "match{$i}@example.com"]);
+            $this->application(['last_name' => 'Matchable'.$i, 'email' => "match{$i}@example.com"]);
         }
         $this->application(['last_name' => 'Irrelevant']);
 

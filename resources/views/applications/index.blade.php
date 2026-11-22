@@ -60,12 +60,34 @@
                         'passed_to_test' => 'Passed to test',
                     ];
                     $current = $activeStatus ?? 'all';
+
+                    $sectionTabs = ['all' => 'All sections'] + \App\Models\UserRecrute::SECTION_LABELS;
                 @endphp
+
+                @if ($canFilterSections)
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="stat-label" style="margin: 0;">Section</span>
+                    <nav class="app-filter-tabs" aria-label="Filter applications by section">
+                        @foreach ($sectionTabs as $key => $label)
+                        <a
+                            href="{{ route('applications.index', array_filter([
+                                'section' => $key === 'all' ? null : $key,
+                                'status' => $activeStatus,
+                                'q' => $search ?: null,
+                            ])) }}"
+                            class="app-filter-tab {{ $activeSection === ($key === 'all' ? null : $key) ? 'is-active' : '' }}"
+                            @if ($activeSection === ($key === 'all' ? null : $key)) aria-current="page" @endif>
+                            {{ $label }}
+                        </a>
+                        @endforeach
+                    </nav>
+                </div>
+                @endif
 
                 <nav class="app-filter-tabs" aria-label="Filter applications by status">
                     @foreach ($tabs as $key => $label)
                     <a
-                        href="{{ route('applications.index', array_filter(['status' => $key === 'all' ? null : $key, 'q' => $search ?: null])) }}"
+                        href="{{ route('applications.index', array_filter(['status' => $key === 'all' ? null : $key, 'q' => $search ?: null, 'section' => $activeSection])) }}"
                         class="app-filter-tab {{ $current === $key ? 'is-active' : '' }}"
                         @if ($current === $key) aria-current="page" @endif>
                         {{ $label }}
@@ -77,6 +99,9 @@
                 <form method="GET" action="{{ route('applications.index') }}" class="filter-bar">
                     @if ($activeStatus)
                     <input type="hidden" name="status" value="{{ $activeStatus }}">
+                    @endif
+                    @if ($activeSection)
+                    <input type="hidden" name="section" value="{{ $activeSection }}">
                     @endif
 
                     <input
@@ -90,7 +115,7 @@
 
                     <button type="submit" class="btn btn-primary btn-sm">Search</button>
 
-                    @if ($search || $activeStatus)
+                    @if ($search || $activeStatus || $activeSection)
                     <a href="{{ route('applications.index') }}" class="text-action">Clear</a>
                     @endif
                 </form>
@@ -177,10 +202,10 @@
 
             <div class="empty-state" id="applications-empty" @if ($applications->isNotEmpty()) hidden @endif>
                 <p class="empty-state-title">
-                    {{ $search || $activeStatus ? 'No matching applications' : 'No applications yet' }}
+                    {{ $search || $activeStatus || $activeSection ? 'No matching applications' : 'No applications yet' }}
                 </p>
                 <p>
-                    {{ $search || $activeStatus
+                    {{ $search || $activeStatus || $activeSection
                         ? 'Try adjusting or clearing your filters.'
                         : 'New recruitment applications will appear here as candidates apply.' }}
                 </p>

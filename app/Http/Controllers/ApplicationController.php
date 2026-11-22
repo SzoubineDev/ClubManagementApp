@@ -22,6 +22,8 @@ class ApplicationController extends Controller
     {
         $this->authorize('viewAny', UserRecrute::class);
 
+        $user = $request->user();
+
         // Only trust a status that is actually allowed.
         $status = $request->input('status');
         if (! in_array($status, UserRecrute::STATUSES, true)) {
@@ -30,11 +32,18 @@ class ApplicationController extends Controller
 
         $search = trim((string) $request->input('q'));
 
-        // Managers keep full visibility; a section lead only sees applicants
-        // who picked their own section.
-        $section = $request->user()->isManager()
-            ? null
-            : $request->user()->recruitmentSection();
+        // Managers (president, vice-president, secretary general) can browse
+        // every section and narrow the list with the section filter. A section
+        // lead is always locked to the section they lead.
+        $canFilterSections = $user->isManager();
+
+        $section = $canFilterSections
+            ? $request->input('section')
+            : $user->recruitmentSection();
+
+        if (! in_array($section, UserRecrute::SECTIONS, true)) {
+            $section = null;
+        }
 
         $query = UserRecrute::query();
 
@@ -69,6 +78,8 @@ class ApplicationController extends Controller
             'applications' => $applications,
             'counts' => $counts,
             'activeStatus' => $status,
+            'activeSection' => $section,
+            'canFilterSections' => $canFilterSections,
             'search' => $search,
         ]);
     }
@@ -81,7 +92,7 @@ class ApplicationController extends Controller
         $this->authorize('updateStatus', $application);
 
         $validated = $request->validate([
-            'status' => ['required', 'string', 'in:' . implode(',', UserRecrute::STATUSES)],
+            'status' => ['required', 'string', 'in:'.implode(',', UserRecrute::STATUSES)],
         ]);
 
         $application->update(['status' => $validated['status']]);
