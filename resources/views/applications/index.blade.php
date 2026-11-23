@@ -58,11 +58,21 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <a href="{{ route('applications.export') }}" class="btn btn-primary btn-sm">
+                    <a
+                        href="{{ route('applications.export') }}"
+                        class="btn btn-primary btn-sm"
+                        data-export-pdf
+                        data-export-url="{{ route('applications.export') }}"
+                        data-export-label="All applicants">
                         All applicants
                     </a>
                     @foreach (\App\Models\UserRecrute::SECTION_LABELS as $code => $label)
-                    <a href="{{ route('applications.export', ['section' => $code]) }}" class="btn btn-outline btn-sm">
+                    <a
+                        href="{{ route('applications.export', ['section' => $code]) }}"
+                        class="btn btn-outline btn-sm"
+                        data-export-pdf
+                        data-export-url="{{ route('applications.export', ['section' => $code]) }}"
+                        data-export-label="{{ $label }} applicants">
                         {{ $label }} applicants
                     </a>
                     @endforeach
@@ -440,6 +450,43 @@
                                 { label: 'Motivation', value: d.motivation, wide: true },
                             ],
                         });
+                        return;
+                    }
+
+                    // --- PDF export: choose normal or group naming first ---
+                    const exportBtn = event.target.closest('[data-export-pdf]');
+                    if (exportBtn) {
+                        event.preventDefault();
+                        if (exportBtn.disabled) return;
+                        exportBtn.disabled = true;
+
+                        try {
+                            const naming = await TGD.menu({
+                                title: 'Download PDF',
+                                subject: exportBtn.dataset.exportLabel || 'Applications',
+                                subjectLabel: 'Export',
+                                options: [
+                                    {
+                                        key: 'normal',
+                                        label: 'Normal names',
+                                        hint: 'Use names exactly as submitted in the database',
+                                    },
+                                    {
+                                        key: 'group',
+                                        label: 'Group names',
+                                        hint: 'Replace names with tgd27_1, tgd27_2, …',
+                                    },
+                                ],
+                            });
+
+                            if (naming) {
+                                const url = new URL(exportBtn.dataset.exportUrl, window.location.origin);
+                                url.searchParams.set('naming', naming);
+                                window.location.assign(url.toString());
+                            }
+                        } finally {
+                            exportBtn.disabled = false;
+                        }
                         return;
                     }
 

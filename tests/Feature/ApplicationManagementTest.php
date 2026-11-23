@@ -356,6 +356,64 @@ class ApplicationManagementTest extends TestCase
         $this->assertStringContainsString('0612345678', $html);
     }
 
+    public function test_group_naming_replaces_names_with_sequential_codes(): void
+    {
+        $first = $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $second = $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+
+        $html = view('applications.export', [
+            'applications' => collect([$first, $second]),
+            'total' => 2,
+            'sectionLabel' => 'All sections',
+            'generatedAt' => now()->format('M j, Y · H:i'),
+            'groupNaming' => true,
+            'groupNamePrefix' => 'tgd27_',
+        ])->render();
+
+        $this->assertStringContainsString('tgd27_1', $html);
+        $this->assertStringContainsString('tgd27_2', $html);
+        $this->assertStringNotContainsString('EnOnly', $html);
+        $this->assertStringNotContainsString('FrOnly', $html);
+    }
+
+    public function test_export_filename_reflects_group_naming(): void
+    {
+        $this->application(['preferred_section' => 'EN']);
+
+        $response = $this->actingAs($this->manager('president'))
+            ->get(route('applications.export', ['section' => 'EN', 'naming' => 'group']));
+
+        $response->assertOk()
+            ->assertDownload()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertStringContainsString(
+            'applications-english-group-',
+            (string) $response->headers->get('content-disposition')
+        );
+    }
+
+    public function test_invalid_naming_falls_back_to_normal(): void
+    {
+        $this->application(['preferred_section' => 'EN']);
+
+        $response = $this->actingAs($this->manager('president'))
+            ->get(route('applications.export', ['naming' => 'hacked']));
+
+        $response->assertOk()
+            ->assertDownload()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertStringContainsString(
+            'applications-all-',
+            (string) $response->headers->get('content-disposition')
+        );
+        $this->assertStringNotContainsString(
+            'group',
+            (string) $response->headers->get('content-disposition')
+        );
+    }
+
     public function test_applications_page_shows_pdf_download_buttons_for_managers(): void
     {
         $this->actingAs($this->manager('president'))
@@ -366,6 +424,10 @@ class ApplicationManagementTest extends TestCase
             ->assertSee('English applicants')
             ->assertSee('French applicants')
             ->assertSee('Arabic applicants')
+            ->assertSee('data-export-pdf', false)
+            ->assertSee('Normal names')
+            ->assertSee('Group names')
+            ->assertSee('tgd27_1', false)
             ->assertSee(route('applications.export'), false)
             ->assertSee(route('applications.export', ['section' => 'EN']), false);
     }

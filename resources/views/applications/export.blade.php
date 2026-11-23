@@ -105,10 +105,18 @@
 </head>
 <body>
 
+    @php
+        $groupNaming = $groupNaming ?? false;
+        $groupNamePrefix = $groupNamePrefix ?? 'tgd27_';
+    @endphp
+
     <div class="header">
         <div class="club">The Great Debaters</div>
         <h1>Recruitment Applications</h1>
-        <div class="meta">{{ $sectionLabel }} · Generated {{ $generatedAt }}</div>
+        <div class="meta">
+            {{ $sectionLabel }} · Generated {{ $generatedAt }}
+            @if ($groupNaming) · Group naming ({{ $groupNamePrefix }}1, {{ $groupNamePrefix }}2, …) @endif
+        </div>
     </div>
 
     <div class="summary">
@@ -134,7 +142,9 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <span class="name">{{ $application->full_name }}</span><br>
+                    <span class="name">
+                        {{ $groupNaming ? $groupNamePrefix.$loop->iteration : $application->full_name }}
+                    </span><br>
                     <span class="email">{{ $application->email }}</span>
                 </td>
                 <td>{{ $application->phone_number }}</td>

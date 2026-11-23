@@ -21,6 +21,11 @@ class ApplicationController extends Controller
     private const PER_PAGE = 15;
 
     /**
+     * Prefix used when exporting applications with anonymous group names.
+     */
+    private const GROUP_NAME_PREFIX = 'tgd27_';
+
+    /**
      * Applications management dashboard: search, status filter, counts, pagination.
      */
     public function index(Request $request): View
@@ -110,6 +115,12 @@ class ApplicationController extends Controller
             $section = null;
         }
 
+        $naming = $request->input('naming');
+
+        if (! in_array($naming, ['normal', 'group'], true)) {
+            $naming = 'normal';
+        }
+
         $applications = $this->applicationsQuery($section)
             ->orderBy('created_at')
             ->orderBy('id')
@@ -119,7 +130,9 @@ class ApplicationController extends Controller
             ? strtolower(UserRecrute::SECTION_LABELS[$section])
             : 'all';
 
-        $filename = "applications-{$label}-".now()->format('Y-m-d').'.pdf';
+        $filename = "applications-{$label}"
+            .($naming === 'group' ? '-group' : '')
+            .'-'.now()->format('Y-m-d').'.pdf';
 
         $pdf = Pdf::loadView('applications.export', [
             'applications' => $applications,
@@ -128,6 +141,8 @@ class ApplicationController extends Controller
                 ? UserRecrute::SECTION_LABELS[$section].' section'
                 : 'All sections',
             'generatedAt' => now()->format('M j, Y · H:i'),
+            'groupNaming' => $naming === 'group',
+            'groupNamePrefix' => self::GROUP_NAME_PREFIX,
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($filename);
