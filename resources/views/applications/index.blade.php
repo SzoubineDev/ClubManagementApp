@@ -47,6 +47,30 @@
             </div>
         </div>
 
+        {{-- PDF exports (management roles only) --}}
+        @if ($canFilterSections)
+        <div class="card animate-fade-in-up">
+            <div class="card-body flex items-center gap-3 flex-wrap">
+                <div style="flex: 1 1 240px; min-width: 0;">
+                    <h3 class="card-title">Download applications</h3>
+                    <p class="section-desc" style="margin-top: 4px; text-align: left;">
+                        Download all recruitment applications or a single section as a PDF file.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('applications.export') }}" class="btn btn-primary btn-sm">
+                        All applicants
+                    </a>
+                    @foreach (\App\Models\UserRecrute::SECTION_LABELS as $code => $label)
+                    <a href="{{ route('applications.export', ['section' => $code]) }}" class="btn btn-outline btn-sm">
+                        {{ $label }} applicants
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- Status filters + search --}}
         <div class="card animate-fade-in-up">
             <div class="card-body" style="display: flex; flex-direction: column; gap: 18px;">

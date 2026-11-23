@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\MyPlaceController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignVideoController;
@@ -8,6 +7,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRsvpController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MyPlaceController;
 use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecruitmentController;
@@ -151,6 +151,7 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
 
     // Applications console — recruitment applications (policies enforce access)
     Route::get('applications', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::get('applications/export', [ApplicationController::class, 'export'])->name('applications.export');
     Route::patch('applications/{application}', [ApplicationController::class, 'updateStatus'])->name('applications.status');
     Route::delete('applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
 

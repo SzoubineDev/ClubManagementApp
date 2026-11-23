@@ -269,6 +269,115 @@ class ApplicationManagementTest extends TestCase
             ->assertViewHas('canFilterSections', false);
     }
 
+    // --- PDF exports -------------------------------------------------------
+
+    public function test_manager_can_export_all_applications_as_pdf(): void
+    {
+        $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+
+        $response = $this->actingAs($this->manager('president'))
+            ->get(route('applications.export'));
+
+        $response->assertOk()
+            ->assertDownload()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $content = $response->getContent();
+
+        $this->assertStringStartsWith('%PDF', $content);
+        $this->assertStringContainsString(
+            'applications-all-',
+            (string) $response->headers->get('content-disposition')
+        );
+    }
+
+    public function test_manager_can_export_a_single_section_as_pdf(): void
+    {
+        $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+
+        $response = $this->actingAs($this->manager('president'))
+            ->get(route('applications.export', ['section' => 'EN']));
+
+        $response->assertOk()
+            ->assertDownload()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertStringContainsString(
+            'applications-english-',
+            (string) $response->headers->get('content-disposition')
+        );
+    }
+
+    public function test_invalid_section_export_falls_back_to_all_applications(): void
+    {
+        $this->application(['first_name' => 'EnOnly', 'preferred_section' => 'EN']);
+        $this->application(['first_name' => 'FrOnly', 'preferred_section' => 'FR']);
+
+        $response = $this->actingAs($this->manager('president'))
+            ->get(route('applications.export', ['section' => 'XX']));
+
+        $response->assertOk()
+            ->assertDownload()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertStringContainsString(
+            'applications-all-',
+            (string) $response->headers->get('content-disposition')
+        );
+    }
+
+    public function test_section_lead_cannot_export_applications(): void
+    {
+        $this->application(['preferred_section' => 'EN']);
+
+        $this->actingAs($this->sectionLead('english'))
+            ->get(route('applications.export'))
+            ->assertForbidden();
+    }
+
+    public function test_exported_phone_numbers_keep_their_leading_zero(): void
+    {
+        $application = $this->application([
+            'first_name' => 'PhoneTester',
+            'phone_number' => '0612345678',
+        ]);
+
+        $html = view('applications.export', [
+            'applications' => collect([$application]),
+            'total' => 1,
+            'sectionLabel' => 'All sections',
+            'generatedAt' => now()->format('M j, Y · H:i'),
+        ])->render();
+
+        $this->assertStringContainsString('0612345678', $html);
+    }
+
+    public function test_applications_page_shows_pdf_download_buttons_for_managers(): void
+    {
+        $this->actingAs($this->manager('president'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertSee('Download applications')
+            ->assertSee('All applicants')
+            ->assertSee('English applicants')
+            ->assertSee('French applicants')
+            ->assertSee('Arabic applicants')
+            ->assertSee(route('applications.export'), false)
+            ->assertSee(route('applications.export', ['section' => 'EN']), false);
+    }
+
+    public function test_section_leads_do_not_see_pdf_download_buttons(): void
+    {
+        $this->actingAs($this->sectionLead('english'))
+            ->get(route('applications.index'))
+            ->assertOk()
+            ->assertDontSee('Download applications');
+    }
+
     public function test_section_lead_cannot_view_another_sections_application(): void
     {
         $application = $this->application(['preferred_section' => 'FR']);
