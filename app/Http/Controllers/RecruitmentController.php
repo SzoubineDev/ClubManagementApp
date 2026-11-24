@@ -20,9 +20,44 @@ class RecruitmentController extends Controller
     }
 
     /**
+     * Display the late application form.
+     */
+    public function createLate(): View
+    {
+        return view('late-recrute');
+    }
+
+    /**
      * Store a newly submitted recruitment application.
+     *
+     * The regular season is closed, so any application received from now on is
+     * flagged as late, even if it reaches the old endpoint directly.
      */
     public function store(Request $request): RedirectResponse
+    {
+        return $this->storeApplication(
+            $request,
+            'recrute',
+            'Your recruitment application has been received! Welcome to The Great Debaters community. The Bureau will contact you shortly via WhatsApp / email.'
+        );
+    }
+
+    /**
+     * Store a late recruitment application.
+     */
+    public function storeLate(Request $request): RedirectResponse
+    {
+        return $this->storeApplication(
+            $request,
+            'late_recrute',
+            'Your late recruitment application has been received! The Bureau will review it and contact you shortly via WhatsApp / email.'
+        );
+    }
+
+    /**
+     * Validate and persist an application in the shared `users_recrute` table.
+     */
+    private function storeApplication(Request $request, string $redirectRoute, string $successMessage): RedirectResponse
     {
         // Normalize the identity fields BEFORE validation so the unique check
         // and the value we persist are compared in the same normalized form
@@ -69,16 +104,17 @@ class RecruitmentController extends Controller
                 'filiere' => trim($validated['filiere']),
                 'preferred_section' => $validated['preferred_section'],
                 'motivation' => trim($validated['motivation']),
+                'is_late' => true,
             ]);
 
-            return redirect()->route('recrute')->with('success', 'Your recruitment application has been received! Welcome to The Great Debaters community. The Bureau will contact you shortly via WhatsApp / email.');
+            return redirect()->route($redirectRoute)->with('success', $successMessage);
         } catch (QueryException $e) {
             // Log the exception object only — never the request payload, which
             // contains the applicant's personal data (name, email, phone, CNE).
             Log::error('Failed to store recruitment application', ['exception' => $e]);
 
             // Never surface raw database errors to the applicant.
-            return redirect()->route('recrute')
+            return redirect()->route($redirectRoute)
                 ->withInput()
                 ->with('error', 'We could not save your application right now. Please try again in a moment or contact the club directly.');
         }

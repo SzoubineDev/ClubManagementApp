@@ -59,21 +59,21 @@
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <a
-                        href="{{ route('applications.export') }}"
+                        href="{{ route('applications.export', array_filter(['late' => $late ? 1 : null])) }}"
                         class="btn btn-primary btn-sm"
                         data-export-pdf
-                        data-export-url="{{ route('applications.export') }}"
-                        data-export-label="All applicants">
-                        All applicants
+                        data-export-url="{{ route('applications.export', array_filter(['late' => $late ? 1 : null])) }}"
+                        data-export-label="{{ $late ? 'All late applicants' : 'All applicants' }}">
+                        {{ $late ? 'All late applicants' : 'All applicants' }}
                     </a>
                     @foreach (\App\Models\UserRecrute::SECTION_LABELS as $code => $label)
                     <a
-                        href="{{ route('applications.export', ['section' => $code]) }}"
+                        href="{{ route('applications.export', array_filter(['section' => $code, 'late' => $late ? 1 : null])) }}"
                         class="btn btn-outline btn-sm"
                         data-export-pdf
-                        data-export-url="{{ route('applications.export', ['section' => $code]) }}"
-                        data-export-label="{{ $label }} applicants">
-                        {{ $label }} applicants
+                        data-export-url="{{ route('applications.export', array_filter(['section' => $code, 'late' => $late ? 1 : null])) }}"
+                        data-export-label="{{ $label }} {{ $late ? 'late ' : '' }}applicants">
+                        {{ $label }} {{ $late ? 'late ' : '' }}applicants
                     </a>
                     @endforeach
                 </div>
@@ -108,6 +108,7 @@
                                 'section' => $key === 'all' ? null : $key,
                                 'status' => $activeStatus,
                                 'q' => $search ?: null,
+                                'late' => $late ? 1 : null,
                             ])) }}"
                             class="app-filter-tab {{ $activeSection === ($key === 'all' ? null : $key) ? 'is-active' : '' }}"
                             @if ($activeSection === ($key === 'all' ? null : $key)) aria-current="page" @endif>
@@ -118,10 +119,29 @@
                 </div>
                 @endif
 
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="stat-label" style="margin: 0;">Application type</span>
+                    <nav class="app-filter-tabs" aria-label="Filter applications by type">
+                        <a
+                            href="{{ route('applications.index', array_filter(['status' => $activeStatus, 'q' => $search ?: null, 'section' => $activeSection])) }}"
+                            class="app-filter-tab {{ $late ? '' : 'is-active' }}"
+                            @if (! $late) aria-current="page" @endif>
+                            All applications
+                        </a>
+                        <a
+                            href="{{ route('applications.index', array_filter(['status' => $activeStatus, 'q' => $search ?: null, 'section' => $activeSection, 'late' => 1])) }}"
+                            class="app-filter-tab {{ $late ? 'is-active' : '' }}"
+                            @if ($late) aria-current="page" @endif>
+                            Late applications
+                            <span class="app-filter-tab-count" data-count="late">{{ $lateCount }}</span>
+                        </a>
+                    </nav>
+                </div>
+
                 <nav class="app-filter-tabs" aria-label="Filter applications by status">
                     @foreach ($tabs as $key => $label)
                     <a
-                        href="{{ route('applications.index', array_filter(['status' => $key === 'all' ? null : $key, 'q' => $search ?: null, 'section' => $activeSection])) }}"
+                        href="{{ route('applications.index', array_filter(['status' => $key === 'all' ? null : $key, 'q' => $search ?: null, 'section' => $activeSection, 'late' => $late ? 1 : null])) }}"
                         class="app-filter-tab {{ $current === $key ? 'is-active' : '' }}"
                         @if ($current === $key) aria-current="page" @endif>
                         {{ $label }}
@@ -137,6 +157,9 @@
                     @if ($activeSection)
                     <input type="hidden" name="section" value="{{ $activeSection }}">
                     @endif
+                    @if ($late)
+                    <input type="hidden" name="late" value="1">
+                    @endif
 
                     <input
                         type="text"
@@ -149,7 +172,7 @@
 
                     <button type="submit" class="btn btn-primary btn-sm">Search</button>
 
-                    @if ($search || $activeStatus || $activeSection)
+                    @if ($search || $activeStatus || $activeSection || $late)
                     <a href="{{ route('applications.index') }}" class="text-action">Clear</a>
                     @endif
                 </form>
@@ -176,10 +199,15 @@
 
                     <tbody id="applications-body">
                         @foreach ($applications as $application)
-                        <tr data-application-row="{{ $application->id }}" data-status="{{ $application->status }}">
+                        <tr data-application-row="{{ $application->id }}" data-status="{{ $application->status }}" data-late="{{ $application->is_late ? '1' : '0' }}">
                             <td>
                                 <div class="min-w-0">
-                                    <div class="cell-title truncate">{{ $application->full_name }}</div>
+                                    <div class="cell-title truncate">
+                                        {{ $application->full_name }}
+                                        @if ($application->is_late)
+                                        <span class="chip chip--brand" style="margin-left: 6px; padding: 1px 8px; font-size: 10px; vertical-align: middle;">Late</span>
+                                        @endif
+                                    </div>
                                     <p class="cell-sub truncate">{{ $application->email }}</p>
                                     <p class="cell-sub hide-desktop" style="display: none; margin-top: 2px; font-size: 11.5px;">
                                         {{ $application->cne }} · {{ $application->filiere }}
@@ -212,6 +240,7 @@
                                         data-section="{{ $application->sectionLabel() }}"
                                         data-filiere="{{ $application->filiere }}"
                                         data-status-label="{{ $application->statusLabel() }}"
+                                        data-late="{{ $application->is_late ? 'Late' : 'Regular' }}"
                                         data-created="{{ $application->created_at?->format('M j, Y · H:i') }}"
                                         data-motivation="{{ $application->motivation }}">View</button>
 
@@ -236,10 +265,10 @@
 
             <div class="empty-state" id="applications-empty" @if ($applications->isNotEmpty()) hidden @endif>
                 <p class="empty-state-title">
-                    {{ $search || $activeStatus || $activeSection ? 'No matching applications' : 'No applications yet' }}
+                    {{ $search || $activeStatus || $activeSection || $late ? 'No matching applications' : 'No applications yet' }}
                 </p>
                 <p>
-                    {{ $search || $activeStatus || $activeSection
+                    {{ $search || $activeStatus || $activeSection || $late
                         ? 'Try adjusting or clearing your filters.'
                         : 'New recruitment applications will appear here as candidates apply.' }}
                 </p>
@@ -389,10 +418,12 @@
                             data = await request(ctx.deleteUrl, 'DELETE');
 
                             const rowStatus = ctx.row ? ctx.row.dataset.status : null;
+                            const wasLate = ctx.row ? ctx.row.dataset.late === '1' : false;
                             if (ctx.row) ctx.row.remove();
 
                             adjustCount('all', -1);
                             if (rowStatus) adjustCount(rowStatus, -1);
+                            if (wasLate) adjustCount('late', -1);
                             syncEmptyState();
                         } else {
                             data = await request(ctx.statusUrl, 'PATCH', { status: copy.status });
@@ -446,6 +477,7 @@
                                 { label: 'Section', value: d.section },
                                 { label: 'Filière', value: d.filiere },
                                 { label: 'Status', value: d.statusLabel },
+                                { label: 'Application type', value: d.late },
                                 { label: 'Submitted', value: d.created },
                                 { label: 'Motivation', value: d.motivation, wide: true },
                             ],

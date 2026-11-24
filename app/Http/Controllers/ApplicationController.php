@@ -42,6 +42,10 @@ class ApplicationController extends Controller
 
         $search = trim((string) $request->input('q'));
 
+        // Late applications are flagged when they are submitted after the
+        // regular recruitment season has closed.
+        $late = $request->boolean('late');
+
         // Managers (president, vice-president, secretary general) can browse
         // every section and narrow the list with the section filter. A section
         // lead is always locked to the section they lead.
@@ -55,7 +59,7 @@ class ApplicationController extends Controller
             $section = null;
         }
 
-        $query = $this->applicationsQuery($section);
+        $query = $this->applicationsQuery($section, $late);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -78,7 +82,7 @@ class ApplicationController extends Controller
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
-        $counts = $this->statusCounts($section);
+        $counts = $this->statusCounts($section, $late);
 
         return view('applications.index', [
             'applications' => $applications,
@@ -87,6 +91,8 @@ class ApplicationController extends Controller
             'activeSection' => $section,
             'canFilterSections' => $canFilterSections,
             'search' => $search,
+            'late' => $late,
+            'lateCount' => $this->lateCount($section),
         ]);
     }
 
@@ -121,7 +127,9 @@ class ApplicationController extends Controller
             $naming = 'normal';
         }
 
-        $applications = $this->applicationsQuery($section)
+        $late = $request->boolean('late');
+
+        $applications = $this->applicationsQuery($section, $late)
             ->orderBy('created_at')
             ->orderBy('id')
             ->get();
@@ -131,6 +139,7 @@ class ApplicationController extends Controller
             : 'all';
 
         $filename = "applications-{$label}"
+            .($late ? '-late' : '')
             .($naming === 'group' ? '-group' : '')
             .'-'.now()->format('Y-m-d').'.pdf';
 
@@ -140,6 +149,7 @@ class ApplicationController extends Controller
             'sectionLabel' => $section !== null
                 ? UserRecrute::SECTION_LABELS[$section].' section'
                 : 'All sections',
+            'lateOnly' => $late,
             'generatedAt' => now()->format('M j, Y · H:i'),
             'groupNaming' => $naming === 'group',
             'groupNamePrefix' => self::GROUP_NAME_PREFIX,
@@ -221,12 +231,22 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Base query for applications, optionally limited to one section.
+     * Base query for applications, optionally limited to one section and/or
+     * to late applications only.
      */
-    private function applicationsQuery(?string $section = null): Builder
+    private function applicationsQuery(?string $section = null, bool $late = false): Builder
     {
         return UserRecrute::query()
-            ->when($section !== null, fn ($q) => $q->where('preferred_section', $section));
+            ->when($section !== null, fn ($q) => $q->where('preferred_section', $section))
+            ->when($late, fn ($q) => $q->late());
+    }
+
+    /**
+     * Number of late applications, optionally limited to one section.
+     */
+    private function lateCount(?string $section = null): int
+    {
+        return $this->applicationsQuery($section, true)->count();
     }
 
     /**
@@ -237,13 +257,9 @@ class ApplicationController extends Controller
      *
      * @return array<string, int>
      */
-    private function statusCounts(?string $section = null): array
+    private function statusCounts(?string $section = null, bool $late = false): array
     {
-        $query = UserRecrute::query();
-
-        if ($section !== null) {
-            $query->where('preferred_section', $section);
-        }
+        $query = $this->applicationsQuery($section, $late);
 
         $rows = $query
             ->selectRaw('status, COUNT(*) as aggregate')

@@ -30,6 +30,64 @@ class RecruitmentTest extends TestCase
         $response->assertSee('Recruitment');
     }
 
+    public function test_late_recruitment_page_can_be_rendered(): void
+    {
+        $response = $this->get(route('late_recrute'));
+
+        $response->assertOk();
+        $response->assertSee('Late application form');
+        $response->assertSee('Late recruitment');
+    }
+
+    public function test_late_application_is_flagged_and_can_be_filtered(): void
+    {
+        $payload = [
+            'first_name' => 'Late',
+            'last_name' => 'Applicant',
+            'phone_number' => '0612345678',
+            'email' => 'late.applicant@example.com',
+            'cne' => 'LATE001',
+            'filiere' => 'Génie Informatique',
+            'preferred_section' => 'EN',
+            'motivation' => 'I missed the regular deadline but would still like to join the club.',
+        ];
+
+        $response = $this->post(route('late_recrute.store'), $payload);
+
+        $response->assertRedirect(route('late_recrute'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('users_recrute', [
+            'cne' => 'LATE001',
+            'is_late' => true,
+        ]);
+
+        // An application from the regular season is not flagged as late.
+        UserRecrute::create([
+            'first_name' => 'Regular',
+            'last_name' => 'Applicant',
+            'phone_number' => '0600000000',
+            'email' => 'regular.applicant@example.com',
+            'cne' => 'REGULAR001',
+            'filiere' => 'CPGE',
+            'preferred_section' => 'FR',
+            'motivation' => 'I applied during the regular recruitment season.',
+        ]);
+
+        $president = User::factory()->create(['is_suspended' => false]);
+        $president->assignRole('president');
+
+        $lateOnly = $this->actingAs($president)->get(route('applications.index', ['late' => 1]));
+        $lateOnly->assertOk();
+        $lateOnly->assertSee('Late Applicant');
+        $lateOnly->assertDontSee('Regular Applicant');
+
+        $all = $this->actingAs($president)->get(route('applications.index'));
+        $all->assertOk();
+        $all->assertSee('Late Applicant');
+        $all->assertSee('Regular Applicant');
+    }
+
     public function test_candidate_can_submit_recruitment_application(): void
     {
         $payload = [

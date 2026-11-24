@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -88,6 +89,7 @@ class UserRecrute extends Model
         'preferred_section',
         'motivation',
         'status',
+        'is_late',
     ];
 
     /**
@@ -97,7 +99,16 @@ class UserRecrute extends Model
      */
     protected $casts = [
         'created_at' => 'datetime',
+        'is_late' => 'boolean',
     ];
+
+    /**
+     * Limit the query to applications submitted after the regular season.
+     */
+    public function scopeLate(Builder $query): Builder
+    {
+        return $query->where('is_late', true);
+    }
 
     /**
      * Get the candidate's full name.

@@ -78,9 +78,13 @@ Route::get('/', function () {
     return view('landing', compact('upcomingEvents'));
 })->name('landing');
 
-// Recruitment — Call for new members
+// Recruitment — Call for new members (closed for the season)
 Route::get('/recrute', [RecruitmentController::class, 'create'])->name('recrute');
 Route::post('/recrute', [RecruitmentController::class, 'store'])->name('recrute.store');
+
+// Late recruitment — applications submitted after the season closed
+Route::get('/late_recrute', [RecruitmentController::class, 'createLate'])->name('late_recrute');
+Route::post('/late_recrute', [RecruitmentController::class, 'storeLate'])->name('late_recrute.store');
 
 /*
 |--------------------------------------------------------------------------

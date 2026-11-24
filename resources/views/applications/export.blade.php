@@ -108,13 +108,14 @@
     @php
         $groupNaming = $groupNaming ?? false;
         $groupNamePrefix = $groupNamePrefix ?? 'tgd27_';
+        $lateOnly = $lateOnly ?? false;
     @endphp
 
     <div class="header">
         <div class="club">The Great Debaters</div>
         <h1>Recruitment Applications</h1>
         <div class="meta">
-            {{ $sectionLabel }} · Generated {{ $generatedAt }}
+            {{ $sectionLabel }} · {{ $lateOnly ? 'Late applications · ' : '' }}Generated {{ $generatedAt }}
             @if ($groupNaming) · Group naming ({{ $groupNamePrefix }}1, {{ $groupNamePrefix }}2, …) @endif
         </div>
     </div>
