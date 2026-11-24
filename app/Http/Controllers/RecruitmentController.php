@@ -12,7 +12,7 @@ use Illuminate\View\View;
 class RecruitmentController extends Controller
 {
     /**
-     * Display the recruitment application form.
+     * Display the closed-recruitment notice (applications are over for the season).
      */
     public function create(): View
     {

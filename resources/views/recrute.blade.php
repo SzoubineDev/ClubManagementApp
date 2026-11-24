@@ -1,10 +1,14 @@
+@php
+    // Local number 0712051658 → international format for WhatsApp (Morocco +212).
+    $whatsappUrl = 'https://wa.me/212712051658?text=' . rawurlencode('Hello, I would like more information about recruitment.');
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Application — The Great Debaters Club</title>
-    <meta name="description" content="Apply to join The Great Debaters Club at FST Errachidia.">
+    <title>Recruitment closed — The Great Debaters Club</title>
+    <meta name="description" content="Recruitment is over for this season at The Great Debaters Club, FST Errachidia.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +23,7 @@
 </head>
 <body class="recruit-page">
 
-    <a class="recruit-skip" href="#application">Skip to the application form</a>
+    <a class="recruit-skip" href="#notice">Skip to the notice</a>
 
     <header class="recruit-header">
         <div class="recruit-header-inner">
@@ -36,225 +40,62 @@
         </div>
     </header>
 
-    <main class="recruit-main" id="application">
-        <div class="recruit-heading">
-            <p class="recruit-eyebrow">2026 / 2027 · Recruitment</p>
-            <h1>Application form</h1>
-            <p class="recruit-lead">Complete the form below to apply to The Great Debaters Club. It takes about two minutes.</p>
-        </div>
-
-        @if (session('success'))
-            <div class="recruit-alert recruit-alert--success" role="status">
-                <div><strong>Application received.</strong> {{ session('success') }}</div>
+    <main class="recruit-main" id="notice">
+        <div class="recruit-closed">
+            <div class="recruit-closed-intro">
+                <span class="recruit-closed-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4.5" width="18" height="16" rx="2.5"></rect>
+                        <path d="M8 2.5v4M16 2.5v4M3 9.5h18"></path>
+                        <path d="m9.5 14 5 4M14.5 14l-5 4"></path>
+                    </svg>
+                </span>
+                <p class="recruit-eyebrow">2026 / 2027 · Recruitment</p>
+                <h1>Recruitment is over for this season.</h1>
+                <p class="recruit-lead">For more information, send us a message on WhatsApp.</p>
             </div>
-        @endif
 
-        @if (session('error'))
-            <div class="recruit-alert recruit-alert--error" role="alert">
-                <div><strong>Something went wrong.</strong> {{ session('error') }}</div>
+            <div class="recruit-langs">
+                <article class="recruit-lang" lang="fr" dir="ltr">
+                    <span class="recruit-lang-tag">Français</span>
+                    <p class="recruit-lang-message">Le recrutement est terminé pour cette saison.</p>
+                    <p class="recruit-lang-text">
+                        Pour plus d'informations,
+                        <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer">envoyez-nous un message</a>.
+                    </p>
+                </article>
+
+                <article class="recruit-lang" lang="ar" dir="rtl">
+                    <span class="recruit-lang-tag">العربية</span>
+                    <p class="recruit-lang-message">انتهى الترشيح لهذا الموسم.</p>
+                    <p class="recruit-lang-text">
+                        لمزيد من المعلومات،
+                        <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer">أرسل لنا رسالة</a>.
+                    </p>
+                </article>
+
+                <article class="recruit-lang" lang="en" dir="ltr">
+                    <span class="recruit-lang-tag">English</span>
+                    <p class="recruit-lang-message">Recruitment is over for this season.</p>
+                    <p class="recruit-lang-text">
+                        For more information,
+                        <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer">send us a message</a>.
+                    </p>
+                </article>
             </div>
-        @endif
 
-        @if ($errors->any())
-            <div class="recruit-alert recruit-alert--error" role="alert" tabindex="-1">
-                <div>
-                    <strong>Please review the form.</strong>
-                    <ul>
-                        @foreach ($errors->all() as $message)
-                            <li>{{ $message }}</li>
-                        @endforeach
-                    </ul>
+            <div class="recruit-wa">
+                <div class="recruit-wa-copy">
+                    <strong>WhatsApp</strong>
+                    <span>07 12 05 16 58</span>
                 </div>
+                <a class="recruit-wa-btn" href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                        <path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.11.82.83-3.04-.2-.31a8.17 8.17 0 0 1-1.25-4.34c0-4.52 3.68-8.2 8.21-8.2a8.2 8.2 0 0 1 8.2 8.21c0 4.52-3.68 8.18-8.19 8.18Zm4.5-6.13c-.25-.12-1.47-.72-1.69-.8-.23-.09-.39-.13-.56.12-.17.25-.64.8-.79.96-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.57.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.11-.22-.17-.47-.29Z"/>
+                    </svg>
+                    <span>Send us a message</span>
+                </a>
             </div>
-        @endif
-
-        <div class="recruit-layout">
-            <div class="recruit-primary">
-                <form action="{{ route('recrute.store') }}" method="POST" class="recruit-form">
-
-                    @csrf
-
-                    {{-- 01 · Personal information ------------------------------------ --}}
-                    <section class="recruit-section" aria-labelledby="personal-heading">
-                        <div class="recruit-section-head">
-                            <span class="recruit-section-index" aria-hidden="true">01</span>
-                            <div>
-                                <h2 id="personal-heading">Personal information</h2>
-                                <p>Tell us how to identify and contact you.</p>
-                            </div>
-                        </div>
-
-                        <div class="recruit-grid">
-                            <div class="recruit-field">
-                                <label class="recruit-label" for="first_name">First name <span class="recruit-req" aria-hidden="true">*</span></label>
-                                <input class="recruit-control @error('first_name') is-invalid @enderror"
-                                       id="first_name" name="first_name" type="text"
-                                       value="{{ old('first_name') }}" placeholder="e.g. Soulaimane"
-                                       autocomplete="given-name" required
-                                       @error('first_name') aria-invalid="true" aria-describedby="first_name-error" @enderror>
-                                @error('first_name') <small class="recruit-error" id="first_name-error">{{ $message }}</small> @enderror
-                            </div>
-
-                            <div class="recruit-field">
-                                <label class="recruit-label" for="last_name">Last name <span class="recruit-req" aria-hidden="true">*</span></label>
-                                <input class="recruit-control @error('last_name') is-invalid @enderror"
-                                       id="last_name" name="last_name" type="text"
-                                       value="{{ old('last_name') }}" placeholder="e.g. Zoubine"
-                                       autocomplete="family-name" required
-                                       @error('last_name') aria-invalid="true" aria-describedby="last_name-error" @enderror>
-                                @error('last_name') <small class="recruit-error" id="last_name-error">{{ $message }}</small> @enderror
-                            </div>
-
-                            <div class="recruit-field">
-                                <label class="recruit-label" for="phone_number">Phone / WhatsApp <span class="recruit-req" aria-hidden="true">*</span></label>
-                                <input class="recruit-control @error('phone_number') is-invalid @enderror"
-                                       id="phone_number" name="phone_number" type="tel"
-                                       value="{{ old('phone_number') }}" placeholder="06 12 34 56 78"
-                                       autocomplete="tel" required
-                                       @error('phone_number') aria-invalid="true" aria-describedby="phone_number-error" @enderror>
-                                @error('phone_number') <small class="recruit-error" id="phone_number-error">{{ $message }}</small> @enderror
-                            </div>
-
-                            <div class="recruit-field">
-                                <label class="recruit-label" for="email">Email address <span class="recruit-req" aria-hidden="true">*</span></label>
-                                <input class="recruit-control @error('email') is-invalid @enderror"
-                                       id="email" name="email" type="email"
-                                       value="{{ old('email') }}" placeholder="you@example.com"
-                                       autocomplete="email" required
-                                       @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
-                                @error('email') <small class="recruit-error" id="email-error">{{ $message }}</small> @enderror
-                            </div>
-
-                            <div class="recruit-field">
-                                <label class="recruit-label" for="cne">CNE / Massar <span class="recruit-req" aria-hidden="true">*</span></label>
-                                <input class="recruit-control @error('cne') is-invalid @enderror"
-                                       id="cne" name="cne" type="text"
-                                       value="{{ old('cne') }}" placeholder="Your student identifier" required
-                                       @error('cne') aria-invalid="true" aria-describedby="cne-error" @enderror>
-                                @error('cne') <small class="recruit-error" id="cne-error">{{ $message }}</small> @enderror
-                            </div>
-
-                            <div class="recruit-field">
-                                <label class="recruit-label" for="filiere">Programme / Filière <span class="recruit-req" aria-hidden="true">*</span></label>
-                                <select class="recruit-control @error('filiere') is-invalid @enderror"
-                                        id="filiere" name="filiere" required
-                                        @error('filiere') aria-invalid="true" aria-describedby="filiere-error" @enderror>
-                                    <option value="" disabled {{ old('filiere') ? '' : 'selected' }}>Choose your programme</option>
-                                    @foreach (['DEUST MIP', 'DEUST BCG', 'LST', 'Cycle Ingénieur', 'MST', 'Doctorat', 'Autre'] as $programme)
-                                        <option value="{{ $programme }}" {{ old('filiere') === $programme ? 'selected' : '' }}>
-                                            {{ $programme }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('filiere') <small class="recruit-error" id="filiere-error">{{ $message }}</small> @enderror
-                            </div>
-                        </div>
-                    </section>
-
-                    {{-- 02 · Preferred section --------------------------------------- --}}
-                    <section class="recruit-section" aria-labelledby="section-heading">
-                        <div class="recruit-section-head">
-                            <span class="recruit-section-index" aria-hidden="true">02</span>
-                            <div>
-                                <h2 id="section-heading">Preferred section</h2>
-                                <p>Select the language section you would like to join.</p>
-                            </div>
-                        </div>
-
-                        <div class="recruit-choices" role="radiogroup" aria-labelledby="section-heading"
-                             @error('preferred_section') aria-describedby="preferred_section-error" @enderror>
-                            <label class="recruit-choice">
-                                <input type="radio" name="preferred_section" value="EN"
-                                       {{ old('preferred_section', 'EN') === 'EN' ? 'checked' : '' }} required>
-                                <span class="recruit-choice-dot" aria-hidden="true"></span>
-                                <span class="recruit-choice-copy"><strong>English</strong><small>British Parliamentary</small></span>
-                            </label>
-                            <label class="recruit-choice">
-                                <input type="radio" name="preferred_section" value="FR"
-                                       {{ old('preferred_section') === 'FR' ? 'checked' : '' }}>
-                                <span class="recruit-choice-dot" aria-hidden="true"></span>
-                                <span class="recruit-choice-copy"><strong>Français</strong><small>Art oratoire</small></span>
-                            </label>
-                            <label class="recruit-choice">
-                                <input type="radio" name="preferred_section" value="AR"
-                                       {{ old('preferred_section') === 'AR' ? 'checked' : '' }}>
-                                <span class="recruit-choice-dot" aria-hidden="true"></span>
-                                <span class="recruit-choice-copy"><strong>العربية</strong><small>مناظرة برلمانية</small></span>
-                            </label>
-                        </div>
-                        @error('preferred_section') <small class="recruit-error" id="preferred_section-error">{{ $message }}</small> @enderror
-                    </section>
-
-                    {{-- 03 · Motivation ---------------------------------------------- --}}
-                    <section class="recruit-section" aria-labelledby="motivation-heading">
-                        <div class="recruit-section-head">
-                            <span class="recruit-section-index" aria-hidden="true">03</span>
-                            <div>
-                                <h2 id="motivation-heading">Motivation</h2>
-                                <p>There is no perfect answer. We want to hear from you.</p>
-                            </div>
-                        </div>
-
-                        <div class="recruit-field">
-                            <label class="recruit-label" for="motivation">Why do you want to join the club? <span class="recruit-req" aria-hidden="true">*</span></label>
-                            <textarea class="recruit-control @error('motivation') is-invalid @enderror"
-                                      id="motivation" name="motivation" rows="5" maxlength="2500"
-                                      placeholder="Write a few sentences about your interest in debate..." required
-                                      @error('motivation') aria-invalid="true" aria-describedby="motivation-error" @enderror>{{ old('motivation') }}</textarea>
-                            <div class="recruit-meta">
-                                @error('motivation')
-                                    <small class="recruit-error" id="motivation-error">{{ $message }}</small>
-                                @else
-                                    <small class="recruit-hint">Between 15 and 2500 characters.</small>
-                                @enderror
-                                <small class="recruit-count" data-count-for="motivation">{{ mb_strlen((string) old('motivation')) }} / 2500</small>
-                            </div>
-                        </div>
-                    </section>
-
-                    <div class="recruit-actions">
-                        <p class="recruit-required"><span class="recruit-req" aria-hidden="true">*</span> Required fields</p>
-                        <button type="submit" class="recruit-submit">
-                            <span class="recruit-submit-label">Submit application <span class="recruit-arrow" aria-hidden="true">→</span></span>
-                            <span class="recruit-submit-loading">
-                                <span class="recruit-spinner" aria-hidden="true"></span> Submitting…
-                            </span>
-                        </button>
-                    </div>
-                    <p class="recruit-privacy">Your information will only be used for club recruitment.</p>
-                </form>
-            </div>
-
-            <aside class="recruit-aside" aria-label="Application information">
-                <div class="recruit-aside-card">
-                    <h2>What happens next</h2>
-                    <p>From application to your first session.</p>
-                    <ol class="recruit-steps">
-                        <li>
-                            <span class="recruit-step-num" aria-hidden="true">1</span>
-                            <span class="recruit-step-body"><strong>Submit your application</strong><span>Fill in the form on this page.</span></span>
-                        </li>
-                        <li>
-                            <span class="recruit-step-num" aria-hidden="true">2</span>
-                            <span class="recruit-step-body"><strong>The Bureau reviews it</strong><span>Every application is read by the board.</span></span>
-                        </li>
-                        <li>
-                            <span class="recruit-step-num" aria-hidden="true">3</span>
-                            <span class="recruit-step-body"><strong>We contact you</strong><span>Expect a message via WhatsApp or email.</span></span>
-                        </li>
-                    </ol>
-                </div>
-
-                <div class="recruit-aside-card">
-                    <h2>Who can apply</h2>
-                    <ul class="recruit-list">
-                        <li>Open to all FST Errachidia students, every year and filière.</li>
-                        <li>No prior debating experience required.</li>
-                        <li>Membership is free.</li>
-                        <li>Choose English, French or Arabic debate.</li>
-                    </ul>
-                </div>
-            </aside>
         </div>
     </main>
 
@@ -264,36 +105,5 @@
             <span>FST Errachidia · Université Moulay Ismaïl</span>
         </div>
     </footer>
-
-    <script>
-        // Progressive enhancement only — the form works fully without JS.
-        (function () {
-            // Live character counter for the motivation field.
-            var field = document.getElementById('motivation');
-            var counter = document.querySelector('[data-count-for="motivation"]');
-            if (field && counter) {
-                var max = parseInt(field.getAttribute('maxlength'), 10) || 2500;
-                var warnAt = max - 200;
-                var update = function () {
-                    var length = field.value.length;
-                    counter.textContent = length + ' / ' + max;
-                    counter.classList.toggle('is-near', length > warnAt);
-                };
-                field.addEventListener('input', update);
-                update();
-            }
-
-            // Loading state on submit (native validation runs first).
-            var form = document.querySelector('.recruit-form');
-            var submit = form && form.querySelector('.recruit-submit');
-            if (form && submit) {
-                form.addEventListener('submit', function () {
-                    submit.classList.add('is-submitting');
-                    submit.disabled = true;
-                    submit.setAttribute('aria-busy', 'true');
-                });
-            }
-        })();
-    </script>
 </body>
 </html>

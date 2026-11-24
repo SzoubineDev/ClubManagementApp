@@ -501,6 +501,178 @@ select.recruit-control:invalid { color: #9A938B; }
     opacity: .65;
 }
 
+/* ---------- Closed recruitment notice ------------------------------------- */
+.recruit-closed {
+    width: min(100%, 980px);
+    margin: 0 auto;
+}
+
+.recruit-closed-intro {
+    max-width: 680px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.recruit-closed-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand);
+    box-shadow: inset 0 0 0 1px rgba(102, 12, 27, .08);
+}
+
+.recruit-closed-intro .recruit-eyebrow { margin-bottom: 8px; }
+
+.recruit-closed-intro h1 {
+    margin: 0;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    color: var(--ink);
+    text-wrap: balance;
+}
+
+.recruit-closed-intro .recruit-lead {
+    max-width: 46ch;
+    margin: 12px auto 0;
+    text-align: center;
+}
+
+.recruit-langs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 860px) {
+    .recruit-langs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.recruit-lang {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 2px rgba(23, 20, 17, .04), 0 12px 28px -22px rgba(23, 20, 17, .3);
+}
+
+.recruit-lang::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--brand);
+    opacity: .85;
+}
+
+.recruit-lang-tag {
+    color: var(--brand);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.recruit-lang-message {
+    margin: 0;
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -.01em;
+}
+
+.recruit-lang-text {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.recruit-lang-text a {
+    color: var(--brand);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.recruit-lang-text a:hover { color: var(--brand-strong); }
+
+.recruit-lang[lang="ar"] {
+    font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", "Arial", sans-serif;
+}
+.recruit-lang[lang="ar"] .recruit-lang-tag { letter-spacing: 0; }
+.recruit-lang[lang="ar"] .recruit-lang-message { line-height: 1.7; }
+.recruit-lang[lang="ar"] .recruit-lang-text { line-height: 1.8; }
+
+.recruit-wa {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 2px rgba(23, 20, 17, .04);
+}
+
+.recruit-wa-copy { display: grid; gap: 2px; }
+.recruit-wa-copy strong {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.recruit-wa-copy span {
+    color: var(--muted);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.recruit-wa-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 24px;
+    border-radius: var(--radius);
+    background: var(--brand);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(23, 20, 17, .14);
+    transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+.recruit-wa-btn:hover {
+    background: var(--brand-strong);
+    color: #fff;
+    box-shadow: 0 8px 20px -10px rgba(102, 12, 27, .55);
+}
+.recruit-wa-btn:active { transform: translateY(1px); }
+.recruit-wa-btn:focus-visible { outline: 3px solid rgba(102, 12, 27, .35); outline-offset: 2px; }
+
+@media (max-width: 639px) {
+    .recruit-closed-intro { margin-bottom: 24px; }
+    .recruit-lang { padding: 20px 18px; border-radius: var(--radius); }
+    .recruit-wa { flex-direction: column; align-items: stretch; }
+    .recruit-wa-btn { width: 100%; }
+}
+
 /* ---------- Footer -------------------------------------------------------- */
 .recruit-footer { border-top: 1px solid var(--line); background: var(--surface); }
 .recruit-footer-inner {
