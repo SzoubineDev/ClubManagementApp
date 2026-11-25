@@ -12,6 +12,7 @@ use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\SectionAttendanceController;
+use App\Http\Controllers\SpinTheWheelController;
 use App\Http\Controllers\VideoController;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\RedirectIfSuspended;
@@ -141,6 +142,14 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
         ->name('events.unpublish');
 
     Route::resource('events', EventController::class);
+
+    // Games — presenter picker (unique draws per session)
+    Route::get('games/spin_the_wheel', [SpinTheWheelController::class, 'index'])
+        ->name('games.spin-the-wheel');
+    Route::post('games/spin_the_wheel', [SpinTheWheelController::class, 'spin'])
+        ->name('games.spin-the-wheel.spin');
+    Route::delete('games/spin_the_wheel', [SpinTheWheelController::class, 'reset'])
+        ->name('games.spin-the-wheel.reset');
 
     // Members console — admin-only surfaces (policies enforce per-action)
     Route::get('members', [MemberController::class, 'index'])->name('members.index');

@@ -19,6 +19,10 @@
                     {{ __('Events') }}
                 </x-nav-link>
 
+                <x-nav-link :href="route('games.spin-the-wheel')" :active="request()->routeIs('games.*')">
+                    {{ __('Wheel') }}
+                </x-nav-link>
+
                 @can('viewAny', \App\Models\User::class)
                 <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
                     {{ __('Members') }}
@@ -115,6 +119,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')" @click="mobileOpen = false">
                     {{ __('Events') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('games.spin-the-wheel')" :active="request()->routeIs('games.*')" @click="mobileOpen = false">
+                    {{ __('Wheel') }}
                 </x-responsive-nav-link>
                 @can('viewAny', \App\Models\User::class)
                 <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')" @click="mobileOpen = false">
