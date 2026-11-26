@@ -9,11 +9,13 @@ use App\Http\Controllers\EventRsvpController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MyPlaceController;
 use App\Http\Controllers\PasswordRecoveryController;
+use App\Http\Controllers\PresentationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\SectionAttendanceController;
 use App\Http\Controllers\SpinTheWheelController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\WordAssociationController;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\RedirectIfSuspended;
 use App\Models\Event;
@@ -78,6 +80,9 @@ Route::get('/', function () {
 
     return view('landing', compact('upcomingEvents'));
 })->name('landing');
+
+// Integration day — standalone full-screen presentation deck
+Route::get('/presentation', [PresentationController::class, 'index'])->name('presentation');
 
 // Recruitment — Call for new members (closed for the season)
 Route::get('/recrute', [RecruitmentController::class, 'create'])->name('recrute');
@@ -150,6 +155,16 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
         ->name('games.spin-the-wheel.spin');
     Route::delete('games/spin_the_wheel', [SpinTheWheelController::class, 'reset'])
         ->name('games.spin-the-wheel.reset');
+
+    // Games — word association (rebus figures, 60-second rounds)
+    Route::get('games/word_assoc', [WordAssociationController::class, 'index'])
+        ->name('games.word-assoc');
+    Route::post('games/word_assoc/draw', [WordAssociationController::class, 'draw'])
+        ->name('games.word-assoc.draw');
+    Route::post('games/word_assoc/reveal', [WordAssociationController::class, 'reveal'])
+        ->name('games.word-assoc.reveal');
+    Route::delete('games/word_assoc', [WordAssociationController::class, 'reset'])
+        ->name('games.word-assoc.reset');
 
     // Members console — admin-only surfaces (policies enforce per-action)
     Route::get('members', [MemberController::class, 'index'])->name('members.index');

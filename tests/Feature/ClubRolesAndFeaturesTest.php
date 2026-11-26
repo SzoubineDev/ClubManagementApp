@@ -251,6 +251,17 @@ class ClubRolesAndFeaturesTest extends TestCase
             ->assertSee('Member Directory');
     }
 
+    public function test_the_panel_navigation_links_to_the_presentation(): void
+    {
+        $member = $this->userWithRole('member');
+
+        $this->actingAs($member)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('href="'.route('presentation').'"', false)
+            ->assertSee('Presentation');
+    }
+
     // --- Section chef daily attendance -----------------------------------
 
     public function test_section_chef_sees_only_their_section_and_records_presence(): void

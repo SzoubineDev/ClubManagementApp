@@ -19,8 +19,16 @@
                     {{ __('Events') }}
                 </x-nav-link>
 
-                <x-nav-link :href="route('games.spin-the-wheel')" :active="request()->routeIs('games.*')">
+                <x-nav-link :href="route('games.spin-the-wheel')" :active="request()->routeIs('games.spin-the-wheel*')">
                     {{ __('Wheel') }}
+                </x-nav-link>
+
+                <x-nav-link :href="route('games.word-assoc')" :active="request()->routeIs('games.word-assoc*')">
+                    {{ __('Word Game') }}
+                </x-nav-link>
+
+                <x-nav-link :href="route('presentation')" :active="request()->routeIs('presentation')">
+                    {{ __('Presentation') }}
                 </x-nav-link>
 
                 @can('viewAny', \App\Models\User::class)
@@ -120,8 +128,14 @@
                 <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')" @click="mobileOpen = false">
                     {{ __('Events') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('games.spin-the-wheel')" :active="request()->routeIs('games.*')" @click="mobileOpen = false">
+                <x-responsive-nav-link :href="route('games.spin-the-wheel')" :active="request()->routeIs('games.spin-the-wheel*')" @click="mobileOpen = false">
                     {{ __('Wheel') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('games.word-assoc')" :active="request()->routeIs('games.word-assoc*')" @click="mobileOpen = false">
+                    {{ __('Word Game') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('presentation')" :active="request()->routeIs('presentation')" @click="mobileOpen = false">
+                    {{ __('Presentation') }}
                 </x-responsive-nav-link>
                 @can('viewAny', \App\Models\User::class)
                 <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')" @click="mobileOpen = false">
