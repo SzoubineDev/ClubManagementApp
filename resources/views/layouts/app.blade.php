@@ -31,6 +31,10 @@
                     {{ __('Presentation') }}
                 </x-nav-link>
 
+                <x-nav-link :href="route('alphabets')" :active="request()->routeIs('alphabets')">
+                    {{ __('Alphabets') }}
+                </x-nav-link>
+
                 @can('viewAny', \App\Models\User::class)
                 <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
                     {{ __('Members') }}
@@ -136,6 +140,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('presentation')" :active="request()->routeIs('presentation')" @click="mobileOpen = false">
                     {{ __('Presentation') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('alphabets')" :active="request()->routeIs('alphabets')" @click="mobileOpen = false">
+                    {{ __('Alphabets') }}
                 </x-responsive-nav-link>
                 @can('viewAny', \App\Models\User::class)
                 <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')" @click="mobileOpen = false">

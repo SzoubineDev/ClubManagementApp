@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlphabetController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DesignVideoController;
@@ -83,6 +84,9 @@ Route::get('/', function () {
 
 // Integration day — standalone full-screen presentation deck
 Route::get('/presentation', [PresentationController::class, 'index'])->name('presentation');
+
+// Alphabet reference page — standalone, themed like the presentation
+Route::get('/alphabets', [AlphabetController::class, 'index'])->name('alphabets');
 
 // Recruitment — Call for new members (closed for the season)
 Route::get('/recrute', [RecruitmentController::class, 'create'])->name('recrute');

@@ -251,7 +251,7 @@ class ClubRolesAndFeaturesTest extends TestCase
             ->assertSee('Member Directory');
     }
 
-    public function test_the_panel_navigation_links_to_the_presentation(): void
+    public function test_the_panel_navigation_links_to_the_presentation_and_alphabets(): void
     {
         $member = $this->userWithRole('member');
 
@@ -259,7 +259,9 @@ class ClubRolesAndFeaturesTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('href="'.route('presentation').'"', false)
-            ->assertSee('Presentation');
+            ->assertSee('Presentation')
+            ->assertSee('href="'.route('alphabets').'"', false)
+            ->assertSee('Alphabets');
     }
 
     // --- Section chef daily attendance -----------------------------------
