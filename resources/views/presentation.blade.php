@@ -990,7 +990,7 @@
                 </div>
                 <p class="kicker" data-reveal data-delay="1">FST Errachidia · Université Moulay Ismaïl</p>
                 <h1 class="intro__title" data-reveal data-delay="2">Journée<br><em>d'Intégration</em></h1>
-                <p class="intro__welcome" data-reveal data-delay="3">Bienvenue · مرحباً · Welcome</p>
+                <p class="intro__welcome" data-reveal data-delay="3">Bienvenue · مرحباً · Azul · Welcome</p>
                 <div class="intro__rule" data-reveal data-delay="4"></div>
                 <p class="intro__brand" data-reveal data-delay="5">
                     The Great Debaters
