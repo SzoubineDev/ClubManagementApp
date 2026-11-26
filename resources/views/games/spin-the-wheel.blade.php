@@ -214,8 +214,8 @@
             border-radius: 50%;
             overflow: hidden;
             background: repeating-conic-gradient(from 0deg,
-                #FFFDFC 0deg 9deg,
-                #F4DFE5 9deg 18deg);
+                #FFFDFC 0deg 7.2deg,
+                #F4DFE5 7.2deg 14.4deg);
             box-shadow:
                 inset 0 0 0 2px rgba(92, 15, 36, .22),
                 inset 0 0 32px rgba(122, 21, 49, .18);
@@ -231,7 +231,7 @@
             border-radius: 50%;
             background: repeating-conic-gradient(from 0deg,
                 rgba(155, 27, 63, .55) 0deg .5deg,
-                transparent .5deg 90deg);
+                transparent .5deg 72deg);
             opacity: .75;
         }
 

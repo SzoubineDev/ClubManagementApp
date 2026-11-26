@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Presenter picker: draws a unique number from 1 to 40 for the current
+ * Presenter picker: draws a unique number from 1 to 50 for the current
  * session. Once a number has been drawn it never comes back until the
  * board is reset, so each member presents exactly once per round.
  */
@@ -15,7 +15,7 @@ class SpinTheWheelController extends Controller
 {
     private const MIN = 1;
 
-    private const MAX = 40;
+    private const MAX = 50;
 
     private const MEME_COUNT = 20;
 

@@ -30,15 +30,15 @@ class SpinTheWheelTest extends TestCase
             ->get(route('games.spin-the-wheel'))
             ->assertOk()
             ->assertSee('Spin the Wheel')
-            ->assertSee('1 to 40')
-            ->assertSee('40 of 40 left')
+            ->assertSee('1 to 50')
+            ->assertSee('50 of 50 left')
             ->assertSee('Presenter board')
             ->assertSee('id="resultOverlay"', false)
             ->assertSee('id="resultImage"', false)
             ->assertSee('/images/memes/meme1.png');
     }
 
-    public function test_spins_return_unique_numbers_between_one_and_forty(): void
+    public function test_spins_return_unique_numbers_between_one_and_fifty(): void
     {
         $this->actingAs($this->user());
 
@@ -56,7 +56,7 @@ class SpinTheWheelTest extends TestCase
             $this->assertMatchesRegularExpression('#/images/memes/meme([1-9]|1\d|20)\.(png|jpe?g|webp|gif)$#i', $image);
 
             $this->assertGreaterThanOrEqual(1, $number);
-            $this->assertLessThanOrEqual(40, $number);
+            $this->assertLessThanOrEqual(50, $number);
             $this->assertNotContains($number, $seen);
             $this->assertSame(
                 'Number '.$number.' is going to present themselves now.',
@@ -65,7 +65,7 @@ class SpinTheWheelTest extends TestCase
 
             $seen[] = $number;
 
-            $this->assertSame(40 - ($i + 1), $response->json('remaining'));
+            $this->assertSame(50 - ($i + 1), $response->json('remaining'));
             $this->assertCount($i + 1, $response->json('drawn'));
         }
 
@@ -82,7 +82,7 @@ class SpinTheWheelTest extends TestCase
             ->assertOk()
             ->assertJson([
                 'drawn' => [],
-                'remaining' => 40,
+                'remaining' => 50,
             ]);
 
         $this->assertNull(session('spin_the_wheel.last'));
@@ -93,11 +93,11 @@ class SpinTheWheelTest extends TestCase
     {
         $this->actingAs($this->user());
 
-        $all = range(1, 40);
+        $all = range(1, 50);
 
         $this->withSession([
             'spin_the_wheel.drawn' => $all,
-            'spin_the_wheel.last' => 40,
+            'spin_the_wheel.last' => 50,
         ])->postJson(route('games.spin-the-wheel.spin'))
             ->assertStatus(409)
             ->assertJson(['remaining' => 0]);
