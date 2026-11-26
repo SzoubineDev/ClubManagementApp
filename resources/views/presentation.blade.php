@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Tifinagh&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -167,6 +167,12 @@
             margin: 20px 0 0;
             font-size: clamp(.95rem, 1.5vw, 1.25rem);
             letter-spacing: .05em;
+        }
+
+        .intro__tifinagh {
+            font-family: 'Noto Sans Tifinagh', var(--body);
+            font-size: 1.15em;
+            letter-spacing: 0;
         }
 
         .intro__rule {
@@ -990,7 +996,7 @@
                 </div>
                 <p class="kicker" data-reveal data-delay="1">FST Errachidia · Université Moulay Ismaïl</p>
                 <h1 class="intro__title" data-reveal data-delay="2">Journée<br><em>d'Intégration</em></h1>
-                <p class="intro__welcome" data-reveal data-delay="3">Bienvenue · مرحباً · Azul · Welcome</p>
+                <p class="intro__welcome" data-reveal data-delay="3">Bienvenue · مرحباً · <span class="intro__tifinagh" lang="zgh">ⴰⵣⵓⵍ</span> · Welcome</p>
                 <div class="intro__rule" data-reveal data-delay="4"></div>
                 <p class="intro__brand" data-reveal data-delay="5">
                     The Great Debaters

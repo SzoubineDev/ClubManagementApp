@@ -11,7 +11,7 @@ class PresentationTest extends TestCase
         $response = $this->get(route('presentation'))
             ->assertOk()
             ->assertSee("Journée")
-            ->assertSee('Azul')
+            ->assertSee('ⴰⵣⵓⵍ')
             ->assertSee('Hymne')
             ->assertSee('Chérifien')
             ->assertSee('Zoubine Soulaimane')
