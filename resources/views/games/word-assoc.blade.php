@@ -11,6 +11,14 @@
                 <span class="chip chip--brand chip-lg" id="headerRemaining">
                     {{ $remaining }} of {{ $total }} left
                 </span>
+                <button type="button" class="btn btn-outline btn-sm" id="restartButton"
+                    title="Restart the whole game">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Restart
+                </button>
             </div>
         </div>
     </x-slot>
@@ -409,6 +417,7 @@
             const revealButton = document.getElementById('revealButton');
             const nextButton = document.getElementById('nextButton');
             const resetButton = document.getElementById('resetButton');
+            const restartButton = document.getElementById('restartButton');
             const timer = document.getElementById('timer');
             const timerProgress = document.getElementById('timerProgress');
             const timerValue = document.getElementById('timerValue');
@@ -520,6 +529,7 @@
                 revealButton.disabled = state !== 'playing';
                 nextButton.disabled = state !== 'revealed' || remaining === 0;
                 resetButton.disabled = (used.length === 0 && ! current) || state === 'playing';
+                restartButton.disabled = state === 'idle' && used.length === 0 && ! current;
             }
 
             function setIdleFigure() {
@@ -624,23 +634,32 @@
             }
 
             async function reset() {
-                if (state === 'playing') {
-                    return;
+                const wasPlaying = state === 'playing';
+                const canConfirm = window.TGD && typeof window.TGD.confirm === 'function';
+
+                // Pause the clock while the confirmation dialog is open.
+                if (wasPlaying) {
+                    stopTimer();
                 }
 
-                const confirmed = window.TGD && await window.TGD.confirm({
-                    title: 'Reset the deck?',
+                const confirmed = canConfirm ? await window.TGD.confirm({
+                    title: 'Restart the game?',
                     message: 'All ' + TOTAL + ' figures go back into the deck and a new round starts.',
-                    confirmLabel: 'Reset deck',
+                    confirmLabel: 'Restart',
                     cancelLabel: 'Keep playing',
                     danger: true,
-                });
+                }) : true;
 
-                if (window.TGD && confirmed === false) {
+                if (! confirmed) {
+                    if (wasPlaying && remainingSeconds > 0) {
+                        runTimer(remainingSeconds);
+                    }
+
                     return;
                 }
 
                 resetButton.disabled = true;
+                restartButton.disabled = true;
 
                 try {
                     const data = await request(RESET_URL, 'DELETE');
@@ -662,6 +681,10 @@
                     render();
                     toast(data.message, 'success');
                 } catch (error) {
+                    if (wasPlaying && remainingSeconds > 0) {
+                        runTimer(remainingSeconds);
+                    }
+
                     toast(error.message, 'error');
                     render();
                 }
@@ -671,6 +694,7 @@
             revealButton.addEventListener('click', revealAnswer);
             nextButton.addEventListener('click', draw);
             resetButton.addEventListener('click', reset);
+            restartButton.addEventListener('click', reset);
 
             // Restore a figure that was drawn before a page reload.
             if (current) {

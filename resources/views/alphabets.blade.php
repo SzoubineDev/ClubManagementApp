@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Alphabet — The Great Debaters</title>
-    <meta name="description" content="The English alphabet A to Z — The Great Debaters, FST Errachidia.">
+    <meta name="description" content="Switch between the English alphabet A–Z and the Arabic alphabet — The Great Debaters, FST Errachidia.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -25,9 +25,12 @@
             --ease: cubic-bezier(.22, .61, .36, 1);
             --display: 'Playfair Display', Georgia, serif;
             --body: 'Inter', system-ui, sans-serif;
+            --arabic: 'Amiri', 'Noto Naskh Arabic', 'Traditional Arabic', serif;
         }
 
         * { box-sizing: border-box; }
+
+        [hidden] { display: none !important; }
 
         html, body { min-height: 100%; }
 
@@ -177,14 +180,89 @@
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
         }
 
+        /* Arabic hero variant */
+        [data-hero="ar"] .kicker {
+            font-family: var(--arabic);
+            font-size: clamp(1rem, 1.6vw, 1.25rem);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        [data-hero="ar"] h1 {
+            font-family: var(--arabic);
+            font-size: clamp(2.8rem, 7vw, 5.6rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: 0;
+        }
+
+        [data-hero="ar"] h1 em { font-style: normal; }
+
+        [data-hero="ar"] .hero__sub {
+            font-family: var(--arabic);
+            font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+            line-height: 1.85;
+        }
+
         /* ---------------------------------------------------------------
-           Alphabet grid
+           Alphabet switch
+           --------------------------------------------------------------- */
+        .switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 22px;
+            padding: 4px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(20, 13, 16, .5);
+            backdrop-filter: blur(8px);
+        }
+
+        .switch button {
+            padding: 8px 18px;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: rgba(251, 247, 240, .66);
+            font-family: var(--body);
+            font-size: .68rem;
+            font-weight: 600;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .2s var(--ease), color .2s var(--ease);
+        }
+
+        .switch button[data-alphabet-target="ar"] {
+            font-family: var(--arabic);
+            font-size: .98rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .switch button:hover:not(.is-active) { color: var(--gold-2); }
+
+        .switch button.is-active {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        .switch button:focus-visible {
+            outline: 2px solid var(--gold-2);
+            outline-offset: 2px;
+        }
+
+        /* ---------------------------------------------------------------
+           Alphabet grids
            --------------------------------------------------------------- */
         .letters {
             display: grid;
             grid-template-columns: repeat(7, minmax(0, 1fr));
             gap: clamp(9px, 1.1vw, 15px);
-            margin-top: clamp(28px, 4vw, 46px);
+            margin-top: clamp(28px, 4vw, 44px);
         }
 
         .letter {
@@ -193,9 +271,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
+            gap: 1px;
             aspect-ratio: 1;
-            padding: 10px;
+            padding: 12px 10px 10px;
             border: 1px solid var(--line);
             border-radius: 6px;
             background: linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .012));
@@ -240,28 +318,49 @@
         .letter__num {
             position: absolute;
             top: 9px;
-            left: 11px;
+            inset-inline-start: 11px;
             font-size: .58rem;
             font-weight: 600;
-            letter-spacing: .14em;
+            letter-spacing: .12em;
             color: rgba(251, 247, 240, .38);
             font-variant-numeric: tabular-nums;
         }
 
-        .letter__upper {
+        .letter__char {
+            font-family: var(--arabic);
+            font-size: clamp(2rem, 4.6vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .letter__name {
+            font-family: var(--arabic);
+            font-size: clamp(.86rem, 1.4vw, 1.08rem);
+            line-height: 1.2;
+            color: var(--gold-2);
+        }
+
+        .letter__latin {
+            font-family: var(--body);
+            font-size: .56rem;
+            font-weight: 500;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: rgba(251, 247, 240, .4);
+        }
+
+        /* English grid variant */
+        .letters--en .letter__char {
             font-family: var(--display);
             font-size: clamp(1.9rem, 4.2vw, 3.4rem);
             font-weight: 500;
-            line-height: 1;
         }
 
-        .letter__lower {
+        .letters--en .letter__name {
             font-family: var(--display);
             font-style: italic;
             font-size: clamp(.9rem, 1.7vw, 1.35rem);
-            line-height: 1;
-            color: var(--gold-2);
-            opacity: .8;
+            opacity: .85;
         }
 
         /* ---------------------------------------------------------------
@@ -273,22 +372,31 @@
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin-top: clamp(32px, 4.5vw, 54px);
+            margin-top: clamp(32px, 4.5vw, 52px);
             padding-top: 20px;
             border-top: 1px solid var(--line);
-            font-size: .66rem;
-            letter-spacing: .16em;
-            text-transform: uppercase;
-            color: rgba(251, 247, 240, .42);
         }
 
         .foot strong {
             font-family: var(--display);
-            font-size: .92rem;
+            font-size: .95rem;
             font-weight: 500;
             letter-spacing: .02em;
-            text-transform: none;
             color: rgba(251, 247, 240, .78);
+        }
+
+        .foot span {
+            font-size: .66rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: rgba(251, 247, 240, .46);
+        }
+
+        .foot span[data-footer="ar"] {
+            font-family: var(--arabic);
+            font-size: .9rem;
+            letter-spacing: 0;
+            text-transform: none;
         }
 
         /* ---------------------------------------------------------------
@@ -339,28 +447,59 @@
 
     <main class="page">
         <section class="hero">
-            <p class="kicker">A · B · C · D · E</p>
-            <h1>The <em>Alphabet</em></h1>
-            <p class="hero__sub">
-                <strong>{{ $totalLetters }} letters</strong> from A to Z. Click any letter to hear it out loud.
-            </p>
+            <div class="hero__lang" data-hero="en">
+                <p class="kicker">A · B · C · D · E</p>
+                <h1>The <em>Alphabet</em></h1>
+                <p class="hero__sub">
+                    <strong>{{ $englishTotal }} letters</strong> from A to Z. Click any letter to hear it.
+                </p>
+            </div>
+
+            <div class="hero__lang" data-hero="ar" hidden>
+                <p class="kicker">ا · ب · ت · ث · ج</p>
+                <h1>الأبجدية <em>العربية</em></h1>
+                <p class="hero__sub">
+                    <strong>{{ $arabicTotal }} حرفاً</strong> من الألف إلى الياء. اضغط على أي حرف لسماعه.
+                </p>
+            </div>
+
             <div class="hero__rule" aria-hidden="true"></div>
+
+            <div class="switch" role="group" aria-label="Choose alphabet">
+                <button type="button" class="is-active" data-alphabet-target="en" aria-pressed="true">English</button>
+                <button type="button" data-alphabet-target="ar" aria-pressed="false">العربية</button>
+            </div>
         </section>
 
-        <section class="letters" id="letters" aria-label="The English alphabet">
-            @foreach ($letters as $letter)
-                <button type="button" class="letter" data-letter="{{ $letter }}"
-                    aria-label="Letter {{ $letter }}, lowercase {{ strtolower($letter) }}">
+        <section class="letters letters--en" data-grid="en" dir="ltr" aria-label="English alphabet">
+            @foreach ($englishLetters as $letter)
+                <button type="button" class="letter" data-letter="{{ $letter['char'] }}"
+                    data-speak="{{ $letter['char'] }}" data-speech-lang="en-US"
+                    aria-label="Letter {{ $letter['char'] }}">
                     <span class="letter__num" aria-hidden="true">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
-                    <span class="letter__upper" aria-hidden="true">{{ $letter }}</span>
-                    <span class="letter__lower" aria-hidden="true">{{ strtolower($letter) }}</span>
+                    <span class="letter__char" aria-hidden="true">{{ $letter['char'] }}</span>
+                    <span class="letter__name" aria-hidden="true">{{ $letter['name'] }}</span>
+                </button>
+            @endforeach
+        </section>
+
+        <section class="letters letters--ar" data-grid="ar" dir="rtl" aria-label="الأبجدية العربية" hidden>
+            @foreach ($arabicLetters as $letter)
+                <button type="button" class="letter" data-letter="{{ $letter['char'] }}"
+                    data-speak="{{ $letter['name'] }}" data-speech-lang="ar-SA"
+                    aria-label="حرف {{ $letter['name'] }}">
+                    <span class="letter__num" aria-hidden="true">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                    <span class="letter__char" aria-hidden="true">{{ $letter['char'] }}</span>
+                    <span class="letter__name" aria-hidden="true">{{ $letter['name'] }}</span>
+                    <span class="letter__latin" aria-hidden="true">{{ $letter['latin'] }}</span>
                 </button>
             @endforeach
         </section>
 
         <footer class="foot">
             <strong>The Great Debaters</strong>
-            <span>Think. Speak. Change. · FST Errachidia</span>
+            <span data-footer="en">Think. Speak. Change. · FST Errachidia</span>
+            <span data-footer="ar" hidden>فكر. تحدث. غيّر. · كلية العلوم والتقنيات بالراشيدية</span>
         </footer>
     </main>
 
@@ -368,9 +507,19 @@
         (() => {
             'use strict';
 
-            const letters = Array.from(document.querySelectorAll('.letter'));
+            const root = document.documentElement;
             const synth = window.speechSynthesis;
             const utteranceSupported = 'SpeechSynthesisUtterance' in window;
+
+            const heroes = Array.from(document.querySelectorAll('[data-hero]'));
+            const grids = Array.from(document.querySelectorAll('[data-grid]'));
+            const footers = Array.from(document.querySelectorAll('[data-footer]'));
+            const switchButtons = Array.from(document.querySelectorAll('[data-alphabet-target]'));
+
+            const titles = {
+                en: 'The Alphabet — The Great Debaters',
+                ar: 'الأبجدية العربية — The Great Debaters',
+            };
 
             let activeButton = null;
             let activeTimer = null;
@@ -389,11 +538,25 @@
                     if (activeButton === button) {
                         activeButton = null;
                     }
-                }, 800);
+                }, 900);
+            }
+
+            function stopSpeech() {
+                if (activeButton) {
+                    activeButton.classList.remove('is-speaking');
+                    activeButton = null;
+                }
+
+                window.clearTimeout(activeTimer);
+
+                if (synth) {
+                    synth.cancel();
+                }
             }
 
             function speak(button) {
-                const letter = button.dataset.letter;
+                const text = button.dataset.speak || button.dataset.letter;
+                const lang = button.dataset.speechLang || 'en-US';
 
                 highlight(button);
 
@@ -403,30 +566,96 @@
 
                 synth.cancel();
 
-                const utterance = new SpeechSynthesisUtterance(letter);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.85;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = lang.toLowerCase().startsWith('ar') ? 0.8 : 0.85;
                 utterance.pitch = 1;
+
+                // Use a matching installed voice when one is available.
+                const prefix = lang.slice(0, 2).toLowerCase();
+                const voice = synth.getVoices().find((candidate) =>
+                    candidate.lang.toLowerCase().startsWith(prefix)
+                );
+
+                if (voice) {
+                    utterance.voice = voice;
+                }
 
                 synth.speak(utterance);
             }
 
-            letters.forEach((button) => {
+            function setLanguage(lang, { persist = true } = {}) {
+                const isArabic = lang === 'ar';
+                const active = isArabic ? 'ar' : 'en';
+
+                root.lang = active;
+                root.dir = isArabic ? 'rtl' : 'ltr';
+                document.title = titles[active];
+
+                heroes.forEach((element) => {
+                    element.hidden = element.dataset.hero !== active;
+                });
+
+                grids.forEach((element) => {
+                    element.hidden = element.dataset.grid !== active;
+                });
+
+                footers.forEach((element) => {
+                    element.hidden = element.dataset.footer !== active;
+                });
+
+                switchButtons.forEach((button) => {
+                    const isActive = button.dataset.alphabetTarget === active;
+                    button.classList.toggle('is-active', isActive);
+                    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                });
+
+                stopSpeech();
+
+                if (persist) {
+                    try {
+                        localStorage.setItem('alphabet-lang', active);
+                    } catch (error) {
+                        // Storage can be unavailable in private mode.
+                    }
+
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('lang', active);
+                    window.history.replaceState(null, '', url);
+                }
+            }
+
+            switchButtons.forEach((button) => {
+                button.addEventListener('click', () => setLanguage(button.dataset.alphabetTarget));
+            });
+
+            document.querySelectorAll('.letter').forEach((button) => {
                 button.addEventListener('click', () => speak(button));
             });
 
-            // Escape clears any active highlight.
             document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && activeButton) {
-                    activeButton.classList.remove('is-speaking');
-                    activeButton = null;
-                    window.clearTimeout(activeTimer);
-
-                    if (synth) {
-                        synth.cancel();
-                    }
+                if (event.key === 'Escape') {
+                    stopSpeech();
                 }
             });
+
+            // Restore the last choice, or use ?lang=ar / ?lang=en.
+            let initial = 'en';
+
+            try {
+                const requested = new URLSearchParams(window.location.search).get('lang');
+                const stored = localStorage.getItem('alphabet-lang');
+
+                if (requested === 'ar' || requested === 'en') {
+                    initial = requested;
+                } else if (stored === 'ar' || stored === 'en') {
+                    initial = stored;
+                }
+            } catch (error) {
+                // Ignore unavailable storage.
+            }
+
+            setLanguage(initial, { persist: false });
         })();
     </script>
 </body>

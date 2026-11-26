@@ -36,7 +36,9 @@ class WordAssociationTest extends TestCase
             ->assertSee('The deck')
             ->assertSee('id="figureText"', false)
             ->assertSee('id="answerPanel"', false)
-            ->assertSee('id="timerProgress"', false);
+            ->assertSee('id="timerProgress"', false)
+            ->assertSee('id="restartButton"', false)
+            ->assertSee('Restart');
     }
 
     public function test_draws_return_unique_figures_and_a_sixty_second_round(): void

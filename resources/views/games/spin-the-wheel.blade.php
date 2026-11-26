@@ -214,8 +214,8 @@
             border-radius: 50%;
             overflow: hidden;
             background: repeating-conic-gradient(from 0deg,
-                #FFFDFC 0deg 4.5deg,
-                #F4DFE5 4.5deg 9deg);
+                #FFFDFC 0deg 9deg,
+                #F4DFE5 9deg 18deg);
             box-shadow:
                 inset 0 0 0 2px rgba(92, 15, 36, .22),
                 inset 0 0 32px rgba(122, 21, 49, .18);
@@ -231,7 +231,7 @@
             border-radius: 50%;
             background: repeating-conic-gradient(from 0deg,
                 rgba(155, 27, 63, .55) 0deg .5deg,
-                transparent .5deg 45deg);
+                transparent .5deg 90deg);
             opacity: .75;
         }
 
@@ -989,7 +989,7 @@
                         drawn = error.data?.drawn || drawn;
                         setHub('—', 'Board', 'complete');
                         wheelHub.classList.remove('is-result');
-                        setAnnouncement('—', 'All 80 numbers have presented. Reset the board to start again.');
+                        setAnnouncement('—', 'All ' + TOTAL + ' numbers have presented. Reset the board to start again.');
                     } else {
                         setHub(lastDrawn ? String(lastDrawn) : '?', lastDrawn ? 'Number' : 'Presenter', lastDrawn ? 'presenting' : 'ready');
                         wheelHub.classList.toggle('is-result', Boolean(lastDrawn));
